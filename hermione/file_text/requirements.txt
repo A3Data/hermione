@@ -1,0 +1,14 @@
+category-encoders
+datetime
+Flask
+matplotlib
+mlflow
+numpy
+pandas
+plotly
+seaborn
+scikit-learn
+scipy
+statsmodels
+tqdm
+yellowbrick

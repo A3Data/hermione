@@ -1,2 +1,2 @@
 # hermione
-ML Project Structure
+Um montador de projetos de DS estilo cookiecutter

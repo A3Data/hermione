@@ -1,0 +1,142 @@
+# -*- coding: utf-8 -*-
+import os
+from datetime import datetime
+from flask import Blueprint, jsonify, make_response, request
+from flask_cors import CORS
+try:  # Python 3.5+
+   from http import HTTPStatus as StatusCodes
+except ImportError:
+   try:  # Python 3
+       from http import client as StatusCodes
+   except ImportError:  # Python 2
+       import httplib as StatusCodes
+import pandas as pd
+from webargs import fields
+from webargs.flaskparser import use_args
+from flask_httpauth import HTTPBasicAuth
+
+#from config import CONFIGS_DIR
+from util import load_json, create_dirs
+from ml.modelo import Modelo
+from ml.geracao_modelo import GeracaoModelo
+# Logger
+#ml_logger = logging.getLogger("ml_logger")
+
+# Define blueprint
+_api = Blueprint("_api", __name__)
+CORS(_api) # enable CORS on the _api blue print
+
+config = load_json("config/config.json")
+
+auth = HTTPBasicAuth()
+args = {"args_1": fields.Str(required=True, error_messages={'required': 'Informe o args_1!'}),
+        "args_2": fields.Str(required=True, error_messages={'required': 'Informe o args_2!'})}
+
+"""
+Verifica se o modelo já foi carregado para a memória.
+Se o modelo não tiver sido carregado, verifica-se se ele existe na pasta do
+modelo (contents['modelo']).
+Se o o modelo não existir, ele é gerado. Caso ele exista, o modelo é carregado.
+"""
+if 'modelo' not in locals():
+    print("Carregando modelo...")
+    contents = load_json("config/arquivos.json")
+    if os.path.isfile(contents['modelo']):
+        modelo = Modelo.carregar(contents['modelo'])        
+    else:
+        geracao = GeracaoModelo()
+        modelo = geracao.construir()
+        create_dirs(contents["path_modelo"]) # cria a pasta se ela não existir
+        modelo.salvar(contents["path_modelo"] + contents['nome_modelo'])
+    print("Modelo carregado")
+
+# Health check
+@_api.route(f"/{config['nome_projeto']}", methods=["GET"])
+@auth.login_required
+def _health_check():
+    """Verifica se a API está funcionando normalmente."""
+    # Construct response
+    response = {
+        "message": StatusCodes.OK.phrase,
+        "method": request.method,
+        "status-code": StatusCodes.OK,
+        "timestamp": datetime.now().isoformat(),
+        "url": request.url,
+        }
+
+    # Log
+    #ml_logger.info(json.dumps(response, indent=4, sort_keys=True))
+    return make_response(jsonify(response), response["status-code"])
+
+
+# Inference
+@_api.route(f"/{config['nome_projeto']}/predict", methods=["POST"])
+@use_args(args)
+@auth.login_required
+def _predict(input_model):
+    """
+    Método POST que realiza a predição
+    
+    Parameters
+    ----------            
+    input_model : dict
+        Json recebido pelo método POST contendo os campos que serão utilizados
+        para a predição
+    
+    Returns
+	-------
+    dict : retorna um json com o resultado da predição
+    """
+    # Get inputs
+    results = {}
+    try:
+        data = pd.DataFrame([{'feature_1': input_model['args_1'],
+                             'feature_2': input_model['args_2']}])
+        results = modelo.predict(data)        
+        # Construct response
+        response = {
+            "message": StatusCodes.OK.phrase,
+            "method": StatusCodes.OK,
+            "status-code": StatusCodes.OK,
+            "timestamp": datetime.now().isoformat(),
+            "url": request.url,
+        }
+    except Exception as e:
+        response = {
+            "message": "Falha na predição: "+str(e),
+            "method": StatusCodes.BAD_REQUEST,
+            "status-code": StatusCodes.UNPROCESSABLE_ENTITY,
+            "timestamp": datetime.now().isoformat(),
+            "url": request.url,
+        }
+
+    response["data"] = results
+
+    # Log
+    #ml_logger.info(json.dumps(response, indent=4, sort_keys=True))
+    return make_response(jsonify(response), response["status-code"])
+
+
+# Classes
+@_api.route(f"/{config['nome_projeto']}/classes", methods=["GET"])
+@auth.login_required
+def _classes(experiment_id="latest"):
+    """Classes in an experiment."""
+    # Get classes
+    results = ['classe1', 'classe2']
+    # Construct response
+    response = {
+        "message": "Classes",
+        "method": request.method,
+        "status-code": StatusCodes.OK,
+        "timestamp": datetime.now().isoformat(),
+        "url": request.url,
+    }
+    response["data"] = results
+    # Log
+    #ml_logger.info(json.dumps(response, indent=4, sort_keys=True))
+    return make_response(jsonify(response), response["status-code"])
+
+@auth.verify_password
+def verify_password(username, password):
+    return config['user'] == username and config['key'] == password

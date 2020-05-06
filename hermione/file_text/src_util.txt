@@ -1,0 +1,122 @@
+import os
+import sys
+import collections
+import copy
+import json
+import numpy as np
+import pandas as pd
+import re
+from shutil import copyfile
+import time
+import yaml
+import io
+
+def create_dirs(dirpath):
+    """Creating directories."""
+    if not os.path.exists(dirpath):
+        os.makedirs(dirpath)
+
+def load_yaml(filepath):
+    with open(filepath, 'r') as stream:
+        return yaml.safe_load(stream)
+
+
+def load_json(filepath):
+    """Load a json file."""
+    with open(filepath, "r", encoding='utf8') as fp:
+        obj = json.load(fp)
+    return obj
+
+
+def save_json(obj, filepath):
+    """Save a dictionary to a json file."""
+    with open(filepath, "w") as fp:
+        json.dump(obj, fp, indent=4)
+
+def wrap_text(text):
+    """Pretty box print."""
+    box_width = len(text) + 2
+    print ('\n╒{}╕'.format('═' * box_width))
+    print ('│ {} │'.format(text.upper()))
+    print ('╘{}╛'.format('═' * box_width))
+
+
+def load_data(data_csv):
+    """Load data from CSV to Pandas DataFrame."""
+    df = pd.read_csv(data_csv, header=0)
+    wrap_text("Raw data")
+    print (df.head(5))
+    return df
+
+
+def DistributedSplit(df, train_size, val_size, test_size,
+                     min_samples_per_class, shuffle):
+    """Split the data into train/val/test splits that
+    have equal class distributions."""
+
+    # Split by category
+    items = collections.defaultdict(list)
+    for _, row in df.iterrows():
+        items[row.y].append(row.to_dict())
+
+    # Clean
+    by_category = {k: v for k, v in items.items() \
+                   if len(v) >= min_samples_per_class}
+
+    # Class counts
+    class_counts = {}
+    for category in by_category:
+        class_counts[category] = len(by_category[category])
+
+    wrap_text("Class Distribution")
+    print (json.dumps(class_counts, indent=4, sort_keys=True))
+
+    # Create split data
+    final_list = []
+    for _, item_list in sorted(by_category.items()):
+        if shuffle:
+            np.random.shuffle(item_list)
+        n = len(item_list)
+        n_train = int(train_size*n)
+        n_val = int(val_size*n)
+        n_test = int(test_size*n)
+
+      # Give data point a split attribute
+        for item in item_list[:n_train]:
+            item["split"] = "train"
+        for item in item_list[n_train:n_train+n_val]:
+            item["split"] = "val"
+        for item in item_list[n_train+n_val:]:
+            item["split"] = "test"
+
+        # Add to final list
+        final_list.extend(item_list)
+
+    # df with split datasets
+    split_df = pd.DataFrame(final_list)
+    train_df = split_df[split_df.split == "train"]
+    val_df = split_df[split_df.split == "val"]
+    test_df = split_df[split_df.split == "test"]
+
+    wrap_text("Split data")
+    print (split_df["split"].value_counts())
+    return train_df, val_df, test_df
+
+
+def class_weights(df, vectorizer):
+    """Get class counts for imbalances."""
+    class_counts = df.y.value_counts().to_dict()
+    def sort_key(item):
+        return vectorizer.y_vocab.lookup_token(item[0])
+    sorted_counts = sorted(class_counts.items(), key=sort_key)
+    frequencies = [count for _, count in sorted_counts]
+    class_weights = 1.0 / torch.tensor(frequencies, dtype=torch.float32)
+    return class_weights
+
+
+def pad_seq(seq, length):
+    """Pad inputs to create uniformly sized inputs."""
+    vector = np.zeros(length, dtype=np.int64)
+    vector[:len(seq)] = seq
+    vector[len(seq):] = 0 # mask_index=0
+    return vector
