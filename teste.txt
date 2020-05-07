@@ -1,1 +1,2 @@
 Meu teste super bonito.
+Uma nova linha no teste.
