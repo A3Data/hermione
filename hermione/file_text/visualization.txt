@@ -15,7 +15,7 @@ class Visualization:
         Parameters
         ----------    
         df : pd.DataFrame
-            dataframe to be analyzed
+             dataframe to be analyzed
  
         Returns
         ----
@@ -31,7 +31,7 @@ class Visualization:
         Parameters
         ----------    
         df : pd.DataFrame
-            dataframe on which the missing will be analyzed
+             dataframe on which the missing will be analyzed
              
         Returns
         -------
@@ -49,12 +49,12 @@ class Visualization:
     
         Parameters
         ----------    
-        df : pd.DataFrame
-             dataframe with the values
-        feature: str 
-            name of the feature to be counted
-        title: str 
-            chart title
+        df      : pd.DataFrame
+                  dataframe with the values
+        feature : str 
+                  name of the feature to be counted
+        title   : str 
+                  chart title
         
         Returns
         ----
@@ -73,7 +73,7 @@ class Visualization:
         ----------    
         y_true      : array
                       true values
-        y_pred : array
+        y_pred      : array
                       predicted values
         path        : str
                       path where the graphics will be saved
@@ -83,7 +83,7 @@ class Visualization:
         None
         """
         residual = y_true - y_pred
-        print("Histograma")
+        print("Histogram")
         cls.histogram(residual, "Residual")
         print("Scatter")
         cls.scatter_plot(y_pred, residual, "pred", "residual", path=path)
@@ -120,7 +120,7 @@ class Visualization:
     
         
     @staticmethod
-    def analyze_correlation(df, fig_size=(5,4), path=None):
+    def correlation_analyze(df, fig_size=(5,4), path=None):
         """
         Correlation of variables in the dataframe
     
@@ -145,10 +145,10 @@ class Visualization:
                     yticklabels=corr.columns.values, ax=ax)
         f.tight_layout()
         if(path != None):
-            f.savefig(path+'/correlacao.png')
+            f.savefig(path+'/correlation.png')
 
     @staticmethod    
-    def plot_feature_corr(df, cols, target, fig_size=(6,6), path=None):
+    def features_correlation(df, cols, target, fig_size=(6,6), path=None):
         """
         Correlation of variables in the dataframe with respect to the target
     
@@ -170,14 +170,15 @@ class Visualization:
         None
         """
         f, ax = plt.subplots(1, figsize=fig_size)
+        ax.set_xlabel("Feature Correlation")
         visualizer = FeatureCorrelation(labels=list(cols))
         visualizer.fit(df[cols], df[target])
         f.tight_layout()
         if(path != None):
-            f.savefig(path+'/feature_correlacao_target.png')
+            f.savefig(path+'/features_correlation.png')
 
     @staticmethod
-    def scatter_plot(x, y, xlabel, ylabel, fig_size=(5,4), grupos=None, cor_grupo=None, path=None):
+    def scatter(x, y, xlabel, ylabel, fig_size=(5,4), grupos=None, cor_grupo=None, path=None):
         """
         Plot scatter
     
@@ -213,30 +214,30 @@ class Visualization:
             f.savefig(path+'/scatter_'+xlabel+'_'+ylabel+'.png')
             
     @staticmethod
-    def bar_plot(x, y, xlabel, ylabel, fig_size=(5,4), est=np.mean, groups=None, group_color=None, path=None):
+    def bar(x, y, xlabel, ylabel, fig_size=(5,4), est=np.mean, groups=None, group_color=None, path=None):
         """
         Plot bar
     
         Parameters
         ----------    
-        x         : array
-                    list of x-axis values
-        y         : array
-                    list of y-axis values                            
-        x_label   : str
-                    label x
-        y_label   : array
-                    label y                                    
-        fig_size  : tuple
-                    figure size
-        est       : np
-                    numpy function for aggregating the bars
-        groups    : array
-                    group list
+        x           : array
+                      list of x-axis values
+        y           : array
+                      list of y-axis values                            
+        x_label     : str
+                      label x
+        y_label     : array
+                      label y                                    
+        fig_size    : tuple
+                      figure size
+        est         : np
+                      numpy function for aggregating the bars
+        groups      : array
+                      group list
         group_color : dict
-                    group colors
-        path      : str
-                    path where the graphics will be saved
+                      group colors
+        path        : str
+                      path where the graphics will be saved
                       
         Returns
         -------
@@ -248,10 +249,10 @@ class Visualization:
         ax.set_ylabel(ylabel)
         f.tight_layout()
         if(path != None):
-            f.savefig(path+'/barra_'+xlabel+'_'+ylabel+'.png')
+            f.savefig(path+'/barr_'+xlabel+'_'+ylabel+'.png')
 
     @staticmethod
-    def line_plot(x, y, xlabel, ylabel, fig_size=(5,4), est=np.mean, groups=None, group_color=None, path=None):
+    def line(x, y, xlabel, ylabel, fig_size=(5,4), est=np.mean, groups=None, group_color=None, path=None):
         """
         Plot bar
     
@@ -321,7 +322,7 @@ class Visualization:
             f.savefig(path+'/boxplot_'+xlabel+'_'+ylabel+'.png')
 
     @staticmethod
-    def interactive_scatter_plot(df, col_name_x,  col_name_y, xlabel, ylabel, hover, fig_size=(400,300), **kwargs):
+    def scatter_interactive(df, col_name_x,  col_name_y, xlabel, ylabel, hover, fig_size=(400,300), **kwargs):
         """
         Interactive plotter
     
@@ -356,7 +357,7 @@ class Visualization:
                 ).interactive().display()
 
     @staticmethod
-    def interactive_bar_plot(df, col_name_x, col_name_y, xlabel, ylabel, hover, fig_size=(400,300), **kwargs):
+    def bar_interactive(df, col_name_x, col_name_y, xlabel, ylabel, hover, fig_size=(400,300), **kwargs):
         """
         Interactive plotter
     
@@ -391,7 +392,7 @@ class Visualization:
                 ).interactive().display()
         
     @staticmethod
-    def line_plot_interativo(df, col_name_x, col_name_y, xlabel, ylabel, hover, fig_size=(400,300), **kwargs):
+    def line_interativo(df, col_name_x, col_name_y, xlabel, ylabel, hover, fig_size=(400,300), **kwargs):
         """
         Interactive plotter
     

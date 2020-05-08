@@ -12,7 +12,7 @@ class Normalizer:
     	Parameters
     	----------            
         norm_cols : dict
-                    Receives a dict with the name of the normalization to be 
+                    Receives dict with the name of the normalization to be 
                     performed and which are the columns
                     Ex: norm_cols = {'zscore': ['salary', 'price'], 
                                      'min-max': ['heigth', 'age']}
@@ -27,7 +27,7 @@ class Normalizer:
                       'standard': StandardScaler}
         self.fitted = False
         
-    def statistics(self, df: pd.DataFrame):
+    def statistics(self, df : pd.DataFrame):
         """
         Calculates dataframe statistics
         
@@ -53,7 +53,7 @@ class Normalizer:
     	Parameters
     	----------            
         X             : array
-                        dados a serem normalizados
+                        Data to be normalized
         normalization : Normalization
                         Normalization to be applied
                     
@@ -66,7 +66,7 @@ class Normalizer:
 
     def fit(self, df: pd.DataFrame):
         """
-        Generates the normalization object for each column
+        Generates normalization object for each column
         
     	Parameters
     	----------            
@@ -144,7 +144,7 @@ class Normalizer:
     
     def fit_transform(self, df: pd.DataFrame):
         """
-        Creates the object and applies it to normalized
+        Creates object and apply it normalization
         
     	Parameters
     	----------            

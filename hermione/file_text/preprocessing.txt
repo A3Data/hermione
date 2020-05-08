@@ -15,8 +15,8 @@ class Preprocessing:
         
         Parameters
         ----------            
-        df          :  pd.Dataframe
-                       Dataframe to be processed
+        df  :   pd.Dataframe
+                Dataframe to be processed
 
         Returns
     	-------
@@ -35,8 +35,8 @@ class Preprocessing:
 
         Parameters
         ----------            
-        df          :  pd.Dataframe
-                       Dataframe to be processed
+        df  :   pd.Dataframe
+                Dataframe to be processed
 
         Returns
     	-------

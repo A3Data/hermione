@@ -18,11 +18,11 @@ class Wrapper(mlflow.pyfunc.PythonModel):
                           if it is more than one model: do not enter parameters and use
                           the add method to add each of the models
         preprocessing :   Preprocessamento
-                          preprocessing used in training
+                          Preprocessing used in training
         metrics       :   dict
-                          dictionary with the metrics of the result of the model
-        model_name    :   str
-                          model name
+                          Dictionary with the metrics of the result of the model
+        columns       :   list
+                          list with columns names
     	Returns
     	-------
     	WrapperModel
@@ -41,7 +41,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
     	Parameters
     	----------            
         df : pd.DataFrame
-             data to be predicted
+             Data to be predicted
              
     	Returns
     	-------
@@ -107,10 +107,22 @@ class Wrapper(mlflow.pyfunc.PythonModel):
     
             
     def save(self, path):
+        """
+    	Save model
+    
+    	Parameters
+    	----------            
+        path : str
+               path where the model object will be loaded.
+             
+    	Returns
+    	-------
+    	None
+        """
         path_artifacts = path+'_artifacts.pkl'
-        dump(self.artifacts, path_artifacts) # salva os artifacts
+        dump(self.artifacts, path_artifacts)
         content = load_json("config/arquivos.json") 
-        conda_env = load_yaml(content["path_yaml"]) # carrega o arquivo de env
+        conda_env = load_yaml(content["path_yaml"])
         mlflow.pyfunc.save_model(
                     path= path, 
                     python_model= self, 
@@ -118,10 +130,43 @@ class Wrapper(mlflow.pyfunc.PythonModel):
                     conda_env= conda_env)
     
     def get_metrics(self):
+        """
+    	Return metrics
+    
+    	Parameters
+    	----------            
+        self : object Wrapper
+             
+    	Returns
+    	-------
+    	dict
+        """
         return self.artifacts['metrics']
 
     def get_columns(self):
+        """
+    	Return columns
+    
+    	Parameters
+    	----------            
+        self : object Wrapper
+             
+    	Returns
+    	-------
+    	list
+        """
         return self.artifacts['columns']
     
     def get_model(self):
+        """
+    	Return model
+    
+    	Parameters
+    	----------            
+        self : object Wrapper
+             
+    	Returns
+    	-------
+    	dict
+        """
         return self.artifacts['model']

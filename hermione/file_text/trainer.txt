@@ -22,6 +22,7 @@ class Trainer(ABC):
     def train(self):
         """
         Abstract method that should be implemented in every class that inherits TrainerModel
+
     	Parameters
     	----------    
         None
@@ -32,8 +33,7 @@ class Trainer(ABC):
         """
         pass
     
-
-        
+     
 class TrainerSklearn(Trainer):
         
     def train(self, X_train, y_train, X_test, y_test, classification: bool, algorithm, preprocessing=None, **params):
@@ -53,7 +53,7 @@ class TrainerSklearn(Trainer):
     	-------
     	Wrapper
         """
-        model = algorithm(random_state=618, **params) #modelo
+        model = algorithm(random_state=618, **params)
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
         y_probs = model.predict_proba(X_test)[:,1]
