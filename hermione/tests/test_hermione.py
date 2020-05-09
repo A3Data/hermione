@@ -1,5 +1,6 @@
 from click.testing import CliRunner
 from hermione.cli import cli, logo
+import os
 
 def test_installation_ok():
     runner = CliRunner()
@@ -11,3 +12,6 @@ def test_info():
     res = runner.invoke(cli, ['info'])
     assert logo in res.output
 
+def test_implementation_script_folders():
+    assert os.path.exists(os.path.join(os.getcwd(), 'hermione', 'file_text'))
+    assert os.path.exists(os.path.join(os.getcwd(), 'hermione', 'not_implemented_file_text'))
