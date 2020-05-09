@@ -1,5 +1,7 @@
 # hermione
 
+![hermione](https://github.com/A3Data/hermione/workflows/hermione/badge.svg)
+
  ```
   _                         _                  
 | |__   ___ _ __ _ __ ___ (_) ___  _ __   ___ 
