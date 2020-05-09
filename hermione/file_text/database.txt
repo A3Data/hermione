@@ -15,8 +15,7 @@ class DataBase(DataSource):
         
         Returns
         -------
-        Database
-             Class Object
+        class Object
         """
         pass
     
@@ -48,14 +47,14 @@ class DataBase(DataSource):
         Returns
         -------
         bool
-            Variable that tells if connection has been opened
+            Check if connection is open or not
             
         """
         pass
     
     def close_connection(self, connection ):
         """
-        Close the connection to the database
+        Close the connection database
         
         Parameters
         -----------         
@@ -65,7 +64,7 @@ class DataBase(DataSource):
         Returns
         -------
         bool
-            Variable that informs if connection was closed
+            Check if connection was closed
             
         """
         pass

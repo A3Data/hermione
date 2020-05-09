@@ -1,6 +1,7 @@
 from sklearn.metrics import *
 import numpy as np
 from sklearn.metrics import make_scorer
+from sklearn.model_selection import cross_validate
 
 class Metrics:
     
@@ -57,8 +58,8 @@ class Metrics:
     	-------
     	float
     	"""
-        metrica_customizada = make_scorer(cls.__custom_score, greater_is_better=True)
-        return metrica_customizada
+        custom_metric = make_scorer(cls.__custom_score, greater_is_better=True)
+        return custom_metric
         
     @classmethod
     def mape(cls, y_true, y_pred):
@@ -94,18 +95,31 @@ class Metrics:
     
     	Returns
     	-------
-    	dict : values for each metric
+    	dict : metrics results
     	"""
-        resultados = {'mean_absolute_error': round(mean_absolute_error(y_true, y_pred), 7),
+        results =   {'mean_absolute_error': round(mean_absolute_error(y_true, y_pred), 7),
                       'root_mean_squared_error': round(np.sqrt(mean_squared_error(y_true, y_pred)), 7),
                       'r2': round(r2_score(y_true, y_pred), 7),
                       'smape': round(cls.smape(y_true, y_pred), 7),
                       'mape': round(cls.mape(y_true, y_pred), 7)
                      }        
-        return resultados
-    
+        return results
+        
     @classmethod
-    def __multiclass_classification(cls, y_true, y_pred, normalize=False, title="Matriz de confusão"):
+    def crossvalidation(cls, model, X, y, classification: bool, agg=np.mean):
+        if classification:
+            if len(set(y)) > 2:
+                metrics = ['accuracy','f1_weighted', 'recall_weighted','precision_weighted']
+            else:
+                metrics = ['accuracy','f1', 'recall','precision', 'roc_auc']
+        else:
+            metrics = ['mean_absolute_error', 'r2', 'root_mean_squared_error', 'smape', 'mape']
+        res_metrics = cross_validate(model, X, y, return_train_score=False, scoring=metrics)
+        results = {metric.replace("test_", ""): round(agg(res_metrics[metric]),7) for metric in res_metrics}
+        return results
+
+    @classmethod
+    def __multiclass_classification(cls, y_true, y_pred):
         """
     	Calculates some metrics for multiclass classification problems
     
@@ -115,23 +129,20 @@ class Metrics:
                     Target values
         y_pred    : array
                     Predicted values
-        normalize : bool - False
-                    Se normalize for False os valores da matriz de confusão são reais,
-                    caso contrário a matriz de confusão apresenta o percentual.
     
     	Returns
     	-------
-    	dict : valores de cada métrica
+    	dict : metrics results
     	"""
-        resultados = {'accuracy': accuracy_score(y_true, y_pred),
-                      'f1 score': f1_score(y_true, y_pred, average='weighted'),
+        results =   {'accuracy': accuracy_score(y_true, y_pred),
+                      'f1': f1_score(y_true, y_pred, average='weighted'),
                       'precision': precision_score(y_true, y_pred, average='weighted'),
                       'recall': recall_score(y_true, y_pred, average='weighted'),
                      }
-        return resultados
+        return results
     
     @classmethod
-    def __binary_classification(cls, y_true, y_pred, y_probs, normalize=False):
+    def __binary_classification(cls, y_true, y_pred, y_probs):
         """
     	Calculates some metrics for binary classification problems
     
@@ -141,16 +152,13 @@ class Metrics:
                     Target values
         y_pred    : array
                     Predicted values
-        normalize : bool - False
-                    If normalize to False the values of the confusion matrix are real,
-                    otherwise, the confusion matrix shows the percentage..
     
     	Returns
     	-------
-    	dict : values for each metric
+    	dict : metrics results
     	"""
         results =    {'accuracy': accuracy_score(y_true, y_pred),
-                      'f1_score': f1_score(y_true, y_pred),
+                      'f1': f1_score(y_true, y_pred),
                       'precision': precision_score(y_true, y_pred),
                       'recall': recall_score(y_true, y_pred),
                       'roc_auc': roc_auc_score(y_true, y_probs)
@@ -158,7 +166,7 @@ class Metrics:
         return results
     
     @classmethod
-    def classification(cls, y_true, y_pred, y_probs, normalize=False):
+    def classification(cls, y_true, y_pred, y_probs):
         """
     	Checks which classification method will be applied: binary or multiclass
     
@@ -168,19 +176,18 @@ class Metrics:
                     Target values
         y_pred    : array
                     Predicted values
-        normalize : bool - False
-                    If normalize to False the values of the confusion matrix are real,
-                    otherwise, the confusion matrix shows the percentage.
+        y_probs   : array
+                    Probabilities values
     
     	Returns
     	-------
-    	dict: values for each metric
+    	dict: metrics results
     	"""
         if len(set(y_true)) > 2:
-            res = cls.__multiclass_classification(y_true, y_pred)
+            results = cls.__multiclass_classification(y_true, y_pred)
         else:
-            res = cls.__binary_classification(y_true, y_pred, y_probs)
-        return res
+            results = cls.__binary_classification(y_true, y_pred, y_probs)
+        return results
             
         
     @classmethod
@@ -197,8 +204,9 @@ class Metrics:
     
     	Returns
     	-------
-    	dict : values for each metric
+    	dict : metrics results
     	"""
-        return {'silhouette': silhouette_score(X, labels, metric='euclidean'),
-                'calinski_harabaz': calinski_harabaz_score(X, labels)
-                }
+        results = {'silhouette': silhouette_score(X, labels, metric='euclidean'),
+                   'calinski_harabaz': calinski_harabaz_score(X, labels)
+                  }
+        return results
