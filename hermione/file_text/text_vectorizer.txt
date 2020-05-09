@@ -15,10 +15,10 @@ class TextVectorizer:
                        Receives a dict with the name of the vectorizer to be 
                        performed and which are the columns
                        Ex: vectorizer_cols = {'embedding_mediana': ['col'], 
-                                           'embedding_media': ['col'],
-                                           'tf_idf': ['col'],
-                                           'bag_of_words' : [col],
-                                           'embedding_media': ['col']}
+                                              'embedding_media': ['col'],
+                                              'tf_idf': ['col'],
+                                              'bag_of_words' : [col],
+                                              'embedding_media': ['col']}
     	Returns
     	-------
         Normalization
@@ -27,7 +27,7 @@ class TextVectorizer:
         self.index_ini_fim = len(self.word2vec.index2word)
         self.vectorizer_cols = vectorizer_cols
         self.vectorizer_vects = {'bag_of_words': self.bag_of_words,
-                              'tf_idf': self.tf_idf_vect}
+                                 'tf_idf': self.tf_idf_vect}
         self.fitted = False
     
     def fit(self, df: pd.DataFrame):
