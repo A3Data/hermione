@@ -392,7 +392,7 @@ class Visualization:
                 ).interactive().display()
         
     @staticmethod
-    def line_interativo(df, col_name_x, col_name_y, xlabel, ylabel, hover, fig_size=(400,300), **kwargs):
+    def line_interactive(df, col_name_x, col_name_y, xlabel, ylabel, hover, fig_size=(400,300), **kwargs):
         """
         Interactive plotter
     
