@@ -44,6 +44,8 @@ def new(project_name, python_version):
     os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/config'))
     # API folder
     os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/api'))
+    # Tests folder
+    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/tests'))
     # Output 
     os.makedirs(os.path.join(LOCAL_PATH, project_name, 'output'))
     # Data folder
@@ -75,6 +77,8 @@ def new(project_name, python_version):
     write_example_notebook_file(LOCAL_PATH, project_name)
     write_titanic_data(LOCAL_PATH, project_name)
     write_train_dot_py(LOCAL_PATH, project_name)
+
+    write_test_file(LOCAL_PATH, project_name)
 
     print(f'Creating conda virtual environment {project_name}')
     os.system(f"conda create -y --prefix {os.path.join(LOCAL_PATH, project_name)}/{project_name}_env  python={python_version}")

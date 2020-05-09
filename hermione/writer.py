@@ -209,3 +209,9 @@ def write_titanic_data(LOCAL_PATH, project_name):
         arquivo = infile.readlines()
         with codecs.open(os.path.join(LOCAL_PATH, project_name, 'data', 'raw','train.csv'), 'w+', 'utf-8-sig') as outfile:
             outfile.writelines(arquivo)
+
+def write_test_file(LOCAL_PATH, project_name):
+    with codecs.open(os.path.join(hermione.__path__[0], 'file_text', 'test_project.txt'), 'r', 'utf-8-sig') as infile:
+        arquivo = infile.readlines()
+        with codecs.open(os.path.join(LOCAL_PATH, project_name, 'src', 'tests','test_project.py'), 'w+', 'utf-8-sig') as outfile:
+            outfile.writelines(arquivo)
