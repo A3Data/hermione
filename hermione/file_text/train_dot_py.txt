@@ -32,8 +32,10 @@ algos = [RandomForestClassifier, GradientBoostingClassifier, LogisticRegression]
 
 for algo in algos:
     with mlflow.start_run() as run:
-        model = TrainerSklearn().train(X_train, y_train, X_test, y_test, classification=True, 
-                            algorithm=algo, 
+        model = TrainerSklearn().train(X, y, 
+                            classification=True, 
+                            algorithm=algo,
+                            data_split=('cv', {'cv': 8}),
                             preprocessing=p)
         mlflow.log_params({'algorithm': algo})
         mlflow.log_metrics(model.get_metrics())
