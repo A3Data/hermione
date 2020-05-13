@@ -11,7 +11,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Fazendo a instalação de alguns pacotes necessário:"
+    "Install necessary packages:"
    ]
   },
   {
@@ -38,7 +38,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "**É necessário mudar o diretório de trabalho para funcionar corretamente com a estrutura do projeto:**"
+    "**It is necessary to change the working directory so the project struture works properly:**"
    ]
   },
   {
@@ -55,7 +55,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "A partir daqui, desenvolva seu script!"
+    "From this point, develop your own code!"
    ]
   },
   {
