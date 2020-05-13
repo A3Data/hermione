@@ -79,6 +79,7 @@ def new(project_name, python_version):
     write_train_dot_py(LOCAL_PATH, project_name)
 
     write_test_file(LOCAL_PATH, project_name)
+    write_test_readme(LOCAL_PATH, project_name)
 
     print(f'Creating conda virtual environment {project_name}')
     os.system(f"conda create -y --prefix {os.path.join(LOCAL_PATH, project_name)}/{project_name}_env  python={python_version}")
