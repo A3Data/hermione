@@ -61,7 +61,7 @@ class TrainerSklearn(Trainer):
     	-------
     	Wrapper
         """
-        model = algorithm(random_state=618, **params) #modelo
+        model = algorithm(**params) #model
         columns = list(X.columns)
         if data_split[0] == 'train_test':
             X_train, X_test, y_train, y_test = train_test_split(X, y, **data_split[1])
