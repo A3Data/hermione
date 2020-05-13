@@ -23,7 +23,7 @@ class Preprocessing:
         pd.Dataframe
             Cleaned Data Frame
         """
-        wrap_text("Cleaning data")
+        print("Cleaning data")
         df_copy = df.copy()
         df_copy['Pclass'] = df_copy.Pclass.astype('object')
         df_copy = df_copy.dropna()
@@ -43,7 +43,7 @@ class Preprocessing:
         pd.Dataframe
             Cleaned Data Frame
         """
-        wrap_text("Category encoding")
+        print("Category encoding")
         df_copy = df.copy()
         df_copy = pd.get_dummies(df_copy)
         return df_copy
