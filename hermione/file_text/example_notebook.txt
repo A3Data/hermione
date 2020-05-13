@@ -4,14 +4,14 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "# Exemplo de Notebook para treino"
+    "# Notebook example"
    ]
   },
   {
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "Install necessary packages:"
+    "Installing some necessary packages:"
    ]
   },
   {
@@ -38,7 +38,7 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "**It is necessary to change the working directory so the project struture works properly:**"
+    "**It is necessary to change the working directory so the project structure works properly:**"
    ]
   },
   {
@@ -55,7 +55,9 @@
    "cell_type": "markdown",
    "metadata": {},
    "source": [
-    "From this point, develop your own code!"
+    "From this point, it's on you!\n",
+    "\n",
+    "---"
    ]
   },
   {

@@ -85,7 +85,7 @@ def write_gitignore(LOCAL_PATH, project_name, file_source):
     with open(os.path.join(LOCAL_PATH, project_name, '.gitignore'), 'w+') as outfile:
         outfile.writelines(".ipynb_checkpoints \nmlruns/ \n__pycache__/ \n.vscode/ \ncatboost_info/ \n.metaflow \ndata/ \n*_env/")
 
-def write_readme_file(LOCAL_PATH, project_name):
+def write_readme_file(LOCAL_PATH, project_name, file_source):
     with codecs.open(os.path.join(LOCAL_PATH, project_name, 'README.md'), 'w+', "utf-8-sig") as outfile:
         outfile.write(f"""# {project_name}
 
@@ -193,9 +193,9 @@ def write_vif_file(LOCAL_PATH, project_name, file_source):
             outfile.writelines(arquivo)
 
 def write_example_notebook_file(LOCAL_PATH, project_name, file_source):
-    with codecs.open(os.path.join(hermione.__path__[0], file_source, 'example_notebook.txt'), 'r', 'utf-8-sig') as infile:
+    with open(os.path.join(hermione.__path__[0], file_source, 'example_notebook.txt'), 'r') as infile:
         arquivo = infile.readlines()
-        with codecs.open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'notebooks', 'example_notebook.ipynb'), 'w+','utf-8-sig') as outfile:
+        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'notebooks', 'example_notebook.ipynb'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
 def write_train_dot_py(LOCAL_PATH, project_name, file_source):

@@ -36,9 +36,9 @@ def new(project_name, python_version, implemented):
     """
     Create a new hermione project
     """
-    if implemented:
+    if implemented in ['yes', 'ye', 'y', 'Yes', 'YES', 'Y']:
         file_source = 'file_text'
-    else:
+    elif implemented in ['no', 'n', 'No', 'NO', 'N']:
         file_source = 'not_implemented_file_text'
     
     click.echo(f"Creating project {project_name}")
@@ -61,7 +61,7 @@ def new(project_name, python_version, implemented):
     os.makedirs(os.path.join(LOCAL_PATH, project_name, 'data/raw'))
 
     # Write config file
-    write_config_file(LOCAL_PATH, project_name, file_source)
+    write_config_file(LOCAL_PATH, project_name)
     #write_logging_file(LOCAL_PATH, project_name)
     #write_endpoints_file(LOCAL_PATH, project_name)
     write_requirements_txt(LOCAL_PATH, project_name, file_source)
@@ -84,8 +84,10 @@ def new(project_name, python_version, implemented):
     #write_cluster_analysis_file(LOCAL_PATH, project_name)
     #write_vif_file(LOCAL_PATH, project_name)
     write_example_notebook_file(LOCAL_PATH, project_name, file_source)
-    write_titanic_data(LOCAL_PATH, project_name, file_source)
-    write_train_dot_py(LOCAL_PATH, project_name, file_source)
+    
+    if implemented in ['yes', 'ye', 'y', 'Yes', 'YES', 'Y']:
+        write_titanic_data(LOCAL_PATH, project_name, file_source)
+        write_train_dot_py(LOCAL_PATH, project_name, file_source)
 
     write_test_file(LOCAL_PATH, project_name, file_source)
     write_test_readme(LOCAL_PATH, project_name, file_source)
@@ -104,5 +106,9 @@ def train():
     """
     Execute the script in train.py. One should be at src directory
     """
-    os.system('python ./train.py')
-    print("\nNew results logged on mlflow. Access typing:\nmlflow ui\nand visit http://localhost:5000/")
+    if not os.path.exists('./train.py'):
+        click.echo("You gotta have an src/train.py file")
+    else:
+        os.system('python ./train.py')
+        print("\nNew results logged on mlflow. Access typing:\nmlflow ui\nand visit http://localhost:5000/")
+    

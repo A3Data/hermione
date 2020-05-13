@@ -106,7 +106,7 @@ class Metrics:
         return results
         
     @classmethod
-    def crossvalidation(cls, model, X, y, classification: bool, agg=np.mean):
+    def crossvalidation(cls, model, X, y, classification: bool, cv=5, agg=np.mean):
         if classification:
             if len(set(y)) > 2:
                 metrics = ['accuracy','f1_weighted', 'recall_weighted','precision_weighted']
@@ -114,7 +114,7 @@ class Metrics:
                 metrics = ['accuracy','f1', 'recall','precision', 'roc_auc']
         else:
             metrics = ['mean_absolute_error', 'r2', 'root_mean_squared_error', 'smape', 'mape']
-        res_metrics = cross_validate(model, X, y, return_train_score=False, scoring=metrics)
+        res_metrics = cross_validate(model, X, y, cv=cv, return_train_score=False, scoring=metrics)
         results = {metric.replace("test_", ""): round(agg(res_metrics[metric]),7) for metric in res_metrics}
         return results
 
