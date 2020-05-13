@@ -193,9 +193,9 @@ def write_vif_file(LOCAL_PATH, project_name):
             outfile.writelines(arquivo)
 
 def write_example_notebook_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'example_notebook.txt'), 'r') as infile:
+    with codecs.open(os.path.join(hermione.__path__[0], 'file_text', 'example_notebook.txt'), 'r', 'utf-8-sig') as infile:
         arquivo = infile.readlines()
-        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'notebooks', 'example_notebook.ipynb'), 'w+') as outfile:
+        with codecs.open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'notebooks', 'example_notebook.ipynb'), 'w+','utf-8-sig') as outfile:
             outfile.writelines(arquivo)
 
 def write_train_dot_py(LOCAL_PATH, project_name):
