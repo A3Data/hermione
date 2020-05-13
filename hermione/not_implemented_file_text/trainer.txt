@@ -1,0 +1,67 @@
+from abc import ABC, abstractmethod
+from ml.model.wrapper import Wrapper
+from ml.model.metrics import Metrics
+import statsmodels.formula.api as smf
+
+class Trainer(ABC):
+    def __init__(self):
+        """
+    	Constructor
+    
+    	Parameters
+    	----------    
+        None
+             
+    	Returns
+    	-------
+    	Trainer
+        """
+       
+        
+    @abstractmethod
+    def train(self):
+        """
+        Abstract method that should be implemented in every class that inherits TrainerModel
+
+    	Parameters
+    	----------    
+        None
+             
+    	Returns
+    	-------
+    	None
+        """
+        pass
+    
+     
+class TrainerSklearn(Trainer):
+        
+    def train(self, X_train, y_train, X_test, y_test, classification: bool, algorithm, preprocessing=None, **params):
+        """
+    	Method that builds the Sklearn model
+    
+    	Parameters
+    	----------    
+        classification    : bool
+                            if True, classification model training takes place, otherwise Regression
+        model_name        : str
+                            model name
+        preprocessing     : Preprocessing
+                            preprocessed object to be applied
+             
+    	Returns
+    	-------
+    	Wrapper
+        """
+        model = algorithm(random_state=618, **params)
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_test)
+        y_probs = model.predict_proba(X_test)[:,1]
+        colums = list(X_train.columns)
+        if classification:
+            res_metrics = Metrics.classification(y_test.values, y_pred, y_probs)
+        else:
+            res_metrics = Metrics.regression(y_test.values, y_pred)
+        model = Wrapper(model, preprocessing, res_metrics, colums)
+        return model
+    

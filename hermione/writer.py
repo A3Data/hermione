@@ -69,19 +69,19 @@ def write_logging_file(LOCAL_PATH, project_name):
 }
 """)
 
-def write_endpoints_file(LOCAL_PATH, project_name):
-    with codecs.open(os.path.join(hermione.__path__[0], 'file_text', 'endpoints.txt'), 'r', "utf-8") as infile:
+def write_endpoints_file(LOCAL_PATH, project_name, file_source):
+    with codecs.open(os.path.join(hermione.__path__[0], file_source, 'endpoints.txt'), 'r', "utf-8") as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src/api', 'endpoints.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_requirements_txt(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'requirements.txt'), 'r') as infile:
+def write_requirements_txt(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'requirements.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'requirements.txt'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_gitignore(LOCAL_PATH, project_name):
+def write_gitignore(LOCAL_PATH, project_name, file_source):
     with open(os.path.join(LOCAL_PATH, project_name, '.gitignore'), 'w+') as outfile:
         outfile.writelines(".ipynb_checkpoints \nmlruns/ \n__pycache__/ \n.vscode/ \ncatboost_info/ \n.metaflow \ndata/ \n*_env/")
 
@@ -95,129 +95,129 @@ Project developed by A3Data in {datetime.today().strftime("%B %d, %Y")}.
 **Please, complete here information on using and testing this project.**
 """)
 
-def write_application_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'application.txt'), 'r') as infile:
+def write_application_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'application.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src','application.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
 
-def write_application_config(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'app_config.txt'), 'r') as infile:
+def write_application_config(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'app_config.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src','config.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_src_util_file(LOCAL_PATH, project_name):
-    with codecs.open(os.path.join(hermione.__path__[0], 'file_text', 'src_util.txt'), 'r', 'utf-8-sig') as infile:
+def write_src_util_file(LOCAL_PATH, project_name, file_source):
+    with codecs.open(os.path.join(hermione.__path__[0], file_source, 'src_util.txt'), 'r', 'utf-8-sig') as infile:
         arquivo = infile.readlines()
         with codecs.open(os.path.join(LOCAL_PATH, project_name, 'src','util.py'), 'w+', 'utf-8-sig') as outfile:
             outfile.writelines(arquivo)
 
-def write_wsgi_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'wsgi.txt'), 'r') as infile:
+def write_wsgi_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'wsgi.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src','wsgi.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_visualization_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'visualization.txt'), 'r') as infile:
+def write_visualization_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'visualization.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'visualization', 'visualization.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_normalization_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'normalization.txt'), 'r') as infile:
+def write_normalization_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'normalization.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'preprocessing', 'normalization.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_preprocessing_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'preprocessing.txt'), 'r') as infile:
+def write_preprocessing_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'preprocessing.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'preprocessing', 'preprocessing.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_text_vectorizer_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'text_vectorizer.txt'), 'r') as infile:
+def write_text_vectorizer_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'text_vectorizer.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'preprocessing', 'text_vectorizer.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_metrics_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'metrics.txt'), 'r') as infile:
+def write_metrics_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'metrics.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'model', 'metrics.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_trainer_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'trainer.txt'), 'r') as infile:
+def write_trainer_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'trainer.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'model', 'trainer.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_wrapper_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'wrapper.txt'), 'r') as infile:
+def write_wrapper_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'wrapper.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'model', 'wrapper.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_data_source_base_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'data_source_base.txt'), 'r') as infile:
+def write_data_source_base_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'data_source_base.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'data_source', 'base.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_database_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'database.txt'), 'r') as infile:
+def write_database_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'database.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'data_source', 'database.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_spreadsheet_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'spreadsheet.txt'), 'r') as infile:
+def write_spreadsheet_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'spreadsheet.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'data_source', 'spreadsheet.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_cluster_analysis_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'cluster_analysis.txt'), 'r') as infile:
+def write_cluster_analysis_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'cluster_analysis.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'analysis', 'cluster_analysis.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_vif_file(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'vif.txt'), 'r') as infile:
+def write_vif_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'vif.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'analysis', 'vif.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_example_notebook_file(LOCAL_PATH, project_name):
-    with codecs.open(os.path.join(hermione.__path__[0], 'file_text', 'example_notebook.txt'), 'r', 'utf-8-sig') as infile:
+def write_example_notebook_file(LOCAL_PATH, project_name, file_source):
+    with codecs.open(os.path.join(hermione.__path__[0], file_source, 'example_notebook.txt'), 'r', 'utf-8-sig') as infile:
         arquivo = infile.readlines()
         with codecs.open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'notebooks', 'example_notebook.ipynb'), 'w+','utf-8-sig') as outfile:
             outfile.writelines(arquivo)
 
-def write_train_dot_py(LOCAL_PATH, project_name):
-    with open(os.path.join(hermione.__path__[0], 'file_text', 'train_dot_py.txt'), 'r') as infile:
+def write_train_dot_py(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'train_dot_py.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'train.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
-def write_titanic_data(LOCAL_PATH, project_name):
-    with codecs.open(os.path.join(hermione.__path__[0], 'file_text', 'train.csv'), 'r', 'utf-8-sig') as infile:
+def write_titanic_data(LOCAL_PATH, project_name, file_source):
+    with codecs.open(os.path.join(hermione.__path__[0], file_source, 'train.csv'), 'r', 'utf-8-sig') as infile:
         arquivo = infile.readlines()
         with codecs.open(os.path.join(LOCAL_PATH, project_name, 'data', 'raw','train.csv'), 'w+', 'utf-8-sig') as outfile:
             outfile.writelines(arquivo)
 
-def write_test_file(LOCAL_PATH, project_name):
-    with codecs.open(os.path.join(hermione.__path__[0], 'file_text', 'test_project.txt'), 'r', 'utf-8-sig') as infile:
+def write_test_file(LOCAL_PATH, project_name, file_source):
+    with codecs.open(os.path.join(hermione.__path__[0], file_source, 'test_project.txt'), 'r', 'utf-8-sig') as infile:
         arquivo = infile.readlines()
         with codecs.open(os.path.join(LOCAL_PATH, project_name, 'src', 'tests','test_project.py'), 'w+', 'utf-8-sig') as outfile:
             outfile.writelines(arquivo)
 
-def write_test_readme(LOCAL_PATH, project_name):
-    with codecs.open(os.path.join(hermione.__path__[0], 'file_text', 'test_readme.txt'), 'r', 'utf-8-sig') as infile:
+def write_test_readme(LOCAL_PATH, project_name, file_source):
+    with codecs.open(os.path.join(hermione.__path__[0], file_source, 'test_readme.txt'), 'r', 'utf-8-sig') as infile:
         arquivo = infile.readlines()
         with codecs.open(os.path.join(LOCAL_PATH, project_name, 'src', 'tests','README.md'), 'w+', 'utf-8-sig') as outfile:
             outfile.writelines(arquivo)
