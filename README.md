@@ -1,4 +1,4 @@
-# hermione
+# Hermione - ML made simple
 
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
@@ -17,4 +17,32 @@
 
 A Data Science Project struture in cookiecutter style.
 
-Developed by A3Data.
+Developed with S2 by A3Data.
+
+# What is Hermione?
+
+...
+
+# Installing
+
+...
+
+# Documentation
+
+...
+
+# How do I use Hermione?
+
+...
+
+# Why Hermione?
+
+...
+
+# Contributing
+
+...
+
+# Roadmap
+
+...
