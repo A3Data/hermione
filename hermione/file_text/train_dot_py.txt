@@ -25,9 +25,6 @@ df = p.categ_encoding(df)
 X = df.drop(columns=["Survived"])
 y = df["Survived"]
 
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
-X_train.shape, X_test.shape, y_train.shape, y_test.shape
-
 algos = [RandomForestClassifier, GradientBoostingClassifier, LogisticRegression]
 
 for algo in algos:
