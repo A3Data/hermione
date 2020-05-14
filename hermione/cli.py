@@ -31,7 +31,7 @@ def info():
 @click.argument('project_name')
 @click.option('-p', '--python-version', 'python_version', default='3.7', show_default=True)
 @click.option('-imp', '--implemented', 'implemented', prompt='Do you want to start with an implemented example? [y/n] Default:', 
-            default='y', show_default=True)
+            default='n', show_default=True)
 def new(project_name, python_version, implemented):
     """
     Create a new hermione project
