@@ -17,7 +17,7 @@
 
 A Data Science Project struture in cookiecutter style.
 
-Developed with S2 by A3Data.
+Developed with ❤️ by A3Data.
 
 # What is Hermione?
 
