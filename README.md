@@ -29,7 +29,8 @@ Hermione is the newest **open source** library that will help Data Scientists on
 
 ### Why Hermione?
 To bring in a little of the **A3Data** experience, we work in Data Science teams inside several client companies and it’s undeniable the excellence of notebooks as a data exploration tool. Nevertheless, when it comes to the product and its context, when the models needs to be consumed, monitored and have periodic maintenance, putting it into production inside a Jupyter Notebook is not the best choice(we are not even mentioning memory and CPU performance yet). And that’s why **Hermione appears**!
-  
+We have been inspired by this brilliant, empowered and awesome witch of Harry Potter  to name this framework!
+It's a way reinforce we posture, A3Data, about female empowered in Technology.
 
 ## Installing
 
@@ -49,6 +50,7 @@ pip install hermione
 ## How do I use Hermione?
 After installed Hermione:
 1.  Create you new project:
+
  ![](https://cdn-images-1.medium.com/max/800/1*7Ju0Tq2DP1pE5bfGPguh2w.png)
 
 2. Enter “y” to implement the example code
@@ -74,7 +76,7 @@ After installed Hermione:
 
 
 ## Documentation
-<<Digrama aqui>>  
+![](images/class_diagram.png)
 
 Here we describe briefing what each class is doing in Hermione:
 
