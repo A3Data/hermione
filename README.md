@@ -54,28 +54,37 @@ After installed Hermione:
  ![](https://cdn-images-1.medium.com/max/800/1*7Ju0Tq2DP1pE5bfGPguh2w.png)
 
 2. Enter “y” to implement the example code
+
 ![](https://cdn-images-1.medium.com/max/800/1*TJoFVA-Nio2O3XvxBN4MUQ.png)
 
 3. As we mentioned before, Hermione already creates a conda virtual environment for the project, activate it:
+
 ![](https://cdn-images-1.medium.com/max/800/1*38yp-E_AUxM7lIw9PCo0rw.png)
 
 4. After activating, you should install some libraries. There are a few suggestions in “requirements.txt” file:
+
 ![](https://cdn-images-1.medium.com/max/800/1*rpXdiYmPKHNbVoKFZIHrlQ.png)
 
 5. Now we will train the model from the example, using MLflow ❤ .To do so, just type, into the directory, src: _hermione train_. The “hermione train” command will search for a train.py file and execute it. In the example, models and metrics are already controlled via MLflow.
+
 ![](https://cdn-images-1.medium.com/max/800/1*MmVcmAYspxWdzbd5r00W5g.png)
 
 6. After that, a mlflow experiment is created. To verify the experiment in mlflow, type: mlflow ui. The application will go up.
+
 ![](https://cdn-images-1.medium.com/max/800/1*DReyAtL9eJ0fiwxaVo3Yfw.png)
 
 7. To access the experiment, just enter the way previously provided in your preferred browser. Then it is possible to check the trained models and their metrics.
+
 ![](https://cdn-images-1.medium.com/max/800/1*c_rDEqERZR6r8JVI3TMTcQ.png)
 
 8. In the Titanic example, we also provide a step by step notebook. To view it, just type jupyter notebook into the path /src /notebooks/.
+
 ![](https://cdn-images-1.medium.com/max/800/1*U3ToR5jDjQJihT9EnxeDdg.png)
 
 
 ## Documentation
+This diagram is a class structure from Hermione:
+
 ![](images/class_diagram.png)
 
 Here we describe briefing what each class is doing in Hermione:
