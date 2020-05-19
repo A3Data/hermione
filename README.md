@@ -30,7 +30,8 @@ Hermione is the newest **open source** library that will help Data Scientists on
 ### Why Hermione?
 To bring in a little of **A3Data** experience, we work in Data Science teams inside several client companies and it’s undeniable the excellence of notebooks as a data exploration tool. Nevertheless, when it comes to data science products and their context, when the models needs to be consumed, monitored and have periodic maintenance, putting it into production inside a Jupyter Notebook is not the best choice (we are not even mentioning memory and CPU performance yet). And that’s why **Hermione comes in**!
 We have been inspired by this brilliant, empowered and awesome witch of The Harry Potter saga to name this framework!
-This is also our way of reinforcing that women should be taking leading roles in technology field.
+
+This is also our way of reinforcing our position that women should be taking more leading roles in the technology field. **#CodeLikeAGirl**
 
 ## Installing
 
