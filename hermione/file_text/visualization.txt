@@ -178,35 +178,35 @@ class Visualization:
             f.savefig(path+'/features_correlation.png')
 
     @staticmethod
-    def scatter(x, y, xlabel, ylabel, fig_size=(5,4), grupos=None, cor_grupo=None, path=None):
+    def scatter(x, y, xlabel, ylabel, fig_size=(5,4), groups=None, group_color=None, path=None):
         """
         Plot scatter
     
         Parameters
         ----------    
-        x         : array
-                    list of x-axis values
-        y         : array
-                    list of y-axis values
-        x_label   : str
-                    label x
-        y_label   : array
-                    label y                                    
-        fig_size  : tuple
-                    figure size
-        grupos    : array
-                    group list
-        cor_grupo : dict
-                    group colors
-        path      : str
-                    path where the graphics will be saved
+        x            : array
+                       list of x-axis values
+        y            : array
+                       list of y-axis values
+        x_label      : str
+                       label x
+        y_label      : array
+                       label y                                    
+        fig_size     : tuple
+                       figure size
+        groups       : array
+                       group list
+        group_color  : dict
+                       group colors
+        path         : str
+                       path where the graphics will be saved
                       
         Returns
         -------
         None
         """
         f, ax = plt.subplots(1, figsize=fig_size)
-        sns.scatterplot(x, y, hue=grupos, palette=cor_grupo, legend="full", ax=ax)
+        sns.scatterplot(x, y, hue=groups, palette=group_color, legend="full", ax=ax)
         ax.set_xlabel(xlabel)
         ax.set_ylabel(ylabel)
         f.tight_layout()
