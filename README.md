@@ -3,7 +3,7 @@
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
 ![Hermione](https://github.com/A3Data/hermione/workflows/hermione/badge.svg)
-[![MIT license](https://img.shields.io/badge/License-MIT-blue.svg)](https://lbesson.mit-license.org/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GitHub issues](https://img.shields.io/github/issues/a3data/hermione.svg)](https://GitHub.com/a3data/hermione/issues/)
 [![GitHub issues-closed](https://img.shields.io/github/issues-closed/a3data/hermione.svg)](https://GitHub.com/a3data/hermione/issues?q=is%3Aissue+is%3Aclosed)
 
