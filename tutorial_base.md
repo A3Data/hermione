@@ -25,7 +25,7 @@
 "user": "<<<<user>>>>"
 }
 ```
-5. The first step in creating our project is to load the database. In this tutorial we will use the Titanic dataset. For that we load it in the class ``Spreadsheet`` in the method ``get_data`` as follows the example below:
+5. The first step in creating our project is to load the database. In this tutorial we will use the [Titanic dataset](https://www.kaggle.com/c/titanic/data). For that we load it in the class ``Spreadsheet`` in the method ``get_data`` as follows the example below:
 
 ```python
 def  get_data(self, path)->pd.DataFrame:
