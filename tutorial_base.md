@@ -3,12 +3,15 @@
 ## Start your project from scratch with Hermione
 
 1. After you have installed Hermione, you need to create your project:
+
 ![](images/create.png)
 
 2. Activate it environment:
+
  ![](images/env.png)
 
 3. Now we are going to install by default libraries that are in file ``requirements.txt``:
+
 ![](images/requirements.png)
 
 4. When you create a project at Hermione, it already creates a configuration file, this file can be found at ``src/config/config.json``. This file sets some project settings data, and if you find it necessary, you can change it, including new fields or changing existing ones:
