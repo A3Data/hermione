@@ -84,10 +84,11 @@ def new(project_name, python_version, implemented):
     #write_cluster_analysis_file(LOCAL_PATH, project_name)
     #write_vif_file(LOCAL_PATH, project_name)
     write_example_notebook_file(LOCAL_PATH, project_name, file_source)
-    
+    write_train_dot_py(LOCAL_PATH, project_name, file_source)
+
     if implemented in ['yes', 'ye', 'y', 'Yes', 'YES', 'Y']:
         write_titanic_data(LOCAL_PATH, project_name, file_source)
-        write_train_dot_py(LOCAL_PATH, project_name, file_source)
+        
 
     write_test_file(LOCAL_PATH, project_name, file_source)
     write_test_readme(LOCAL_PATH, project_name, file_source)
@@ -110,5 +111,5 @@ def train():
         click.echo("You gotta have an src/train.py file")
     else:
         os.system('python ./train.py')
-        print("\nNew results logged on mlflow. Access typing:\nmlflow ui\nand visit http://localhost:5000/")
+        print("\nModel trained. For MLFlow logging control, type:\nmlflow ui\nand visit http://localhost:5000/")
     
