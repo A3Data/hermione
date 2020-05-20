@@ -82,6 +82,8 @@ After installed Hermione:
 
 ![](https://cdn-images-1.medium.com/max/800/1*U3ToR5jDjQJihT9EnxeDdg.png)
 
+Do you want to create your project from scratch? There click ![here](tutorial_base.md) to check a tutorial.
+
 
 ## Documentation
 This is the class structure diagram that Hermione relies on:
