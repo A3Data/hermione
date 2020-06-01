@@ -5,7 +5,7 @@ import os
 exec(open('hermione/_version.py').read())
 
 setup(
-    name='hermione',
+    name='hermione-ml',
     version=__version__,
     author='A3Data',
     packages=find_packages(),
