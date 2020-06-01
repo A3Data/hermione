@@ -1,0 +1,3 @@
+include README.md
+include hermione/file_text/*
+include hermione/not_implemented_file_text/*
