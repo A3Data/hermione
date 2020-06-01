@@ -14,11 +14,10 @@ class TextVectorizer:
         vectorizer_cols : dict
                        Receives a dict with the name of the vectorizer to be 
                        performed and which are the columns
-                       Ex: vectorizer_cols = {'embedding_mediana': ['col'], 
-                                              'embedding_media': ['col'],
+                       Ex: vectorizer_cols = {'embedding_median': ['col'], 
+                                              'embedding_mean': ['col'],
                                               'tf_idf': ['col'],
-                                              'bag_of_words' : [col],
-                                              'embedding_media': ['col']}
+                                              'bag_of_words' : [col]}
     	Returns
     	-------
         Normalization
@@ -45,7 +44,7 @@ class TextVectorizer:
         """
         self.vectorizers_fitted = dict()
         for vectorizer in self.vectorizer_cols:
-            if vectorizer in ['index', 'embedding_mediana', 'embedding_media']:
+            if vectorizer in ['index', 'embedding_median', 'embedding_mean']:
                 continue
             for col in self.vectorizer_cols[vectorizer]:
                 self.vectorizers_fitted[vectorizer] = {}
@@ -72,10 +71,10 @@ class TextVectorizer:
             if vectorizer == 'index':
                 for col in self.vectorizer_cols[vectorizer]:
                     df.loc[:, col+"_"+vectorizer] = df[col].apply(lambda x: self.embedding(x, 3))
-            elif vectorizer == 'embedding_mediana':
+            elif vectorizer == 'embedding_median':
                 for col in self.vectorizer_cols[vectorizer]:
                     df.loc[:, col+"_"+vectorizer] = df[col].apply(lambda x: self.embedding(x, 1))
-            elif vectorizer == 'embedding_media':
+            elif vectorizer == 'embedding_mean':
                 for col in self.vectorizer_cols[vectorizer]:
                     df.loc[:, col+"_"+vectorizer] = df[col].apply(lambda x: self.embedding(x, 2))
             elif (vectorizer == 'bag_of_words') | (vectorizer == 'tf_idf'):
@@ -113,12 +112,12 @@ class TextVectorizer:
         elif typ_transform == 3: # indexação
             idx = self.word2vec.index2word
             set_idx = set(idx)
-            indices = [idx.index(token) for token in X.split() if token in set_idx]
-            indices = [self.index_ini_fim] + indices + [self.index_ini_fim]
+            indexes = [idx.index(token) for token in X.split() if token in set_idx]
+            indexes = [self.index_ini_fim] + indexes + [self.index_ini_fim]
             # Create vector
-            X_length = len(indices)
+            X_length = len(indexes)
             vector = np.zeros(X_length, dtype=np.int64)
-            vector[:len(indices)] = indices
+            vector[:len(indexes)] = indexes
         else:
             vector = []
         return vector
