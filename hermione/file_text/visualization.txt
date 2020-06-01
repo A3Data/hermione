@@ -120,7 +120,7 @@ class Visualization:
     
         
     @staticmethod
-    def correlation_analyze(df, fig_size=(5,4), path=None):
+    def correlation_analysis(df, fig_size=(5,4), path=None):
         """
         Correlation of variables in the dataframe
     
