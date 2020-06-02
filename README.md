@@ -39,7 +39,7 @@ This is also our way of reinforcing our position that women should be taking mor
 
 ```python
 
-pip install hermione
+pip install -U hermione-ml
 
 ```
 ## How do I use Hermione?
