@@ -46,7 +46,7 @@ def  get_data(self, path)->pd.DataFrame:
 ```python
 def  process(self, df: pd.DataFrame):
 	"""
-	Perform data cleansing.
+	Perform data cleaning.
 	Parameters
 	----------
 	df : pd.Dataframe
