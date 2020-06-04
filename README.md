@@ -36,7 +36,7 @@ This is also our way of reinforcing our position that women should be taking mor
 ## Installing
 
 
-### Dependences
+### Dependencies
 
 - Anaconda or Miniconda Python (>= 3.6)
 - conda (>= 4.8)
