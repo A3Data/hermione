@@ -1,17 +1,23 @@
 ![hermione](images/vertical_logo.png)
 
 
+[![PyPI version fury.io](https://badge.fury.io/py/hermione-ml.svg)](https://pypi.python.org/pypi/hermione-ml/)
 ![Hermione](https://github.com/A3Data/hermione/workflows/hermione/badge.svg)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![GitHub issues](https://img.shields.io/github/issues/a3data/hermione.svg)](https://GitHub.com/a3data/hermione/issues/)
 [![GitHub issues-closed](https://img.shields.io/github/issues-closed/a3data/hermione.svg)](https://GitHub.com/a3data/hermione/issues?q=is%3Aissue+is%3Aclosed)
+[![PyPI status](https://img.shields.io/pypi/status/hermione-ml.svg)](https://pypi.python.org/pypi/hermione-ml/)
+[![PyPI pyversions](https://img.shields.io/pypi/pyversions/hermione-ml.svg)](https://pypi.python.org/pypi/hermione-ml/)
+[![PyPi downloads](https://pypip.in/d/hermione-ml/badge.png)](https://crate.io/packages/hermione-ml/)
+
+
 
 
 [![forthebadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
 
 A Data Science Project struture in cookiecutter style.
 
-Developed with ❤️ by [A3Data](http://www.a3data.com.br/)
+Developed with ❤️ by <a href="http://www.a3data.com.br/" target="_blank">A3Data</a>
 
   
 
@@ -32,7 +38,12 @@ This is also our way of reinforcing our position that women should be taking mor
 
 ### Dependences
 
-- Python (>= 3.6)
+- Anaconda or Miniconda Python (>= 3.6)
+- conda (>= 4.8)
+
+Hermione depends on conda to build and manage virtual conda environments. If you don't have it installed, please visit 
+<a href="https://www.anaconda.com/products/individual" target="_blank">Anaconda website</a> or 
+<a href="https://docs.conda.io/en/latest/miniconda.html" target="_blank">Miniconda website</a>.
   
 
 ### Install
@@ -60,7 +71,7 @@ After installed Hermione:
 
 ![](https://cdn-images-1.medium.com/max/800/1*rpXdiYmPKHNbVoKFZIHrlQ.png)
 
-5. Now we will train some models from the example, using MLflow ❤. To do so, inside *src* directory, just type: _hermione train_. The “hermione train” command will search for a train.py file and execute it. In the example, models and metrics are already controlled via MLflow.
+5. Now we will train some models from the example, using MLflow ❤. To do so, inside *src* directory, just type: _hermione train_. The “hermione train” command will search for a `train.py` file and execute it. In the example, models and metrics are already controlled via MLflow.
 
 ![](https://cdn-images-1.medium.com/max/800/1*MmVcmAYspxWdzbd5r00W5g.png)
 
@@ -104,7 +115,7 @@ Here we describe briefly what each class is doing:
 
 ### Model
 
--   **Trainer**  - module that centralizes training algorithms classes. Algorithms from `scikit-learn` library can be easily used with the TrainerSklearn implemented class.
+-   **Trainer**  - module that centralizes training algorithms classes. Algorithms from `scikit-learn` library, for instance, can be easily used with the TrainerSklearn implemented class.
 -   **Wrapper** - centralizes the trained model with its metrics. This class has built-in integration with MLFlow.
 -   **Metrics** - it contains key metrics that are calculated when models are trained. Classification, regression and clustering metrics are already implemented.
 
