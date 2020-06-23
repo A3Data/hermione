@@ -43,7 +43,7 @@ class Metrics:
         pass
      
     @classmethod
-    def cutomized(cls, y_true, y_pred):
+    def customized(cls, y_true, y_pred):
         """
     	Creates a custom metric
     
