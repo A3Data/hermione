@@ -85,6 +85,8 @@ def new(project_name, python_version, implemented):
     #write_vif_file(LOCAL_PATH, project_name)
     write_example_notebook_file(LOCAL_PATH, project_name, file_source)
     write_train_dot_py(LOCAL_PATH, project_name, file_source)
+    write_predict(LOCAL_PATH, project_name, file_source)
+    write_dockerfile(LOCAL_PATH, project_name, file_source)
 
     if implemented in ['yes', 'ye', 'y', 'Yes', 'YES', 'Y']:
         write_titanic_data(LOCAL_PATH, project_name, file_source)
@@ -112,4 +114,17 @@ def train():
     else:
         os.system('python ./train.py')
         print("\nModel trained. For MLFlow logging control, type:\nmlflow ui\nand visit http://localhost:5000/")
-    
+
+
+@cli.command()
+def predict():
+    """
+    Execute the script in predict.py to make batch predictions. 
+    One should be at src directory
+    """
+    if not os.path.exists('./predict.py'):
+        click.echo("You gotta have an src/predict.py file")
+    else:
+        print("Making predictions: ")
+        os.system('python ./predict.py')
+        
