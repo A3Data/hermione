@@ -57,9 +57,11 @@ pip install -U hermione-ml
 After installed Hermione:
 1.  Create you new project:
 
- ![](https://cdn-images-1.medium.com/max/800/1*7Ju0Tq2DP1pE5bfGPguh2w.png)
+```
+hermione new project_hermione
+```
 
-2. Enter “y” if you want to start with an example code
+1. Enter “y” if you want to start with an example code
 
 ![](https://cdn-images-1.medium.com/max/800/1*TJoFVA-Nio2O3XvxBN4MUQ.png)
 
@@ -69,9 +71,11 @@ After installed Hermione:
 
 4. After activating, you should install some libraries. There are a few suggestions in “requirements.txt” file:
 
-![](https://cdn-images-1.medium.com/max/800/1*rpXdiYmPKHNbVoKFZIHrlQ.png)
+```
+pip install -r requirements.txt
+```
 
-5. Now we will train some models from the example, using MLflow ❤. To do so, inside *src* directory, just type: _hermione train_. The “hermione train” command will search for a `train.py` file and execute it. In the example, models and metrics are already controlled via MLflow.
+1. Now we will train some models from the example, using MLflow ❤. To do so, inside *src* directory, just type: _hermione train_. The “hermione train” command will search for a `train.py` file and execute it. In the example, models and metrics are already controlled via MLflow.
 
 ![](https://cdn-images-1.medium.com/max/800/1*MmVcmAYspxWdzbd5r00W5g.png)
 
@@ -83,11 +87,29 @@ After installed Hermione:
 
 ![](https://cdn-images-1.medium.com/max/800/1*c_rDEqERZR6r8JVI3TMTcQ.png)
 
-8. In the Titanic example, we also provide a step by step notebook. To view it, just type jupyter notebook inside directory `/src/notebooks/`.
+8. To make batch predictions using your `predict.py` file, type `hermione predict`. The default implemented version will print some predictions for you in the terminal.
+
+```
+hermione predict
+```
+
+9.  In the Titanic example, we also provide a step by step notebook. To view it, just type jupyter notebook inside directory `/src/notebooks/`.
 
 ![](https://cdn-images-1.medium.com/max/800/1*U3ToR5jDjQJihT9EnxeDdg.png)
 
 Do you want to create your **project from scratch**? There click [here](tutorial_base.md) to check a tutorial.
+
+
+## Docker
+
+Hermione comes with a default `Dockerfile` that should work fine without editing if you have an autonomous `predict.py` file. It was designed to make batch predictions, not to serve the model with an API (coming soon...). To build correctly, you should be at the top project folder, not inside `src` folder.
+
+You can build the docker image and run it with the following commands:
+
+```
+docker build -f src/Dockerfile -t myprediction:latest .
+docker run --rm myprediction:latest
+```
 
 
 ## Documentation
