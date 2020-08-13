@@ -221,3 +221,15 @@ def write_test_readme(LOCAL_PATH, project_name, file_source):
         arquivo = infile.readlines()
         with codecs.open(os.path.join(LOCAL_PATH, project_name, 'src', 'tests','README.md'), 'w+', 'utf-8-sig') as outfile:
             outfile.writelines(arquivo)
+
+def write_predict(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'predict.txt'), 'r') as infile:
+        arquivo = infile.readlines()
+        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'predict.py'), 'w+') as outfile:
+            outfile.writelines(arquivo)
+
+def write_dockerfile(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'dockerfile.txt'), 'r') as infile:
+        arquivo = infile.readlines()
+        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'Dockerfile'), 'w+') as outfile:
+            outfile.writelines(arquivo)

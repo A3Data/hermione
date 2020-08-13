@@ -25,15 +25,21 @@ df = p.categ_encoding(df)
 X = df.drop(columns=["Survived"])
 y = df["Survived"]
 
-algos = [RandomForestClassifier, GradientBoostingClassifier, LogisticRegression]
+algos = {
+    'rf':RandomForestClassifier,
+    'gb':GradientBoostingClassifier,
+    'log':LogisticRegression
+}
 
-for algo in algos:
+for algo in algos.keys():
     with mlflow.start_run() as run:
         model = TrainerSklearn().train(X, y, 
                             classification=True, 
-                            algorithm=algo,
+                            algorithm=algos[algo],
                             data_split=('cv', {'cv': 8}),
                             preprocessing=p)
         mlflow.log_params({'algorithm': algo})
         mlflow.log_metrics(model.get_metrics())
         mlflow.sklearn.log_model(model.get_model(), 'model')
+        # Salva o modelo na pasta output
+        model.save_model(f'../output/titanic_model_{algo}.pkl')

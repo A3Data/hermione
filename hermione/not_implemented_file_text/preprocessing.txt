@@ -1,7 +1,9 @@
 import pandas as pd
 
 from ml.preprocessing.normalization import Normalizer
-from util import wrap_text
+import logging
+
+logging.getLogger().setLevel(logging.INFO)
 
 class Preprocessing:
     """

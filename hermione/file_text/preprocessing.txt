@@ -1,8 +1,10 @@
 import pandas as pd
 
 from ml.preprocessing.normalization import Normalizer
-from util import wrap_text
 from category_encoders import *
+import logging
+
+logging.getLogger().setLevel(logging.INFO)
 
 class Preprocessing:
     """
@@ -23,7 +25,7 @@ class Preprocessing:
         pd.Dataframe
             Cleaned Data Frame
         """
-        print("Cleaning data")
+        logging.info("Cleaning data")
         df_copy = df.copy()
         df_copy['Pclass'] = df_copy.Pclass.astype('object')
         df_copy = df_copy.dropna()
@@ -43,7 +45,7 @@ class Preprocessing:
         pd.Dataframe
             Cleaned Data Frame
         """
-        print("Category encoding")
+        logging.info("Category encoding")
         df_copy = df.copy()
         df_copy = pd.get_dummies(df_copy)
         return df_copy
