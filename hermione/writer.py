@@ -83,7 +83,7 @@ def write_readme_file(LOCAL_PATH, project_name, file_source):
     with codecs.open(os.path.join(LOCAL_PATH, project_name, 'README.md'), 'w+', "utf-8-sig") as outfile:
         outfile.write(f"""# {project_name}
 
-Project developed by A3Data in {datetime.today().strftime("%B %d, %Y")}.
+Project started in {datetime.today().strftime("%B %d, %Y")}.
 
 
 **Please, complete here information on using and testing this project.**
