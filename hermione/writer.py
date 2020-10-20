@@ -69,12 +69,6 @@ def write_logging_file(LOCAL_PATH, project_name):
 }
 """)
 
-def write_endpoints_file(LOCAL_PATH, project_name, file_source):
-    with codecs.open(os.path.join(hermione.__path__[0], file_source, 'endpoints.txt'), 'r', "utf-8") as infile:
-        arquivo = infile.readlines()
-        with open(os.path.join(LOCAL_PATH, project_name, 'src/api', 'endpoints.py'), 'w+') as outfile:
-            outfile.writelines(arquivo)
-
 def write_requirements_txt(LOCAL_PATH, project_name, file_source):
     with open(os.path.join(hermione.__path__[0], file_source, 'requirements.txt'), 'r') as infile:
         arquivo = infile.readlines()
@@ -95,13 +89,6 @@ Project developed by A3Data in {datetime.today().strftime("%B %d, %Y")}.
 **Please, complete here information on using and testing this project.**
 """)
 
-def write_application_file(LOCAL_PATH, project_name, file_source):
-    with open(os.path.join(hermione.__path__[0], file_source, 'application.txt'), 'r') as infile:
-        arquivo = infile.readlines()
-        with open(os.path.join(LOCAL_PATH, project_name, 'src','application.py'), 'w+') as outfile:
-            outfile.writelines(arquivo)
-
-
 def write_application_config(LOCAL_PATH, project_name, file_source):
     with open(os.path.join(hermione.__path__[0], file_source, 'app_config.txt'), 'r') as infile:
         arquivo = infile.readlines()
@@ -117,8 +104,23 @@ def write_src_util_file(LOCAL_PATH, project_name, file_source):
 def write_wsgi_file(LOCAL_PATH, project_name, file_source):
     with open(os.path.join(hermione.__path__[0], file_source, 'wsgi.txt'), 'r') as infile:
         arquivo = infile.readlines()
-        with open(os.path.join(LOCAL_PATH, project_name, 'src','wsgi.py'), 'w+') as outfile:
+        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'api', 'wsgi.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
+
+def write_app_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'app.txt'), 'r') as infile:
+        arquivo = infile.readlines()
+        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'api', 'app.py'), 'w+') as outfile:
+            outfile.writelines(arquivo)
+
+def write_myrequests_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'myrequests.txt'), 'r') as infile:
+        arquivo = infile.readlines()
+        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'api', 'myrequests.py'), 'w+') as outfile:
+            outfile.writelines(arquivo)
+
+
+
 
 def write_visualization_file(LOCAL_PATH, project_name, file_source):
     with open(os.path.join(hermione.__path__[0], file_source, 'visualization.txt'), 'r') as infile:

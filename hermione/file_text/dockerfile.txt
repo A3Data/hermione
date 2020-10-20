@@ -25,15 +25,14 @@ COPY requirements.txt /opt/ml/code/src/requirements.txt
 RUN pip3 install --no-cache -r /opt/ml/code/src/requirements.txt
 
 # Copy project files
-COPY output/titanic_model_rf.pkl /opt/ml/output/titanic_model_rf.pkl
+COPY output/titanic_model_rf.pkl /opt/ml/code/src/api/model/titanic_model_rf.pkl
 COPY src/api/ /opt/ml/code/src/api/
 COPY src/config/ /opt/ml/code/src/config/
 COPY src/ml/ /opt/ml/code/src/ml/
 COPY src/util.py /opt/ml/code/src/util.py
-COPY src/predict.py /opt/ml/code/src/predict.py
 
 # Change working directory
-WORKDIR /opt/ml/code/src
+WORKDIR /opt/ml/code/src/api
 
 
 # Environment variables
@@ -43,5 +42,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 ENV PYTHONPATH="/opt/ml/code/src:${PATH}"
 
+EXPOSE 5000
+
 # Execution command
-CMD python3 predict.py
+CMD ["gunicorn", "-w", "3", "-b", ":5000", "-t", "360", "--reload", "wsgi:app"]
