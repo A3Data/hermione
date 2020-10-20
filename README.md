@@ -40,6 +40,7 @@ This is also our way of reinforcing our position that women should be taking mor
 
 - Anaconda or Miniconda Python (>= 3.6)
 - conda (>= 4.8)
+- **docker**
 
 Hermione depends on conda to build and manage virtual conda environments. If you don't have it installed, please visit 
 <a href="https://www.anaconda.com/products/individual" target="_blank">Anaconda website</a> or 
@@ -61,9 +62,11 @@ After installed Hermione:
 hermione new project_hermione
 ```
 
-1. Enter “y” if you want to start with an example code
+1. Hit Enter if you want to start with an example code
 
-![](https://cdn-images-1.medium.com/max/800/1*TJoFVA-Nio2O3XvxBN4MUQ.png)
+```
+Do you want to start with an implemented example (recommended) [y/n]? [y]: 
+```
 
 3. Hermione already creates a conda virtual environment for the project. Activate it
 
@@ -81,9 +84,16 @@ pip install -r requirements.txt
 
 6. After that, a mlflow experiment is created. To verify the experiment in mlflow, type: mlflow ui. The application will go up.
 
-![](https://cdn-images-1.medium.com/max/800/1*DReyAtL9eJ0fiwxaVo3Yfw.png)
+```
+mlflow ui
+```
 
-7. To access the experiment, just enter the path previously provided in your preferred browser. Then it is possible to check the trained models and their metrics.
+    [2020-10-19 23:23:12 -0300] [15676] [INFO] Starting gunicorn 19.10.0
+    [2020-10-19 23:23:12 -0300] [15676] [INFO] Listening at: http://127.0.0.1:5000 (15676)
+    [2020-10-19 23:23:12 -0300] [15676] [INFO] Using worker: sync
+    [2020-10-19 23:23:12 -0300] [15678] [INFO] Booting worker with pid: 15678
+
+1. To access the experiment, just enter the path previously provided in your preferred browser. Then it is possible to check the trained models and their metrics.
 
 ![](https://cdn-images-1.medium.com/max/800/1*c_rDEqERZR6r8JVI3TMTcQ.png)
 
@@ -100,16 +110,41 @@ hermione predict
 Do you want to create your **project from scratch**? There click [here](tutorial_base.md) to check a tutorial.
 
 
-## Docker
+# Docker
 
-Hermione comes with a default `Dockerfile` that should work fine without editing if you have an autonomous `predict.py` file. It was designed to make batch predictions, not to serve the model with an API (coming soon...). To build correctly, you should be at the top project folder, not inside `src` folder.
+Hermione comes with a default `Dockerfile` which implements a Flask + Gunicorn API that serves your ML model. You should take a look at the `api/app.py` module and rewrite `predict_new()` function as you see fit.  
 
-You can build the docker image and run it with the following commands:
+Also, in the newest version, hermione brings two CLI commands that helps us abstract a little bit the complexity regarding docker commands. To build an image (remember you should have docker installed), you should be in the project's root directory. Than, do:
 
+```bash
+hermione build <IMAGE_NAME>
 ```
-docker build -f src/Dockerfile -t myprediction:latest .
-docker run --rm myprediction:latest
+
+After you have built you're docker image, run it with:
+
+```bash
+hermione run <IMAGE_NAME>
 ```
+
+    [2020-10-20 02:13:20 +0000] [1] [INFO] Starting gunicorn 20.0.4
+    [2020-10-20 02:13:20 +0000] [1] [INFO] Listening at: http://0.0.0.0:5000 (1)
+    [2020-10-20 02:13:20 +0000] [1] [INFO] Using worker: sync
+    [2020-10-20 02:13:20 +0000] [7] [INFO] Booting worker with pid: 7
+    [2020-10-20 02:13:20 +0000] [8] [INFO] Booting worker with pid: 8
+    [2020-10-20 02:13:20 +0000] [16] [INFO] Booting worker with pid: 16
+
+**THAT IS IT!** You have a live model up and running. To test your API, hermione provides a `api/myrequests.py` module. *This is not part of the project*; it's a "ready to go" code to make requests to the API. Help yourself!
+
+```bash
+cd src/api
+python myrequests.py
+```
+
+    Sending request for model...
+    Data: {"Pclass": [3, 2, 1], "Sex": ["male", "female", "male"], "Age": [4, 22, 28]}
+    Response: "[0.24630952 0.996      0.50678968]"
+
+Play a little with the 'fake' data and see how far can the predictions go.
 
 
 ## Documentation
