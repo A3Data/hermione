@@ -30,8 +30,8 @@ def info():
 @cli.command()
 @click.argument('project_name')
 @click.option('-p', '--python-version', 'python_version', default='3.7', show_default=True)
-@click.option('-imp', '--implemented', 'implemented', prompt='Do you want to start with an implemented example? [y/n] Default:', 
-            default='n', show_default=True)
+@click.option('-imp', '--implemented', 'implemented', prompt='Do you want to start with an implemented example (recommended) [y/n]?', 
+            default='y', show_default=True)
 def new(project_name, python_version, implemented):
     """
     Create a new hermione project
@@ -63,14 +63,13 @@ def new(project_name, python_version, implemented):
     # Write config file
     write_config_file(LOCAL_PATH, project_name)
     #write_logging_file(LOCAL_PATH, project_name)
-    #write_endpoints_file(LOCAL_PATH, project_name)
     write_requirements_txt(LOCAL_PATH, project_name, file_source)
     write_gitignore(LOCAL_PATH, project_name, file_source)
     write_readme_file(LOCAL_PATH, project_name, file_source)
-    #write_application_file(LOCAL_PATH, project_name)
     #write_application_config(LOCAL_PATH, project_name)
     write_src_util_file(LOCAL_PATH, project_name, file_source)
-    #write_wsgi_file(LOCAL_PATH, project_name)
+    write_wsgi_file(LOCAL_PATH, project_name, file_source)
+    write_app_file(LOCAL_PATH, project_name, file_source)
     write_visualization_file(LOCAL_PATH, project_name, file_source)
     write_normalization_file(LOCAL_PATH, project_name, file_source)
     write_preprocessing_file(LOCAL_PATH, project_name, file_source)
@@ -90,6 +89,7 @@ def new(project_name, python_version, implemented):
 
     if implemented in ['yes', 'ye', 'y', 'Yes', 'YES', 'Y']:
         write_titanic_data(LOCAL_PATH, project_name, file_source)
+        write_myrequests_file(LOCAL_PATH, project_name, file_source)
         
 
     write_test_file(LOCAL_PATH, project_name, file_source)
@@ -127,4 +127,31 @@ def predict():
     else:
         print("Making predictions: ")
         os.system('python ./predict.py')
-        
+
+
+@click.argument('image_name')
+@click.option('-t', '--tag', 'tag', default='latest', show_default=True)
+@cli.command()
+def build(image_name, tag):
+    """
+    Build a docker image with given image_name. Only run if you have docker installed.
+    One should be at the root directory.
+    """
+    if not os.path.exists('src/Dockerfile'):
+        click.echo("You gotta have an src/Dockerfile file. You must be at the root folder.")
+    else:
+        os.system(f'docker build -f src/Dockerfile -t {image_name}:{tag} .')
+
+
+@click.argument('image_name')
+@click.option('-t', '--tag', 'tag', default='latest', show_default=True)
+@cli.command()
+def run(image_name, tag):
+    """
+    Run a container with given image_name. 
+    Only run if you have docker installed.
+    """
+    if not os.path.exists('src/Dockerfile'):
+        click.echo("You gotta have an src/Dockerfile file. You must be at the root folder.")
+    else:
+        os.system(f'docker run --rm -p 5000:5000 {image_name}:{tag}')

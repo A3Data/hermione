@@ -2,6 +2,7 @@ category-encoders
 coverage
 datetime
 Flask
+gunicorn
 hermione-ml
 matplotlib
 mlflow
