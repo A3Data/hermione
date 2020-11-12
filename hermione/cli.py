@@ -1,10 +1,13 @@
 import click
 import os
+import re
 import sys
 from .writer import *
 from .__init__ import __version__ as version
 
 LOCAL_PATH = os.getcwd()
+
+# Correct LOCAL_PATH in case of empty spaces #21
 
 logo = r"""
  _                         _                  
@@ -29,10 +32,9 @@ def info():
 
 @cli.command()
 @click.argument('project_name')
-@click.option('-p', '--python-version', 'python_version', default='3.7', show_default=True)
 @click.option('-imp', '--implemented', 'implemented', prompt='Do you want to start with an implemented example (recommended) [y/n]?', 
             default='y', show_default=True)
-def new(project_name, python_version, implemented):
+def new(project_name, implemented):
     """
     Create a new hermione project
     """
@@ -95,13 +97,15 @@ def new(project_name, python_version, implemented):
     write_test_file(LOCAL_PATH, project_name, file_source)
     write_test_readme(LOCAL_PATH, project_name, file_source)
 
-    print(f'Creating conda virtual environment {project_name}')
-    os.system(f"conda create -y --prefix {os.path.join(LOCAL_PATH, project_name)}/{project_name}_env  python={python_version}")
+    print(f'Creating virtual environment {project_name}_env')
+    os.chdir(project_name)
+    env_name = f"{project_name}_env"
+    os.system(f"python -m venv {env_name}")
 
     # Create git repo
-    os.chdir(project_name)
     os.system('git init')
     print("A git repository was created. You should add your files and make your first commit.\n")
+    
 
 
 @cli.command()
@@ -138,7 +142,7 @@ def build(image_name, tag):
     One should be at the root directory.
     """
     if not os.path.exists('src/Dockerfile'):
-        click.echo("You gotta have an src/Dockerfile file. You must be at the root folder.")
+        click.echo("You gotta have an src/Dockerfile file. You must be at the project's root folder.")
     else:
         os.system(f'docker build -f src/Dockerfile -t {image_name}:{tag} .')
 
@@ -152,6 +156,6 @@ def run(image_name, tag):
     Only run if you have docker installed.
     """
     if not os.path.exists('src/Dockerfile'):
-        click.echo("You gotta have an src/Dockerfile file. You must be at the root folder.")
+        click.echo("You gotta have an src/Dockerfile file. You must be at the project's root folder.")
     else:
         os.system(f'docker run --rm -p 5000:5000 {image_name}:{tag}')

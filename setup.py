@@ -29,8 +29,7 @@ setup(
       keywords='machine learning mlops devops artificial intelligence',
       license='Apache License 2.0',
     install_requires=[
-        'Click',
-        'conda'
+        'Click'
     ],
     entry_points='''
         [console_scripts]
