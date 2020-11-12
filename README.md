@@ -38,14 +38,11 @@ This is also our way of reinforcing our position that women should be taking mor
 
 ### Dependencies
 
-- Anaconda or Miniconda Python (>= 3.6)
-- conda (>= 4.8)
+- Python (>= 3.6)
 - **docker**
 
-Hermione depends on conda to build and manage virtual conda environments. If you don't have it installed, please visit 
-<a href="https://www.anaconda.com/products/individual" target="_blank">Anaconda website</a> or 
-<a href="https://docs.conda.io/en/latest/miniconda.html" target="_blank">Miniconda website</a>.
-  
+Hermione does not depend on conda to build and manage virtual environments anymore. It uses `venv` instead.
+
 
 ### Install
 
@@ -68,9 +65,18 @@ hermione new project_hermione
 Do you want to start with an implemented example (recommended) [y/n]? [y]: 
 ```
 
-3. Hermione already creates a conda virtual environment for the project. Activate it
+3. Hermione already creates a virtual environment for the project. For Windows users, activate it with
 
-![](https://cdn-images-1.medium.com/max/800/1*38yp-E_AUxM7lIw9PCo0rw.png)
+```cmd
+<project_name>_env\Scripts\activate
+```
+
+For linux and MacOS users, do
+
+```bash
+source <project_name>_env/bin/activate
+```
+
 
 4. After activating, you should install some libraries. There are a few suggestions in “requirements.txt” file:
 
