@@ -65,7 +65,7 @@ class Visualization:
         g = plt.title(title)
         
     @staticmethod
-    def regression_analysis(cls, y_true, y_pred, path=None):
+    def regression_analysis( y_true, y_pred, path=None):
         """
         Analysis of the real and predicted y of the regression model
     
@@ -84,11 +84,11 @@ class Visualization:
         """
         residual = y_true - y_pred
         print("Histogram")
-        cls.histogram(residual, "Residual")
+        Visualization.histogram(residual, "Residual")
         print("Scatter")
-        cls.scatter_plot(y_pred, residual, "pred", "residual", path=path)
+        Visualization.scatter(y_pred, residual, "pred", "residual", path=path)
         print("Scatter")
-        cls.scatter_plot( y_true, y_pred, "y_test", "pred", path=path)
+        Visualization.scatter(y_true, y_pred, "y_test", "pred", path=path)
 
     @staticmethod
     def histogram(values, title, fig_size=(4,3), path=None):
