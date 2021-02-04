@@ -73,6 +73,7 @@ def new(project_name, implemented):
     write_wsgi_file(LOCAL_PATH, project_name, file_source)
     write_app_file(LOCAL_PATH, project_name, file_source)
     write_visualization_file(LOCAL_PATH, project_name, file_source)
+    write_visualization_streamlit_file(LOCAL_PATH, project_name, file_source)
     write_normalization_file(LOCAL_PATH, project_name, file_source)
     write_preprocessing_file(LOCAL_PATH, project_name, file_source)
     write_text_vectorizer_file(LOCAL_PATH, project_name, file_source)

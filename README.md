@@ -175,6 +175,7 @@ Here we describe briefly what each class is doing:
 ### Visualization
 
 -   **Visualization** - methods for data visualization. There are methods to make static and interactive plots.
+-   **App Streamlit** - streamlit example consuming Titanic dataset, including pandas profilling.
 
 ### Model
 
