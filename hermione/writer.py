@@ -128,6 +128,12 @@ def write_visualization_file(LOCAL_PATH, project_name, file_source):
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'visualization', 'visualization.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
+def write_visualization_streamlit_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'app-streamlit-titanict.txt'), 'r') as infile:
+        arquivo = infile.readlines()
+        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'visualization', 'app-streamlit-titanict.py'), 'w+') as outfile:
+            outfile.writelines(arquivo)
+
 def write_normalization_file(LOCAL_PATH, project_name, file_source):
     with open(os.path.join(hermione.__path__[0], file_source, 'normalization.txt'), 'r') as infile:
         arquivo = infile.readlines()

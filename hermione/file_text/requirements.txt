@@ -16,3 +16,7 @@ scipy
 statsmodels
 tqdm
 yellowbrick
+vega_datasets
+altair
+pandas_profiling
+streamlit_pandas_profiling
