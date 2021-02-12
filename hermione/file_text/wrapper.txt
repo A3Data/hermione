@@ -3,6 +3,7 @@ from datetime import date
 import mlflow.pyfunc
 from mlflow import pyfunc
 from interpret.ext.blackbox import *
+#from interpret.ext.blackbox import TabularExplainer
 import pandas as pd
 
 from util import load_yaml, load_json
@@ -205,7 +206,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         )
         self.artifacts["explainer"] = explainer
 
-    def local_interpret(self, X):
+    def local_interpret(self, X, n_feat):
         """
         Return a local interpret for each row in data
 
@@ -225,12 +226,12 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         local_values = local_explanation.get_ranked_local_values()
         local_names = local_explanation.get_ranked_local_names()
         result = [
-            (local_names[predictions[i]][i] + local_values[predictions[i]][i])
+            (local_names[predictions[i]][i][:n_feat] + local_values[predictions[i]][i][:n_feat])
             for i in range(n_obs)
         ]
         column_names = [
             f"Importance_{item}_{str(i)}"
             for item in ["Name", "Value"]
-            for i in range(n_cols)
+            for i in range(n_feat)
         ]
         return pd.DataFrame(result, columns=column_names)
