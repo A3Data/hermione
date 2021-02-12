@@ -2,8 +2,8 @@ from joblib import dump, load
 from datetime import date
 import mlflow.pyfunc
 from mlflow import pyfunc
-from interpret.ext.blackbox import *
-#from interpret.ext.blackbox import TabularExplainer
+from interpret.ext.blackbox import TabularExplainer, MimicExplainer
+from interpret.ext.glassbox import *
 import pandas as pd
 
 from util import load_yaml, load_json
@@ -188,7 +188,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         """
         return self.artifacts["preprocessing"]
 
-    def train_interpret(self, X):
+    def train_interpret(self, X, model="tabular"):
         """
         Train a interpret model
 
@@ -201,10 +201,26 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         -------
         None
         """
-        explainer = TabularExplainer(
-            self.artifacts["model"], X, features=self.artifacts["columns"]
-        )
-        self.artifacts["explainer"] = explainer
+
+        mimic_models = {'mimic_LGBME':LGBMExplainableModel,
+            'mimic_Linear':LinearExplainableModel,
+            'mimic_SGDE':SGDExplainableModel,
+            'mimic_Dec_Tree':DecisionTreeExplainableModel}
+
+        if model=="tabular":
+
+            explainer = TabularExplainer(
+                self.artifacts["model"], X, features=self.artifacts["columns"]
+            )
+            self.artifacts["explainer"] = explainer
+        
+        else: 
+            explainer = MimicExplainer(self.artifacts["model"], 
+                           X, 
+                           mimic_models[model], 
+                           augment_data=True, 
+                           max_num_of_augmentations=10, 
+                           features=self.artifacts["columns"])
 
     def local_interpret(self, X, n_feat):
         """
