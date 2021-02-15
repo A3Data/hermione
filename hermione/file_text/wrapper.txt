@@ -197,32 +197,35 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         self    : object Wrapper
         X       : pd.DataFrame
                   Data that were used in the train for interpret
+        model   : string, optional
+                  Model to use for the interpret [tabular,mimic_LGBME,
+                  mimic_Linear,mimic_SGDE,mimic_Dec_Tree]
         Returns
         -------
         None
         """
-
-        mimic_models = {'mimic_LGBME':LGBMExplainableModel,
-            'mimic_Linear':LinearExplainableModel,
-            'mimic_SGDE':SGDExplainableModel,
-            'mimic_Dec_Tree':DecisionTreeExplainableModel}
-
-        if model=="tabular":
-
+        mimic_models = {
+            "mimic_LGBME": LGBMExplainableModel,
+            "mimic_Linear": LinearExplainableModel,
+            "mimic_SGDE": SGDExplainableModel,
+            "mimic_Dec_Tree": DecisionTreeExplainableModel,
+        }
+        if model == "tabular":
             explainer = TabularExplainer(
                 self.artifacts["model"], X, features=self.artifacts["columns"]
             )
-            self.artifacts["explainer"] = explainer
-        
-        else: 
-            explainer = MimicExplainer(self.artifacts["model"], 
-                           X, 
-                           mimic_models[model], 
-                           augment_data=True, 
-                           max_num_of_augmentations=10, 
-                           features=self.artifacts["columns"])
+        else:
+            explainer = MimicExplainer(
+                self.artifacts["model"],
+                X,
+                mimic_models[model],
+                augment_data=True,
+                max_num_of_augmentations=10,
+                features=self.artifacts["columns"],
+            )
+        self.artifacts["explainer"] = explainer
 
-    def local_interpret(self, X, n_feat):
+    def local_interpret(self, X, n_feat=3, norm=True):
         """
         Return a local interpret for each row in data
 
@@ -231,19 +234,28 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         self    : object Wrapper
         X       : array[array], shape (n_linha, n_colunas)
                   Matrix with the data that were used to return interpret
+        n_feat  : int, optional
+                  Number of features to return
+        norm    : bool, optional
+                  if True, do normalization in the features importances
 
         Returns
         -------
         pd.DataFrame
         """
         local_explanation = self.artifacts["explainer"].explain_local(X)
-        n_obs, n_cols = X.shape
+        n_obs = X.shape[0]
         predictions = self.artifacts["model"].predict(X)
         local_values = local_explanation.get_ranked_local_values()
+        local_values = [local_values[predictions[i]][i] for i in range(n_obs)]
         local_names = local_explanation.get_ranked_local_names()
+        local_names = [local_names[predictions[i]][i] for i in range(n_obs)]
+        if norm:
+            local_values = [
+                [(i - min(l)) / (max(l) - min(l)) for i in l] for l in local_values
+            ]
         result = [
-            (local_names[predictions[i]][i][:n_feat] + local_values[predictions[i]][i][:n_feat])
-            for i in range(n_obs)
+            (local_names[i][:n_feat] + local_values[i][:n_feat]) for i in range(n_obs)
         ]
         column_names = [
             f"Importance_{item}_{str(i)}"
