@@ -16,9 +16,77 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 1,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Requirement already satisfied: ipywidgets in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (7.5.1)\n",
+      "Requirement already satisfied: widgetsnbextension~=3.5.0 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipywidgets) (3.5.1)\n",
+      "Requirement already satisfied: ipython>=4.0.0; python_version >= \"3.3\" in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipywidgets) (7.9.0)\n",
+      "Requirement already satisfied: traitlets>=4.3.1 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipywidgets) (4.3.3)\n",
+      "Requirement already satisfied: nbformat>=4.2.0 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipywidgets) (4.4.0)\n",
+      "Requirement already satisfied: ipykernel>=4.5.1 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipywidgets) (5.1.3)\n",
+      "Requirement already satisfied: notebook>=4.4.1 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from widgetsnbextension~=3.5.0->ipywidgets) (6.0.1)\n",
+      "Requirement already satisfied: setuptools>=18.5 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipython>=4.0.0; python_version >= \"3.3\"->ipywidgets) (41.6.0.post20191101)\n",
+      "Requirement already satisfied: pickleshare in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipython>=4.0.0; python_version >= \"3.3\"->ipywidgets) (0.7.5)\n",
+      "Requirement already satisfied: prompt-toolkit<2.1.0,>=2.0.0 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipython>=4.0.0; python_version >= \"3.3\"->ipywidgets) (2.0.10)\n",
+      "Requirement already satisfied: jedi>=0.10 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipython>=4.0.0; python_version >= \"3.3\"->ipywidgets) (0.15.1)\n",
+      "Requirement already satisfied: pygments in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipython>=4.0.0; python_version >= \"3.3\"->ipywidgets) (2.4.2)\n",
+      "Requirement already satisfied: decorator in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipython>=4.0.0; python_version >= \"3.3\"->ipywidgets) (4.4.1)\n",
+      "Requirement already satisfied: colorama; sys_platform == \"win32\" in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipython>=4.0.0; python_version >= \"3.3\"->ipywidgets) (0.4.1)\n",
+      "Requirement already satisfied: backcall in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipython>=4.0.0; python_version >= \"3.3\"->ipywidgets) (0.1.0)\n",
+      "Requirement already satisfied: ipython-genutils in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from traitlets>=4.3.1->ipywidgets) (0.2.0)\n",
+      "Requirement already satisfied: six in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from traitlets>=4.3.1->ipywidgets) (1.12.0)\n",
+      "Requirement already satisfied: jsonschema!=2.5.0,>=2.4 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from nbformat>=4.2.0->ipywidgets) (3.1.1)\n",
+      "Requirement already satisfied: jupyter_core in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from nbformat>=4.2.0->ipywidgets) (4.5.0)\n",
+      "Requirement already satisfied: tornado>=4.2 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipykernel>=4.5.1->ipywidgets) (6.0.3)\n",
+      "Requirement already satisfied: jupyter-client in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from ipykernel>=4.5.1->ipywidgets) (5.3.3)\n",
+      "Requirement already satisfied: Send2Trash in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (1.5.0)\n",
+      "Requirement already satisfied: nbconvert in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (5.6.1)\n",
+      "Requirement already satisfied: prometheus-client in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.7.1)\n",
+      "Requirement already satisfied: jinja2 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (2.10.3)\n",
+      "Requirement already satisfied: pyzmq>=17 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (18.1.0)\n",
+      "Requirement already satisfied: terminado>=0.8.1 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.8.2)\n",
+      "Requirement already satisfied: wcwidth in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from prompt-toolkit<2.1.0,>=2.0.0->ipython>=4.0.0; python_version >= \"3.3\"->ipywidgets) (0.1.7)\n",
+      "Requirement already satisfied: parso>=0.5.0 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from jedi>=0.10->ipython>=4.0.0; python_version >= \"3.3\"->ipywidgets) (0.5.1)\n",
+      "Requirement already satisfied: importlib-metadata in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from jsonschema!=2.5.0,>=2.4->nbformat>=4.2.0->ipywidgets) (0.23)\n",
+      "Requirement already satisfied: attrs>=17.4.0 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from jsonschema!=2.5.0,>=2.4->nbformat>=4.2.0->ipywidgets) (19.3.0)\n",
+      "Requirement already satisfied: pyrsistent>=0.14.0 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from jsonschema!=2.5.0,>=2.4->nbformat>=4.2.0->ipywidgets) (0.15.5)\n",
+      "Requirement already satisfied: pywin32>=1.0; sys_platform == \"win32\" in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from jupyter-client->ipykernel>=4.5.1->ipywidgets) (225)\n",
+      "Requirement already satisfied: python-dateutil>=2.1 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from jupyter-client->ipykernel>=4.5.1->ipywidgets) (2.8.1)\n",
+      "Requirement already satisfied: mistune<2,>=0.8.1 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.8.4)\n",
+      "Requirement already satisfied: entrypoints>=0.2.2 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.3)\n",
+      "Requirement already satisfied: defusedxml in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.6.0)\n",
+      "Requirement already satisfied: bleach in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (3.1.0)\n",
+      "Requirement already satisfied: testpath in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.4.4)\n",
+      "Requirement already satisfied: pandocfilters>=1.4.1 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (1.4.2)\n",
+      "Requirement already satisfied: MarkupSafe>=0.23 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from jinja2->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (1.1.1)\n",
+      "Requirement already satisfied: zipp>=0.5 in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from importlib-metadata->jsonschema!=2.5.0,>=2.4->nbformat>=4.2.0->ipywidgets) (0.6.0)\n",
+      "Requirement already satisfied: webencodings in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from bleach->nbconvert->notebook>=4.4.1->widgetsnbextension~=3.5.0->ipywidgets) (0.5.1)\n",
+      "Requirement already satisfied: more-itertools in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from zipp>=0.5->importlib-metadata->jsonschema!=2.5.0,>=2.4->nbformat>=4.2.0->ipywidgets) (7.2.0)\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Enabling notebook extension jupyter-js-widgets/extension...\n",
+      "      - Validating: ok\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "An error occured.\n",
+      "ValueError: Please install nodejs 5+ and npm before continuing installation. nodejs may be installed using conda or directly from the nodejs website.\n",
+      "See the log file for details:  C:\\Users\\gusta\\AppData\\Local\\Temp\\jupyterlab-debug-04zgl4me.log\n"
+     ]
+    }
+   ],
    "source": [
     "!pip install ipywidgets\n",
     "!jupyter nbextension enable --py widgetsnbextension\n",
@@ -27,9 +95,22 @@
   },
   {
    "cell_type": "code",
-   "execution_count": null,
+   "execution_count": 2,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Collecting xgboost\n",
+      "  Downloading https://files.pythonhosted.org/packages/3d/1b/83e5dc0021d12884e9998999945e156cf3628a79dacecaed2ede9f3107cb/xgboost-1.3.3-py3-none-win_amd64.whl (95.2MB)\n",
+      "Requirement already satisfied: numpy in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from xgboost) (1.17.3)\n",
+      "Requirement already satisfied: scipy in c:\\users\\gusta\\appdata\\local\\continuum\\anaconda3\\envs\\octopus\\lib\\site-packages (from xgboost) (1.4.1)\n",
+      "Installing collected packages: xgboost\n",
+      "Successfully installed xgboost-1.3.3\n"
+     ]
+    }
+   ],
    "source": [
     "!pip install xgboost"
    ]
@@ -64,7 +145,22 @@
    "cell_type": "code",
    "execution_count": 2,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Could not import lightgbm, required if using LGBMExplainableModel\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "pandas.util.testing is deprecated. Use the functions in the public API at pandas.testing instead.\n"
+     ]
+    }
+   ],
    "source": [
     "import pandas as pd\n",
     "\n",
@@ -120,11 +216,11 @@
    "metadata": {},
    "outputs": [
     {
-     "name": "stdout",
+     "name": "stderr",
      "output_type": "stream",
      "text": [
-      "Cleaning data\n",
-      "Category encoding\n"
+      "INFO:root:Cleaning data\n",
+      "INFO:root:Category encoding\n"
      ]
     }
    ],
@@ -277,7 +373,16 @@
    "cell_type": "code",
    "execution_count": 10,
    "metadata": {},
-   "outputs": [],
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "Setting feature_perturbation = \"tree_path_dependent\" because no background data was given.\n",
+      "INFO:interpret_community.TabularExplainer:Initialized valid explainer TreeExplainer with args {'explain_subset': None, 'features': ['Age', 'Pclass_1', 'Pclass_2', 'Pclass_3', 'Sex_female', 'Sex_male'], 'classes': None}\n"
+     ]
+    }
+   ],
    "source": [
     "rf = TrainerSklearn().train(X, y, classification=True, \n",
     "                            algorithm=RandomForestClassifier, \n",
@@ -294,11 +399,11 @@
     {
      "data": {
       "text/plain": [
-       "{'accuracy': 0.8186046511627907,\n",
-       " 'f1': 0.7607361963190185,\n",
-       " 'precision': 0.7654320987654321,\n",
-       " 'recall': 0.7560975609756098,\n",
-       " 'roc_auc': 0.8644782688428387}"
+       "{'accuracy': 0.8232558139534883,\n",
+       " 'f1': 0.7500000000000001,\n",
+       " 'precision': 0.7808219178082192,\n",
+       " 'recall': 0.7215189873417721,\n",
+       " 'roc_auc': 0.8634121370067014}"
       ]
      },
      "execution_count": 11,
@@ -317,6 +422,9 @@
    "outputs": [
     {
      "data": {
+      "text/html": [
+       "['Age', 'Pclass_1', 'Pclass_2', 'Pclass_3', 'Sex_female', 'Sex_male']"
+      ],
       "text/plain": [
        "['Age', 'Pclass_1', 'Pclass_2', 'Pclass_3', 'Sex_female', 'Sex_male']"
       ]
@@ -338,49 +446,49 @@
     {
      "data": {
       "text/plain": [
-       "array([1.        , 0.4920119 , 0.713     , 0.92      , 0.23      ,\n",
-       "       0.00416667, 0.10548385, 0.        , 0.18766667, 1.        ,\n",
-       "       0.03      , 0.        , 0.        , 0.97      , 0.85716667,\n",
-       "       0.004     , 0.        , 0.49520155, 1.        , 0.00833333,\n",
-       "       0.2827619 , 1.        , 0.34028571, 0.88516667, 0.47416667,\n",
-       "       1.        , 0.01916342, 0.995     , 0.        , 0.28569833,\n",
-       "       0.        , 0.        , 1.        , 0.28569833, 0.        ,\n",
-       "       0.99      , 0.49520155, 0.        , 0.37355159, 0.        ,\n",
-       "       0.03      , 0.        , 0.23487302, 0.03      , 1.        ,\n",
-       "       0.42838095, 0.49935714, 1.        , 1.        , 0.27207937,\n",
-       "       0.10548385, 0.98      , 0.00857143, 0.67      , 1.        ,\n",
-       "       0.49520155, 1.        , 0.        , 0.        , 0.        ,\n",
-       "       1.        , 1.        , 0.10548385, 0.        , 0.46297619,\n",
-       "       0.        , 0.        , 1.        , 0.02      , 0.49520155,\n",
-       "       0.10548385, 0.67      , 0.114     , 0.34859524, 0.551     ,\n",
-       "       0.        , 0.        , 0.        , 0.        , 0.00833333,\n",
-       "       0.37355159, 0.99      , 1.        , 0.09811905, 0.23487302,\n",
-       "       1.        , 1.        , 1.        , 0.14030134, 0.0945303 ,\n",
-       "       0.        , 0.713     , 0.        , 0.24386114, 0.98      ,\n",
-       "       0.87      , 0.33694048, 1.        , 0.27242063, 0.98      ,\n",
-       "       0.        , 1.        , 0.13428904, 0.22966667, 0.72997078,\n",
-       "       0.03158333, 1.        , 0.        , 0.01572172, 0.        ,\n",
-       "       0.        , 0.05366667, 1.        , 1.        , 0.87      ,\n",
-       "       0.24386114, 0.46297619, 0.        , 0.        , 0.        ,\n",
-       "       0.99      , 0.14030134, 0.44516667, 0.72997078, 0.        ,\n",
-       "       0.        , 0.02      , 0.88516667, 0.28569833, 0.59893651,\n",
-       "       0.70592316, 0.995     , 0.84156374, 0.25      , 0.        ,\n",
-       "       0.        , 0.        , 0.00416667, 0.        , 0.09085714,\n",
-       "       0.68168939, 0.02      , 1.        , 0.10548385, 0.        ,\n",
-       "       1.        , 0.        , 0.13428904, 0.96      , 0.07      ,\n",
-       "       0.99030303, 1.        , 0.15074706, 0.35530952, 0.        ,\n",
-       "       0.15074706, 0.40907143, 0.24386114, 0.        , 0.        ,\n",
-       "       0.02261905, 1.        , 0.03702789, 0.        , 0.        ,\n",
-       "       0.59297547, 0.99      , 0.072     , 0.        , 0.02      ,\n",
-       "       0.665     , 0.18766667, 1.        , 0.        , 0.        ,\n",
-       "       1.        , 0.49190873, 0.995     , 1.        , 0.14030134,\n",
-       "       0.98      , 0.        , 0.        , 0.995     , 1.        ,\n",
-       "       1.        , 0.62      , 0.31      , 0.99      , 0.12246981,\n",
-       "       0.        , 0.51754762, 0.        , 0.01      , 0.22966667,\n",
-       "       0.        , 0.        , 0.        , 0.        , 0.70592316,\n",
-       "       1.        , 0.76      , 1.        , 0.62689683, 1.        ,\n",
-       "       0.16      , 1.        , 0.14030134, 0.        , 0.63216667,\n",
-       "       0.13866667, 1.        , 0.        , 0.31666667, 0.        ])"
+       "array([1.        , 0.45271429, 0.43433333, 0.93333333, 0.29      ,\n",
+       "       0.0097619 , 0.08943685, 0.        , 0.0525    , 0.98      ,\n",
+       "       0.65514286, 0.10844703, 0.10844703, 0.97      , 0.87      ,\n",
+       "       0.29193651, 0.01      , 0.42744644, 1.        , 0.0300202 ,\n",
+       "       0.30402381, 1.        , 0.46507143, 0.73488095, 0.56333333,\n",
+       "       1.        , 0.01339054, 1.        , 0.        , 0.35177655,\n",
+       "       0.        , 0.        , 1.        , 0.11603523, 0.        ,\n",
+       "       0.74980952, 0.42744644, 0.13549914, 0.62743681, 0.        ,\n",
+       "       0.055     , 0.        , 0.29346825, 0.02      , 1.        ,\n",
+       "       0.1125    , 0.21      , 1.        , 1.        , 0.36449206,\n",
+       "       0.08943685, 0.38      , 0.        , 0.02      , 1.        ,\n",
+       "       0.42744644, 1.        , 0.        , 0.10844703, 0.00461538,\n",
+       "       1.        , 1.        , 0.08943685, 0.        , 0.49278571,\n",
+       "       0.        , 0.00461538, 1.        , 0.        , 0.42744644,\n",
+       "       0.08943685, 0.02      , 0.17333333, 0.31885714, 0.43383333,\n",
+       "       0.02      , 0.        , 0.01      , 0.10844703, 0.0300202 ,\n",
+       "       0.62743681, 0.74980952, 1.        , 0.1585    , 0.29346825,\n",
+       "       1.        , 1.        , 1.        , 0.14222724, 0.18938095,\n",
+       "       0.01333333, 0.16983333, 0.33480556, 0.19186052, 0.96      ,\n",
+       "       0.65792857, 0.07983333, 1.        , 0.20904762, 1.        ,\n",
+       "       0.        , 1.        , 0.00111111, 0.31690476, 0.40089322,\n",
+       "       0.07      , 1.        , 0.        , 0.01198413, 0.        ,\n",
+       "       0.        , 0.05333333, 1.        , 1.        , 0.65792857,\n",
+       "       0.19186052, 0.49278571, 0.        , 0.025     , 0.        ,\n",
+       "       1.        , 0.14222724, 0.        , 0.40089322, 0.01      ,\n",
+       "       0.        , 0.        , 0.72988095, 0.35177655, 0.44572039,\n",
+       "       0.55391667, 1.        , 0.7067381 , 0.38      , 0.10844703,\n",
+       "       0.13549914, 0.        , 0.0097619 , 0.        , 0.08122222,\n",
+       "       0.42128571, 0.        , 1.        , 0.08943685, 0.        ,\n",
+       "       1.        , 0.        , 0.00111111, 0.92      , 0.01      ,\n",
+       "       0.9707381 , 1.        , 0.18396825, 0.39642857, 0.        ,\n",
+       "       0.18396825, 0.41533333, 0.19186052, 0.43483333, 0.314     ,\n",
+       "       0.03164286, 1.        , 0.06961652, 0.        , 0.        ,\n",
+       "       0.6867381 , 1.        , 0.17      , 0.        , 0.        ,\n",
+       "       0.89      , 0.0525    , 1.        , 0.025     , 0.        ,\n",
+       "       0.93614286, 0.63869517, 1.        , 1.        , 0.14222724,\n",
+       "       0.96      , 0.        , 0.        , 1.        , 1.        ,\n",
+       "       0.99      , 0.71      , 0.325     , 0.99      , 0.19343795,\n",
+       "       0.        , 0.4915    , 0.714     , 0.03416667, 0.31690476,\n",
+       "       0.02      , 0.01      , 0.        , 0.02      , 0.55391667,\n",
+       "       0.98      , 0.08      , 1.        , 0.41324603, 1.        ,\n",
+       "       0.07      , 1.        , 0.14222724, 0.00333333, 0.5665    ,\n",
+       "       0.        , 1.        , 0.        , 0.23      , 0.00461538])"
       ]
      },
      "execution_count": 13,
@@ -482,11 +590,17 @@
    "metadata": {},
    "outputs": [
     {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "INFO:root:Cleaning data\n",
+      "INFO:root:Category encoding\n"
+     ]
+    },
+    {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "Cleaning data\n",
-      "Category encoding\n",
       "   Age  Pclass_3  Sex_male  Pclass_1  Pclass_2  Sex_female\n",
       "0    4         1         1         0         0           0\n"
      ]
@@ -494,7 +608,7 @@
     {
      "data": {
       "text/plain": [
-       "array([[0.65140476, 0.34859524]])"
+       "array([[0.68114286, 0.31885714]])"
       ]
      },
      "execution_count": 16,
@@ -504,6 +618,299 @@
    ],
    "source": [
     "predict_new(new_data, rf)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Get local explainer for each instance:**"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 30,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Get local explainer\n",
+    "res = rf.local_interpret(X_test, len(X_test.columns))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 31,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Importance_Name_0</th>\n",
+       "      <th>Importance_Name_1</th>\n",
+       "      <th>Importance_Name_2</th>\n",
+       "      <th>Importance_Name_3</th>\n",
+       "      <th>Importance_Name_4</th>\n",
+       "      <th>Importance_Name_5</th>\n",
+       "      <th>Importance_Value_0</th>\n",
+       "      <th>Importance_Value_1</th>\n",
+       "      <th>Importance_Value_2</th>\n",
+       "      <th>Importance_Value_3</th>\n",
+       "      <th>Importance_Value_4</th>\n",
+       "      <th>Importance_Value_5</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>Sex_female</td>\n",
+       "      <td>Sex_male</td>\n",
+       "      <td>Pclass_3</td>\n",
+       "      <td>Pclass_2</td>\n",
+       "      <td>Age</td>\n",
+       "      <td>Pclass_1</td>\n",
+       "      <td>0.235407</td>\n",
+       "      <td>0.212511</td>\n",
+       "      <td>0.131872</td>\n",
+       "      <td>0.049253</td>\n",
+       "      <td>-0.019605</td>\n",
+       "      <td>-0.028737</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>Sex_male</td>\n",
+       "      <td>Sex_female</td>\n",
+       "      <td>Age</td>\n",
+       "      <td>Pclass_2</td>\n",
+       "      <td>Pclass_3</td>\n",
+       "      <td>Pclass_1</td>\n",
+       "      <td>0.107810</td>\n",
+       "      <td>0.105021</td>\n",
+       "      <td>0.027756</td>\n",
+       "      <td>-0.024243</td>\n",
+       "      <td>-0.076479</td>\n",
+       "      <td>-0.173282</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>Pclass_3</td>\n",
+       "      <td>Pclass_1</td>\n",
+       "      <td>Pclass_2</td>\n",
+       "      <td>Age</td>\n",
+       "      <td>Sex_male</td>\n",
+       "      <td>Sex_female</td>\n",
+       "      <td>0.136886</td>\n",
+       "      <td>0.054153</td>\n",
+       "      <td>0.035203</td>\n",
+       "      <td>-0.040919</td>\n",
+       "      <td>-0.093182</td>\n",
+       "      <td>-0.107176</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>Sex_female</td>\n",
+       "      <td>Sex_male</td>\n",
+       "      <td>Age</td>\n",
+       "      <td>Pclass_2</td>\n",
+       "      <td>Pclass_1</td>\n",
+       "      <td>Pclass_3</td>\n",
+       "      <td>0.218018</td>\n",
+       "      <td>0.210792</td>\n",
+       "      <td>0.206967</td>\n",
+       "      <td>-0.012758</td>\n",
+       "      <td>-0.035676</td>\n",
+       "      <td>-0.073309</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>Sex_male</td>\n",
+       "      <td>Sex_female</td>\n",
+       "      <td>Age</td>\n",
+       "      <td>Pclass_2</td>\n",
+       "      <td>Pclass_3</td>\n",
+       "      <td>Pclass_1</td>\n",
+       "      <td>0.125001</td>\n",
+       "      <td>0.124176</td>\n",
+       "      <td>0.092246</td>\n",
+       "      <td>-0.010514</td>\n",
+       "      <td>-0.068209</td>\n",
+       "      <td>-0.133400</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>...</th>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>210</th>\n",
+       "      <td>Age</td>\n",
+       "      <td>Sex_female</td>\n",
+       "      <td>Sex_male</td>\n",
+       "      <td>Pclass_2</td>\n",
+       "      <td>Pclass_3</td>\n",
+       "      <td>Pclass_1</td>\n",
+       "      <td>0.197178</td>\n",
+       "      <td>0.135364</td>\n",
+       "      <td>0.130705</td>\n",
+       "      <td>-0.002840</td>\n",
+       "      <td>-0.014871</td>\n",
+       "      <td>-0.026237</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>211</th>\n",
+       "      <td>Sex_female</td>\n",
+       "      <td>Sex_male</td>\n",
+       "      <td>Pclass_1</td>\n",
+       "      <td>Pclass_3</td>\n",
+       "      <td>Age</td>\n",
+       "      <td>Pclass_2</td>\n",
+       "      <td>0.163068</td>\n",
+       "      <td>0.161115</td>\n",
+       "      <td>0.099112</td>\n",
+       "      <td>0.085461</td>\n",
+       "      <td>0.072337</td>\n",
+       "      <td>-0.000391</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>212</th>\n",
+       "      <td>Sex_female</td>\n",
+       "      <td>Age</td>\n",
+       "      <td>Pclass_1</td>\n",
+       "      <td>Pclass_2</td>\n",
+       "      <td>Sex_male</td>\n",
+       "      <td>Pclass_3</td>\n",
+       "      <td>0.097598</td>\n",
+       "      <td>0.095317</td>\n",
+       "      <td>0.090221</td>\n",
+       "      <td>0.087228</td>\n",
+       "      <td>0.079541</td>\n",
+       "      <td>-0.030605</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>213</th>\n",
+       "      <td>Pclass_3</td>\n",
+       "      <td>Pclass_1</td>\n",
+       "      <td>Sex_female</td>\n",
+       "      <td>Sex_male</td>\n",
+       "      <td>Pclass_2</td>\n",
+       "      <td>Age</td>\n",
+       "      <td>0.127740</td>\n",
+       "      <td>0.054102</td>\n",
+       "      <td>0.043235</td>\n",
+       "      <td>0.041091</td>\n",
+       "      <td>0.036320</td>\n",
+       "      <td>-0.113190</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>214</th>\n",
+       "      <td>Age</td>\n",
+       "      <td>Sex_female</td>\n",
+       "      <td>Sex_male</td>\n",
+       "      <td>Pclass_3</td>\n",
+       "      <td>Pclass_1</td>\n",
+       "      <td>Pclass_2</td>\n",
+       "      <td>0.122643</td>\n",
+       "      <td>0.115234</td>\n",
+       "      <td>0.104086</td>\n",
+       "      <td>0.042674</td>\n",
+       "      <td>0.025775</td>\n",
+       "      <td>0.004272</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>215 rows × 12 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "    Importance_Name_0 Importance_Name_1 Importance_Name_2 Importance_Name_3  \\\n",
+       "0          Sex_female          Sex_male          Pclass_3          Pclass_2   \n",
+       "1            Sex_male        Sex_female               Age          Pclass_2   \n",
+       "2            Pclass_3          Pclass_1          Pclass_2               Age   \n",
+       "3          Sex_female          Sex_male               Age          Pclass_2   \n",
+       "4            Sex_male        Sex_female               Age          Pclass_2   \n",
+       "..                ...               ...               ...               ...   \n",
+       "210               Age        Sex_female          Sex_male          Pclass_2   \n",
+       "211        Sex_female          Sex_male          Pclass_1          Pclass_3   \n",
+       "212        Sex_female               Age          Pclass_1          Pclass_2   \n",
+       "213          Pclass_3          Pclass_1        Sex_female          Sex_male   \n",
+       "214               Age        Sex_female          Sex_male          Pclass_3   \n",
+       "\n",
+       "    Importance_Name_4 Importance_Name_5  Importance_Value_0  \\\n",
+       "0                 Age          Pclass_1            0.235407   \n",
+       "1            Pclass_3          Pclass_1            0.107810   \n",
+       "2            Sex_male        Sex_female            0.136886   \n",
+       "3            Pclass_1          Pclass_3            0.218018   \n",
+       "4            Pclass_3          Pclass_1            0.125001   \n",
+       "..                ...               ...                 ...   \n",
+       "210          Pclass_3          Pclass_1            0.197178   \n",
+       "211               Age          Pclass_2            0.163068   \n",
+       "212          Sex_male          Pclass_3            0.097598   \n",
+       "213          Pclass_2               Age            0.127740   \n",
+       "214          Pclass_1          Pclass_2            0.122643   \n",
+       "\n",
+       "     Importance_Value_1  Importance_Value_2  Importance_Value_3  \\\n",
+       "0              0.212511            0.131872            0.049253   \n",
+       "1              0.105021            0.027756           -0.024243   \n",
+       "2              0.054153            0.035203           -0.040919   \n",
+       "3              0.210792            0.206967           -0.012758   \n",
+       "4              0.124176            0.092246           -0.010514   \n",
+       "..                  ...                 ...                 ...   \n",
+       "210            0.135364            0.130705           -0.002840   \n",
+       "211            0.161115            0.099112            0.085461   \n",
+       "212            0.095317            0.090221            0.087228   \n",
+       "213            0.054102            0.043235            0.041091   \n",
+       "214            0.115234            0.104086            0.042674   \n",
+       "\n",
+       "     Importance_Value_4  Importance_Value_5  \n",
+       "0             -0.019605           -0.028737  \n",
+       "1             -0.076479           -0.173282  \n",
+       "2             -0.093182           -0.107176  \n",
+       "3             -0.035676           -0.073309  \n",
+       "4             -0.068209           -0.133400  \n",
+       "..                  ...                 ...  \n",
+       "210           -0.014871           -0.026237  \n",
+       "211            0.072337           -0.000391  \n",
+       "212            0.079541           -0.030605  \n",
+       "213            0.036320           -0.113190  \n",
+       "214            0.025775            0.004272  \n",
+       "\n",
+       "[215 rows x 12 columns]"
+      ]
+     },
+     "execution_count": 31,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "res"
    ]
   }
  ],
@@ -523,7 +930,7 @@
    "name": "python",
    "nbconvert_exporter": "python",
    "pygments_lexer": "ipython3",
-   "version": "3.7.6"
+   "version": "3.7.3"
   }
  },
  "nbformat": 4,

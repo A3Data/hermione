@@ -78,4 +78,6 @@ class TrainerSklearn(Trainer):
             res_metrics = Metrics.crossvalidation(model, X, y, classification, cv, agg_func)
             model.fit(X,y)
         model = Wrapper(model, preprocessing, res_metrics, columns)
+        if classification:
+            model.train_interpret(X)
         return model
