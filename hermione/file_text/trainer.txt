@@ -81,3 +81,32 @@ class TrainerSklearn(Trainer):
         if classification:
             model.train_interpret(X)
         return model
+
+class TrainerSklearnUnsupervised(Trainer):
+        
+    def train(self, X,
+                algorithm, 
+                preprocessing=None,
+                **params):
+        """
+    	Method that builds the Sklearn model
+    
+    	Parameters
+    	----------    
+        model_name        : str
+                            model name
+        preprocessing     : Preprocessing
+                            preprocessed object to be applied
+             
+    	Returns
+    	-------
+    	Wrapper
+        """
+        model = algorithm(**params) #model
+        columns = list(X.columns)
+        model.fit(X)
+        labels = model.predict(X)
+        res_metrics = Metrics.clusterization(X, labels)
+        
+        model = Wrapper(model, preprocessing, res_metrics, columns)
+        return model
