@@ -23,7 +23,7 @@ class TextVectorizer:
         Normalization
         """
         self.word2vec = word2vec
-        self.index_ini_fim = len(self.word2vec.index2word)
+        self.index_ini_fim = len(self.word2vec.index2word) if word2vec != None else 0
         self.vectorizer_cols = vectorizer_cols
         self.vectorizer_vects = {'bag_of_words': self.bag_of_words,
                                  'tf_idf': self.tf_idf_vect}
