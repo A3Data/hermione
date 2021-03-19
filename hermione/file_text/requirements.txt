@@ -6,6 +6,7 @@ gunicorn
 hermione-ml
 matplotlib
 mlflow
+mlxtend
 numpy
 pandas
 plotly
