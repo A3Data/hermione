@@ -152,6 +152,12 @@ def write_text_vectorizer_file(LOCAL_PATH, project_name, file_source):
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'preprocessing', 'text_vectorizer.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
+def write_feature_selection_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'feature_selection.txt'), 'r') as infile:
+        arquivo = infile.readlines()
+        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'analysis', 'feature_selection.py'), 'w+') as outfile:
+            outfile.writelines(arquivo)
+
 def write_metrics_file(LOCAL_PATH, project_name, file_source):
     with open(os.path.join(hermione.__path__[0], file_source, 'metrics.txt'), 'r') as infile:
         arquivo = infile.readlines()

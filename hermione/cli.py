@@ -49,6 +49,7 @@ def new(project_name, implemented):
     os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/preprocessing'))
     os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/visualization'))
     os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/notebooks'))
+    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/analysis'))
     #os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/analysis'))
     os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/data_source'))
     # Config folder
@@ -76,6 +77,7 @@ def new(project_name, implemented):
     write_visualization_streamlit_file(LOCAL_PATH, project_name, file_source)
     write_normalization_file(LOCAL_PATH, project_name, file_source)
     write_preprocessing_file(LOCAL_PATH, project_name, file_source)
+    write_feature_selection_file(LOCAL_PATH, project_name, file_source)
     write_text_vectorizer_file(LOCAL_PATH, project_name, file_source)
     write_metrics_file(LOCAL_PATH, project_name, file_source)
     write_trainer_file(LOCAL_PATH, project_name, file_source)
