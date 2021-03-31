@@ -1,11 +1,10 @@
 import pandas as pd
 from statsmodels.stats.outliers_influence import variance_inflation_factor 
 
-
-class AnlyzeVIF:
+class VIF:
     
     @classmethod    
-    def calculate_vif(cls, df: pd.DataFrame, thresh=5.0, verbose=True):
+    def analyze(cls, df: pd.DataFrame, thresh=5.0, verbose=True):
         """
         Multicollinearity analysis
     
@@ -35,10 +34,10 @@ class AnlyzeVIF:
                 m = max(vif)
                 index_max = [i for i, j in enumerate(vif) if j == m]
                 if verbose:
-                    cols_possibles_remove = [df.iloc[:, variables].columns[i] for i in index_max]
+                    cols_possibles_remove = [str(df.iloc[:, variables].columns[i]) for i in index_max]
                     print("Columns that can be removed -> " + ", ".join(cols_possibles_remove))
                     print("------")
-                print('dropping \'' + df.iloc[:, variables].columns[maxloc] +
+                print('dropping \'' + str(df.iloc[:, variables].columns[maxloc]) +
                       '\' at index: ' + str(maxloc))
                 print("_____________________________________________________________")
                 del variables[maxloc]
