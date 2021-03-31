@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-class AnalyzeCluster:
+class Cluster:
             
     @classmethod
     def analyzeK(cls, X, k_min = 2, k_max = 20):
@@ -27,11 +27,11 @@ class AnalyzeCluster:
         """
         
         if X is None:
-            raise Exception("X não pode ser None.")
+            raise Exception("Error: X is None.")
         if k_min is None or k_max is  None:
-            raise Exception("Range não pode ser None.")
+            raise Exception("Error: Range is None.")
         if k_min < 2:
-            raise Exception("Valor mínimo de cluster é 2")
+            raise Exception("Error: k_min < 2")
         
         wss = []
         s_gmm = []
@@ -50,21 +50,20 @@ class AnalyzeCluster:
             labels_kmeans = kmeans.predict(X)
             labels_gmm = gmm.predict(X)
             
-            # Quanto maior, melhor -> entre -1 e 1
             s_kmeans.append(metrics.silhouette_score(X, labels_kmeans, metric='euclidean'))
             s_gmm.append(metrics.silhouette_score(X, labels_gmm, metric='euclidean'))
             
-            ch_kmeans.append(metrics.calinski_harabaz_score(X, labels_kmeans))
-            ch_gmm.append(metrics.calinski_harabaz_score(X, labels_gmm))
+            ch_kmeans.append(metrics.calinski_harabasz_score(X, labels_kmeans))
+            ch_gmm.append(metrics.calinski_harabasz_score(X, labels_gmm))
                         
             wss.append(kmeans.inertia_)
                     
-        cls._metodo_elbow(K, wss)
+        cls._elbow(K, wss)
         cls._silhouette_coefficient(K, s_kmeans, s_gmm)
         cls._calinski_harabaz(K, ch_kmeans, ch_gmm)
         
     @classmethod
-    def _metodo_elbow(cls, K, wss):
+    def _elbow(cls, K, wss):
         """
         Function plots the result of the elbow method
         
@@ -87,16 +86,16 @@ class AnalyzeCluster:
     @classmethod
     def _silhouette_coefficient(cls, K, s_kmeans, s_gmm):
         """
-        Function plots the result of the silhouette method for kemans and Gaussian Mixture Models
+        Function plots the result of the silhouette method for kmeans and Gaussian Mixture Models
         
         Parameters
         ----------    
         k : array
-            possíveis valores de k
+             k values
         s_kmeans : array 
-            values Silhouette kmeans
+             Silhouette kmeans values
         s_gmm : array 
-            values Silhouette Gaussian Mixture Models 
+            Silhouette Gaussian Mixture Models values
         
         Returns
         ----
@@ -113,16 +112,16 @@ class AnalyzeCluster:
     @classmethod
     def _calinski_harabaz(cls, K, ch_kmeans, ch_gmm):
         """
-        Function plots the result of the calinski_harabaz method for kemans and Gaussian Mixture Models
+        Function plots the result of the calinski_harabaz method for kmeans and Gaussian Mixture Models
 
         Parameters
         ----------    
         k : array
             possible k values
         s_kmeans : array 
-            values calinski_harabaz kmeans
+             calinski_harabaz kmeans values
         s_gmm : array 
-            values Gaussian Mixture Models 
+             Gaussian Mixture Models values
          
         Returns
         -------

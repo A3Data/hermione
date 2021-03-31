@@ -8,12 +8,12 @@ def write_config_file(LOCAL_PATH, project_name):
     with open(os.path.join(LOCAL_PATH, project_name, 'src/config', 'config.json'), 'w+') as file:
             file.write("{\n")
             file.write(f""""project_name": "{project_name}",
-"env_path": "{project_name}/{project_name}_env",
-"files_path": "../data/raw/",
-"key": "<<<<key>>>>",
-"user": "<<<<user>>>>"
-"""
-                    )
+            "env_path": "{project_name}/{project_name}_env",
+            "files_path": "../data/raw/",
+            "key": "<<<<key>>>>",
+            "user": "<<<<user>>>>"
+            """
+            )
             file.write("}")
 
 def write_logging_file(LOCAL_PATH, project_name):
@@ -158,6 +158,24 @@ def write_feature_selection_file(LOCAL_PATH, project_name, file_source):
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'analysis', 'feature_selection.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
+def write_pca_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'pca.txt'), 'r') as infile:
+        arquivo = infile.readlines()
+        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'analysis', 'pca.py'), 'w+') as outfile:
+            outfile.writelines(arquivo)
+
+def write_vif_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'vif.txt'), 'r') as infile:
+        arquivo = infile.readlines()
+        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'analysis', 'vif.py'), 'w+') as outfile:
+            outfile.writelines(arquivo)
+
+def write_cluster_file(LOCAL_PATH, project_name, file_source):
+    with open(os.path.join(hermione.__path__[0], file_source, 'cluster.txt'), 'r') as infile:
+        arquivo = infile.readlines()
+        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'analysis', 'cluster.py'), 'w+') as outfile:
+            outfile.writelines(arquivo)
+
 def write_metrics_file(LOCAL_PATH, project_name, file_source):
     with open(os.path.join(hermione.__path__[0], file_source, 'metrics.txt'), 'r') as infile:
         arquivo = infile.readlines()
@@ -192,18 +210,6 @@ def write_spreadsheet_file(LOCAL_PATH, project_name, file_source):
     with open(os.path.join(hermione.__path__[0], file_source, 'spreadsheet.txt'), 'r') as infile:
         arquivo = infile.readlines()
         with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'data_source', 'spreadsheet.py'), 'w+') as outfile:
-            outfile.writelines(arquivo)
-
-def write_cluster_analysis_file(LOCAL_PATH, project_name, file_source):
-    with open(os.path.join(hermione.__path__[0], file_source, 'cluster_analysis.txt'), 'r') as infile:
-        arquivo = infile.readlines()
-        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'analysis', 'cluster_analysis.py'), 'w+') as outfile:
-            outfile.writelines(arquivo)
-
-def write_vif_file(LOCAL_PATH, project_name, file_source):
-    with open(os.path.join(hermione.__path__[0], file_source, 'vif.txt'), 'r') as infile:
-        arquivo = infile.readlines()
-        with open(os.path.join(LOCAL_PATH, project_name, 'src', 'ml', 'analysis', 'vif.py'), 'w+') as outfile:
             outfile.writelines(arquivo)
 
 def write_example_notebook_file(LOCAL_PATH, project_name, file_source):
