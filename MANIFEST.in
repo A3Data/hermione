@@ -1,4 +1,4 @@
 include README.md
 include hermione/file_text/*
 include hermione/not_implemented_file_text/*
-recursive-include rony/module_templates/
+recursive-include hermione/module_templates/
