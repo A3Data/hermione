@@ -16,7 +16,7 @@ def get_modules(ctx, args, incomplete):
     """
 
     def get_module_info(module_folder):
-        config_file = os.path.join(hermione.__path__[0], 'module_templates', module_folder,'config.json')
+        config_file = os.path.join(hermione.__path__[0], 'module_templates', f'{module_folder}.json')
         if os.path.exists(config_file):
             with open(config_file, 'r') as f:
                 data = json.load(f)
