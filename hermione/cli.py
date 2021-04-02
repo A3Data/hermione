@@ -40,67 +40,22 @@ def new(project_name, implemented):
     Create a new hermione project
     """
     if implemented in ['yes', 'ye', 'y', 'Yes', 'YES', 'Y']:
-        file_source = 'file_text'
-    elif implemented in ['no', 'n', 'No', 'NO', 'N']:
-        file_source = 'not_implemented_file_text'
+        is_imp = True
+    else:
+        is_imp = False
     
     click.echo(f"Creating project {project_name}")
-    # ML Folder
-    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/model'))
-    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/preprocessing'))
-    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/visualization'))
-    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/notebooks'))
-    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/analysis'))
-    #os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/analysis'))
-    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/ml/data_source'))
-    # Config folder
-    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/config'))
-    # API folder
-    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/api'))
-    # Tests folder
-    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'src/tests'))
-    # Output 
-    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'output'))
-    # Data folder
-    os.makedirs(os.path.join(LOCAL_PATH, project_name, 'data/raw'))
 
-    # Write config file
-    write_config_file(LOCAL_PATH, project_name)
-    #write_logging_file(LOCAL_PATH, project_name)
-    write_requirements_txt(LOCAL_PATH, project_name, file_source)
-    write_gitignore(LOCAL_PATH, project_name, file_source)
-    write_readme_file(LOCAL_PATH, project_name, file_source)
-    #write_application_config(LOCAL_PATH, project_name)
-    write_src_util_file(LOCAL_PATH, project_name, file_source)
-    write_wsgi_file(LOCAL_PATH, project_name, file_source)
-    write_app_file(LOCAL_PATH, project_name, file_source)
-    write_visualization_file(LOCAL_PATH, project_name, file_source)
-    write_visualization_streamlit_file(LOCAL_PATH, project_name, file_source)
-    write_normalization_file(LOCAL_PATH, project_name, file_source)
-    write_preprocessing_file(LOCAL_PATH, project_name, file_source)
-    write_feature_selection_file(LOCAL_PATH, project_name, file_source)
-    write_pca_file(LOCAL_PATH, project_name, file_source)
-    write_vif_file(LOCAL_PATH, project_name, file_source)
-    write_cluster_file(LOCAL_PATH, project_name, file_source)
-    write_text_vectorizer_file(LOCAL_PATH, project_name, file_source)
-    write_metrics_file(LOCAL_PATH, project_name, file_source)
-    write_trainer_file(LOCAL_PATH, project_name, file_source)
-    write_wrapper_file(LOCAL_PATH, project_name, file_source)
-    write_data_source_base_file(LOCAL_PATH, project_name, file_source)
-    write_database_file(LOCAL_PATH, project_name, file_source)
-    write_spreadsheet_file(LOCAL_PATH, project_name, file_source)
-    write_example_notebook_file(LOCAL_PATH, project_name, file_source)
-    write_train_dot_py(LOCAL_PATH, project_name, file_source)
-    write_predict(LOCAL_PATH, project_name, file_source)
-    write_dockerfile(LOCAL_PATH, project_name, file_source)
 
-    if implemented in ['yes', 'ye', 'y', 'Yes', 'YES', 'Y']:
-        write_titanic_data(LOCAL_PATH, project_name, file_source)
-        write_myrequests_file(LOCAL_PATH, project_name, file_source)
-        
-
-    write_test_file(LOCAL_PATH, project_name, file_source)
-    write_test_readme(LOCAL_PATH, project_name, file_source)
+    custom_inputs = {
+        'project_name':project_name, 
+        "project_start_date": datetime.today().strftime("%B %d, %Y")
+        }
+    os.makedirs(os.path.join(LOCAL_PATH, project_name))
+    if is_imp:
+        write_module(os.path.join(LOCAL_PATH, project_name), '__IMPLEMENTED_BASE__', True, custom_inputs)
+    else:
+        write_module(os.path.join(LOCAL_PATH, project_name), '__NOT_IMPLEMENTED_BASE__', True, custom_inputs)
 
     print(f'Creating virtual environment {project_name}_env')
     os.chdir(project_name)
