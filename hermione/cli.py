@@ -3,6 +3,7 @@ import os
 import re
 import sys
 from .writer import *
+from .module_writer import get_modules, write_module
 from .__init__ import __version__ as version
 
 LOCAL_PATH = os.getcwd()
@@ -163,3 +164,10 @@ def run(image_name, tag):
         click.echo("You gotta have an src/Dockerfile file. You must be at the project's root folder.")
     else:
         os.system(f'docker run --rm -p 5000:5000 {image_name}:{tag}')
+
+
+@click.argument("module_name", type = click.STRING, autocompletion=get_modules)
+@cli.command()
+@click.option('-y','--autoconfirm', is_flag=True)
+def add_module(module_name, autoconfirm):
+    write_module(LOCAL_PATH, module_name, autoconfirm)

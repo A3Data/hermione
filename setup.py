@@ -29,7 +29,8 @@ setup(
       keywords='machine learning mlops devops artificial intelligence',
       license='Apache License 2.0',
     install_requires=[
-        'Click'
+        'Click',
+        'Jinja2'
     ],
     entry_points='''
         [console_scripts]
