@@ -46,7 +46,7 @@ def write_module(LOCAL_PATH, module_name, autoconfirm = False , custom_inputs  =
         return input_data
 
     module_path = os.path.join(hermione.__path__[0], 'module_templates', module_name)
-    config_file = os.path.join(module_path, 'config.json')
+    config_file = os.path.join(hermione.__path__[0], 'module_templates', f'{module_name}.json')
 
     # Load config file
     if os.path.exists(config_file):
@@ -58,7 +58,7 @@ def write_module(LOCAL_PATH, module_name, autoconfirm = False , custom_inputs  =
     # Request input data
     data['inputs'] = get_inputs(data['input_info'], autoconfirm)
     data['inputs'].update(custom_inputs)
-    
+
     # Process files
     templateLoader = jinja2.FileSystemLoader(searchpath=module_path)
     templateEnv = jinja2.Environment(loader=templateLoader)
@@ -77,8 +77,6 @@ def write_module(LOCAL_PATH, module_name, autoconfirm = False , custom_inputs  =
                 dirs_to_create.append(local_d_path)
 
         for f in files:
-            if f=='config.json':
-                continue
 
             if os.path.splitext(f)[1] == '.rtpl':
                 template = templateEnv.get_template(os.path.join(rel_path, f))
