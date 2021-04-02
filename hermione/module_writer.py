@@ -25,10 +25,11 @@ def get_modules(ctx, args, incomplete):
             return module_folder, ''
     
     module_folders = next(os.walk(os.path.join(hermione.__path__[0], 'module_templates')))[1]
+    module_folders = [x for x in module_folders if x[:2] != '__']
     return [get_module_info(m) for m in module_folders if incomplete in m]
 
 
-def write_module(LOCAL_PATH, module_name, autoconfirm = False , custom_inputs  = {}):
+def write_module(LOCAL_PATH, module_name, autoconfirm = False , custom_inputs  = {}, ):
     """Copy files to project
 
     Args:
@@ -92,23 +93,24 @@ def write_module(LOCAL_PATH, module_name, autoconfirm = False , custom_inputs  =
 
     # Show changes to user and ask for permission
 
-    click.secho('DIRECTORIES TO BE CREATED:', fg='green', bold = True)
-    for key in dirs_to_create:
-        click.secho(key, fg='green')
+    if (not autoconfirm):
+        click.secho('DIRECTORIES TO BE CREATED:', fg='green', bold = True)
+        for key in dirs_to_create:
+            click.secho(key, fg='green')
 
-    click.secho('FILES TO BE CREATED:', fg='green', bold = True)
-    for key, text in files_to_create.items():
-        click.secho(key, fg='green')
-        click.secho(
-            '\t+  '.join(('\n'+text).splitlines(True)) + '\n'
-        )
+        click.secho('FILES TO BE CREATED:', fg='green', bold = True)
+        for key, text in files_to_create.items():
+            click.secho(key, fg='green')
+            click.secho(
+                '\t+  '.join(('\n'+text).splitlines(True)) + '\n'
+            )
 
-    click.secho('FILES TO BE APPENDED:', fg='yellow', bold = True)
-    for key, text in files_to_append.items():
-        click.secho(key, fg='yellow')
-        click.secho(
-            '\t+  '.join(('\n'+text).splitlines(True)) + '\n'
-        )
+        click.secho('FILES TO BE APPENDED:', fg='yellow', bold = True)
+        for key, text in files_to_append.items():
+            click.secho(key, fg='yellow')
+            click.secho(
+                '\t+  '.join(('\n'+text).splitlines(True)) + '\n'
+            )
 
     if (not autoconfirm) and (not click.confirm('Do you want to continue?', default = True, abort=True)):
         return
