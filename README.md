@@ -189,7 +189,9 @@ Here we describe briefly what each class is doing:
 
 ## Contributing
 
-  Make a pull request with your implementation.
+Have a look at out [contributing guide](CONTRIBUTING.md)
+
+Make a pull request with your implementation.
 
 For suggestions, contact us: hermione@a3data.com.br
 
