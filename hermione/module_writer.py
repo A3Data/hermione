@@ -79,6 +79,9 @@ def write_module(LOCAL_PATH, module_name, autoconfirm = False , custom_inputs  =
 
         for f in files:
 
+            if f == '.hermioneignore':
+                continue
+
             if '.tpl.' in f:
                 template = templateEnv.get_template(os.path.join(rel_path, f))
                 outputText = template.render(**data)

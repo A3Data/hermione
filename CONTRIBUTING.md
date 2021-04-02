@@ -87,3 +87,11 @@ Project started in 01/01/21.
 
 **Please, complete here information on using and testing this project.**
 ```
+
+### Empty Folders and .gitignore files
+
+Empty folders added to the templates, would not be added to Hermione's git repository.
+
+To deal with that a empty file named `.hermioneignore` needs to be added to empty folders. Those files will be ignored by Hermione and will not be added to the user's project
+
+Similarly `.gitignore` files inside the templates would be processed by git and other files could be mistakenly ignored by git. To deal with that the `.gitignore` can be renamed to `.tpl.gitignore`. They will be ignored by git, but will be renamed by Hermione when populating the user's project.
