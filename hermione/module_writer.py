@@ -78,13 +78,13 @@ def write_module(LOCAL_PATH, module_name, autoconfirm = False , custom_inputs  =
 
         for f in files:
 
-            if os.path.splitext(f)[1] == '.rtpl':
+            if '.tpl.' in f:
                 template = templateEnv.get_template(os.path.join(rel_path, f))
                 outputText = template.render(**data)
             else:
                 outputText = open(os.path.join(dir_path, f), 'r').read()
 
-            local_f_path = os.path.join(local_dir_path, f.replace('.rtpl',''))
+            local_f_path = os.path.join(local_dir_path, f.replace('.tpl.','.'))
             if os.path.exists(local_f_path):
                 files_to_append[local_f_path] = outputText
             else:
