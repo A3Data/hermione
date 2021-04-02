@@ -28,7 +28,7 @@ def get_modules(ctx, args, incomplete):
     return [get_module_info(m) for m in module_folders if incomplete in m]
 
 
-def write_module(LOCAL_PATH, module_name, autoconfirm = False ):
+def write_module(LOCAL_PATH, module_name, autoconfirm = False , custom_inputs  = {}):
     """Copy files to project
 
     Args:
@@ -57,7 +57,8 @@ def write_module(LOCAL_PATH, module_name, autoconfirm = False ):
 
     # Request input data
     data['inputs'] = get_inputs(data['input_info'], autoconfirm)
-
+    data['inputs'].update(custom_inputs)
+    
     # Process files
     templateLoader = jinja2.FileSystemLoader(searchpath=module_path)
     templateEnv = jinja2.Environment(loader=templateLoader)
