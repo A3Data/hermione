@@ -4,7 +4,7 @@ import shutil
 from datetime import datetime
 import json
 import jinja2
-import rony
+import hermione
 
 def get_modules(ctx, args, incomplete):
     """Get list of modules available for installation
@@ -16,7 +16,7 @@ def get_modules(ctx, args, incomplete):
     """
 
     def get_module_info(module_folder):
-        config_file = os.path.join(rony.__path__[0], 'module_templates', module_folder,'config.json')
+        config_file = os.path.join(hermione.__path__[0], 'module_templates', module_folder,'config.json')
         if os.path.exists(config_file):
             with open(config_file, 'r') as f:
                 data = json.load(f)
@@ -24,7 +24,7 @@ def get_modules(ctx, args, incomplete):
         else:
             return module_folder, ''
     
-    module_folders = next(os.walk(os.path.join(rony.__path__[0], 'module_templates')))[1]
+    module_folders = next(os.walk(os.path.join(hermione.__path__[0], 'module_templates')))[1]
     return [get_module_info(m) for m in module_folders if incomplete in m]
 
 
@@ -45,7 +45,7 @@ def write_module(LOCAL_PATH, module_name, autoconfirm = False ):
                 input_data[info[0]] = click.prompt(info[2], default=info[1])
         return input_data
 
-    module_path = os.path.join(rony.__path__[0], 'module_templates', module_name)
+    module_path = os.path.join(hermione.__path__[0], 'module_templates', module_name)
     config_file = os.path.join(module_path, 'config.json')
 
     # Load config file
@@ -63,11 +63,17 @@ def write_module(LOCAL_PATH, module_name, autoconfirm = False ):
     templateEnv = jinja2.Environment(loader=templateLoader)
     files_to_create = {}
     files_to_append = {}
+    dirs_to_create = []
 
-    for dir_path,_,files in os.walk(module_path):
+    for dir_path, dirs, files in os.walk(module_path):
 
         rel_path = os.path.relpath(dir_path, module_path)
         local_dir_path = os.path.join(LOCAL_PATH, rel_path)
+
+        for d in dirs:
+            local_d_path = os.path.join(local_dir_path, d)
+            if not os.path.exists(local_d_path):
+                dirs_to_create.append(local_d_path)
 
         for f in files:
             if f=='config.json':
@@ -87,6 +93,10 @@ def write_module(LOCAL_PATH, module_name, autoconfirm = False ):
 
     # Show changes to user and ask for permission
 
+    click.secho('DIRECTORIES TO BE CREATED:', fg='green', bold = True)
+    for key in dirs_to_create:
+        click.secho(key, fg='green')
+
     click.secho('FILES TO BE CREATED:', fg='green', bold = True)
     for key, text in files_to_create.items():
         click.secho(key, fg='green')
@@ -104,7 +114,12 @@ def write_module(LOCAL_PATH, module_name, autoconfirm = False ):
     if (not autoconfirm) and (not click.confirm('Do you want to continue?', default = True, abort=True)):
         return
 
-    # Create and append files
+    # Create and append files and dirs
+
+    for directory in dirs_to_create:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
     for key, text in files_to_create.items():
         directory = os.path.dirname(key)
         if not os.path.exists(directory):
