@@ -25,7 +25,7 @@ That way, the Hermione cli command will point directly to the source code. Any c
 
 ## Adding new modules
 
-All Hermione module templates are kept in ("hermione/module_templates/")[hermione/moule_templates] folder.
+All Hermione module templates are kept in ["hermione/module_templates/"](hermione/moule_templates) folder.
 To add a new module, you just need to add a folder named after the module and add all the files and folders from the module to it.
 
 The files and folders need to respect the exact same folder structure they will have on the user's project.

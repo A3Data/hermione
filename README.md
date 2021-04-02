@@ -189,7 +189,7 @@ Here we describe briefly what each class is doing:
 
 ## Contributing
 
-Have a look at out [contributing guide](CONTRIBUTING.md)
+Have a look at our [contributing guide](CONTRIBUTING.md).
 
 Make a pull request with your implementation.
 
