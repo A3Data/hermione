@@ -1,0 +1,7 @@
+{
+"project_name": "{{ inputs['project_name'] }}",
+            "env_path": "{{ inputs['project_name'] }}/{{ inputs['project_name'] }}_env",
+            "files_path": "../data/raw/",
+            "key": "<<<<key>>>>",
+            "user": "<<<<user>>>>"
+            }
