@@ -110,7 +110,7 @@ def write_module(LOCAL_PATH, module_name, autoconfirm = False , custom_inputs  =
                 template = templateEnv.get_template(os.path.join(rel_path, f))
                 outputText = template.render(**data)
             else:
-                outputText = open(os.path.join(dir_path, f), 'r').read()
+                outputText = open(os.path.join(dir_path, f), 'r', encoding='latin-1').read()
 
             local_f_path = os.path.join(local_dir_path, f.replace('.tpl.','.'))
             if os.path.exists(local_f_path):
