@@ -91,7 +91,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         """
         load(path)
 
-    def save(self, path):
+    def save_model(self, path):
         """
         Saves the model object to a specific path
 
@@ -123,7 +123,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         model = pyfunc.load_model(path)
         return model
 
-    def save_model(self, path):
+    def save(self, path):
         """
         Save model as a Wrapper class (pyfunc)
 
