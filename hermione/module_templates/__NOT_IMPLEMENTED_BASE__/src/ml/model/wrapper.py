@@ -72,8 +72,21 @@ class Wrapper(mlflow.pyfunc.PythonModel):
             return model.predict_proba(df_processed[columns])[:,1]
         else:
             return model.predict_proba(df_processed[columns])
+        
+    def load(self, path):
+        """
+        Load the model object to a specific path
+        Parameters
+        ----------
+        path : str
+               path where the model object will be saved
+        Returns
+        -------
+        None
+        """
+        load(path)
             
-    def save_model(self, path):
+    def save(self, path):
         """
     	Saves the model object to a specific path
     
@@ -91,12 +104,12 @@ class Wrapper(mlflow.pyfunc.PythonModel):
     @staticmethod
     def load_model(path):
         """
-    	Loads the model object in a specific path
+    	Loads the model object in a specific path (pyfunc)
     
     	Parameters
     	----------            
         path : str
-               path where the model object will be loaded.
+               path where the model object will be loaded. 
              
     	Returns
     	-------
@@ -106,9 +119,9 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         return model
     
             
-    def save(self, path):
+    def save_model(self, path):
         """
-    	Save model as a Wrapper class
+    	Save model as a Wrapper class (pyfunc)
     
     	Parameters
     	----------            
