@@ -1,0 +1,7 @@
+{
+    "info": "Base files with implemented example",
+    "input_info": [
+        ["project_name", "My Project", "Enter your project name"],
+        ["project_start_date", "01/01/21", "Enter the date your project started"]
+    ]
+}

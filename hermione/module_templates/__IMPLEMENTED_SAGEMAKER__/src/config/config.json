@@ -1,0 +1,7 @@
+{
+"project_name": "hermione-sagemaker",
+            "env_path": "hermione-sagemaker/hermione-sagemaker_env",
+            "files_path": "../data/raw/",
+            "key": "<<<<key>>>>",
+            "user": "<<<<user>>>>"
+            }
