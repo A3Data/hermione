@@ -102,6 +102,9 @@ First, we need to create an image and upload it in ECR for each one of the steps
 
 ```bash
 cd Sagemaker/project-name
+source project-name_env/bin/activate
+pip install -r requirements.txt
+python -m ipykernel install --user --name project-name_env --display-name "project-name"
 bash build_and_push.sh processor hermione-processor
 bash build_and_push.sh train hermione-train
 bash build_and_push.sh inference hermione-inference
