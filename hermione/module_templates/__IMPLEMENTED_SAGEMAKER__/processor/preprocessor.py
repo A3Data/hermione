@@ -1,5 +1,6 @@
 from ml.preprocessing.preprocessing import Preprocessing
 from ml.preprocessing.dataquality import DataQuality
+from ml.data_source.spreadsheet import Spreadsheet
 import great_expectations as ge
 from datetime import date
 import pandas as pd
@@ -28,7 +29,7 @@ if __name__=='__main__':
     logging.info('Reading the inputs')
     file = glob.glob("/opt/ml/processing/input/raw_data/*.csv")[0]
     logging.info(f'Reading file: {file}')
-    df = pd.read_csv(file)
+    df = Spreadsheet().get_data(file)
     
     
     logging.info("Data Quality")

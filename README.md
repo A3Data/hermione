@@ -74,13 +74,21 @@ After installed Hermione:
 hermione new project_hermione
 ```
 
-1. Hit Enter if you want to start with an example code
+2. Hit Enter if you want to start with an example code
 
 ```
 Do you want to start with an implemented example (recommended) [y/n]? [y]: 
 ```
 
-3. Hermione already creates a virtual environment for the project. For Windows users, activate it with
+3. If you choose an implemented example, select Sagemaker or Local version
+
+```
+Do you want to start with:
+    (1) Sagemaker 
+    (2) Local version 
+```
+
+4. Hermione already creates a virtual environment for the project. For Windows users, activate it with
 
 ```cmd
 <project_name>_env\Scripts\activate
@@ -93,13 +101,13 @@ source <project_name>_env/bin/activate
 ```
 
 
-4. After activating, you should install some libraries. There are a few suggestions in “requirements.txt” file:
+5. After activating, you should install some libraries. There are a few suggestions in “requirements.txt” file:
 
 ```
 pip install -r requirements.txt
 ```
 
-1. Now we will train some models from the example, using MLflow ❤. To do so, inside *src* directory, just type: _hermione train_. The “hermione train” command will search for a `train.py` file and execute it. In the example, models and metrics are already controlled via MLflow.
+1. Now, if you selected the Local version,  we will train some models from the example, using MLflow ❤. To do so, inside *src* directory, just type: _hermione train_. The “hermione train” command will search for a `train.py` file and execute it. In the example, models and metrics are already controlled via MLflow.
 
 ![](https://cdn-images-1.medium.com/max/800/1*MmVcmAYspxWdzbd5r00W5g.png)
 
@@ -118,15 +126,18 @@ mlflow ui
 
 ![](https://cdn-images-1.medium.com/max/800/1*c_rDEqERZR6r8JVI3TMTcQ.png)
 
-8. To make batch predictions using your `predict.py` file, type `hermione predict`. The default implemented version will print some predictions for you in the terminal.
+7. To make batch predictions using your `predict.py` file, type `hermione predict`. The default implemented version will print some predictions for you in the terminal.
 
 ```
 hermione predict
 ```
 
-9.  In the Titanic example, we also provide a step by step notebook. To view it, just type jupyter notebook inside directory `/src/notebooks/`.
+8.  In the Titanic example, we also provide a step by step notebook. To view it, just type jupyter notebook inside directory `/src/notebooks/`.
 
 ![](https://cdn-images-1.medium.com/max/800/1*U3ToR5jDjQJihT9EnxeDdg.png)
+
+
+9. If you selected the Sagemaker version, click [here](hermione/module_templates/__IMPLEMENTED_SAGEMAKER__/README.tpl.md) to check a tutorial.
 
 Do you want to create your **project from scratch**? There click [here](tutorial_base.md) to check a tutorial.
 
@@ -186,6 +197,7 @@ Here we describe briefly what each class is doing:
 -   **Preprocessing**  - concentrates all preprocessing steps that must be performed on the data before the model is trained.
 -   **Normalization** - applies normalization and denormalization to reported columns. This class contains the following normalization algorithms already implemented: StandardScaler e MinMaxScaler.
 -   **TextVectorizer**  - transforms text into vector. Implemented methods: Bag of words, TF_IDF, Embedding: mean, median e indexing.
+-   **DataQuality**  - concentrates all data validation steps that must be performed on the data to ensure its quality (Available in Sagemaker version).
 
 ### Visualization
 

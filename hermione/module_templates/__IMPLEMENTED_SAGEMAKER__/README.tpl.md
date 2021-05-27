@@ -22,7 +22,7 @@ If you are running this code on a SageMaker notebook instance, do the following 
 
 Next, we will create a new policy to attach.
 
-12. Click <b>Attach policies</b> again and then <b>Create policy</b>.\n",
+12. Click <b>Attach policies</b> again and then <b>Create policy</b>.
 13. Enter the following in the <b>JSON</b> tab:  
 
 ```json
