@@ -51,4 +51,5 @@ def test_categ_encoding(cleaned_data):
     p = Preprocessing()
     df = p.categ_encoding(cleaned_data)
     names = ['Survived', 'Age', 'Pclass_1', 'Pclass_2', 'Pclass_3', 'Sex_female', 'Sex_male']
-    assert [name in df.columns for name in names]
+    assert_categ = [name in df.columns for name in names]
+    assert sum(assert_categ) == len(assert_categ)
