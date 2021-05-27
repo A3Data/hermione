@@ -16,3 +16,4 @@ scipy
 statsmodels
 tqdm
 yellowbrick
+great-expectations
