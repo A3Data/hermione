@@ -22,8 +22,7 @@ class DataQuality:
         self.continuous_cols = continuous_cols
         self.discrete_cat_cols = discrete_cat_cols
         
-    def perform(self, 
-                       df: pd.DataFrame):
+    def perform(self, df: pd.DataFrame, target=None, cut_off = 2):
         """
         Perform data quality
 
@@ -36,6 +35,8 @@ class DataQuality:
     	-------
         json
         """
+        if target != None:
+            df.drop(columns=[target], inplace=True)
         df_ge = ge.dataset.PandasDataset(df)
         cols = df_ge.columns
         df_ge.expect_table_columns_to_match_ordered_list(cols)

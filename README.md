@@ -197,7 +197,7 @@ Here we describe briefly what each class is doing:
 -   **Preprocessing**  - concentrates all preprocessing steps that must be performed on the data before the model is trained.
 -   **Normalization** - applies normalization and denormalization to reported columns. This class contains the following normalization algorithms already implemented: StandardScaler e MinMaxScaler.
 -   **TextVectorizer**  - transforms text into vector. Implemented methods: Bag of words, TF_IDF, Embedding: mean, median e indexing.
--   **DataQuality**  - concentrates all data validation steps that must be performed on the data to ensure its quality (Available in Sagemaker version).
+-   **DataQuality**  - concentrates all data validation steps that must be performed on the data to ensure its quality.
 
 ### Visualization
 

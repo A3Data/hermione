@@ -30,17 +30,19 @@ if __name__=='__main__':
     file = glob.glob("/opt/ml/processing/input/raw_data/*.csv")[0]
     logging.info(f'Reading file: {file}')
     df = Spreadsheet().get_data(file)
-    
-    
+      
     logging.info("Data Quality")
     # If True, it creates the DataQuality object, otherwise it loads an existing one
     if step_train:
-        dq = DataQuality(discrete_cat_cols=['Sex', 'Pclass','Survived'])
-        df_ge = dq.perform(df)
+        dq = DataQuality(discrete_cat_cols=['Sex', 'Pclass']) 
+        df_ge = dq.perform(df, target='Survived')
         df_ge.save_expectation_suite('/opt/ml/processing/output/expectations/expectations.json')
     else:
         date = date.today().strftime('%Y%m%d')
-        df_ge = ge.dataset.PandasDataset(df)
+        df_without_target = df.copy()
+        if 'Survived' in df_without_target.columns:
+            df_without_target.drop(columns=['Survived'], inplace=True)
+        df_ge = ge.dataset.PandasDataset(df_without_target)
         ge_val = df_ge.validate(expectation_suite='/opt/ml/processing/input/expectations/expectations.json', only_return_failures=False)
         with open(f'/opt/ml/processing/output/validations/{date}.json', 'w') as f: 
             json.dump(ge_val.to_json_dict(), f)
