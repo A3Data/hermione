@@ -2,7 +2,7 @@
 # Project Structure
 This is the class structure diagram that Hermione relies on:
 
-![](images/class_diagram.png)
+![](../images/class_diagram.png)
 
 Here we describe briefly what each class is doing:
 
