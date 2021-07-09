@@ -1,5 +1,4 @@
 from sklearn.decomposition import FactorAnalysis
-#from sklearn.decomposition import PCA
 from sklearn.decomposition import FastICA
 from sklearn.decomposition import LatentDirichletAllocation
 from sklearn.decomposition import TruncatedSVD
@@ -137,8 +136,6 @@ class DimensionalityReducer:
         if not self.fitted:
             raise Exception("Not yet trained.")
 
-        
-        #return self.selection.transform(df)
         return self.reduction.transform(df)
 
     def fit_transform(self, df: pd.DataFrame, y = None):
@@ -155,9 +152,6 @@ class DimensionalityReducer:
         df : pd.DataFrame
              dataframe with selected features only
         """
-
-        
-        #return self.selection.transform(df)
         return self.reduction.fit_transform(df, y)
     
     def inverse_transform(self, df: pd.DataFrame):
@@ -177,6 +171,4 @@ class DimensionalityReducer:
         if not self.fitted:
             raise Exception("Not yet trained.")
 
-        
-        #return self.selection.transform(df)
         return self.reduction.inverse_transform(df)
