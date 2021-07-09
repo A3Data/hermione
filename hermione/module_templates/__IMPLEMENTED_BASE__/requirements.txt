@@ -25,3 +25,5 @@ interpret-community
 lime
 lightgbm
 great-expectations
+tensorflow
+umap-learn
