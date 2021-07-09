@@ -27,3 +27,4 @@ lightgbm
 great-expectations
 tensorflow
 umap-learn
+keras
