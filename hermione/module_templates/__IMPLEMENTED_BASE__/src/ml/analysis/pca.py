@@ -84,7 +84,7 @@ class PCA:
         reduced = self.pca.transform(df[self.columns].values)
         for col in range(self.k):
             df[self.prefix+"_"+str(col)] = [line[col] for line in reduced]
-        df.drop(self.columns, axis=1, inplace=True)
+        return df.drop(columns = self.columns.values)
 
 
     def fit(self, df : pd.DataFrame, threshold=0.4):
@@ -125,8 +125,9 @@ class PCA:
             self.k = self.__find_k(df,threshold)
         self.pca = PCA_sklearn(n_components=self.k)
         self.pca.fit(df[ self.columns ].values)
-        self.transform(df)
+        transformed = self.transform(df)
         self.report()
+        return transformed
 
 
 
