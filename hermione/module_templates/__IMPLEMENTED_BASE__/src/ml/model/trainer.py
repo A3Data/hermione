@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from ml.model.wrapper import Wrapper
 from ml.model.metrics import Metrics
 import statsmodels.formula.api as smf
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, LeaveOneOut
 import numpy as np
 
 class Trainer(ABC):
@@ -76,6 +76,27 @@ class TrainerSklearn(Trainer):
             cv = data_split[1]['cv'] if 'cv' in data_split[1] else 5
             agg_func = data_split[1]['agg'] if 'agg' in data_split[1] else np.mean
             res_metrics = Metrics.crossvalidation(model, X, y, classification, cv, agg_func)
+            model.fit(X,y)
+
+        elif data_split[0] == 'LOO':
+            cv = LeaveOneOut()
+            # enumerate splits
+            y_true, y_pred = list(), list()
+            for train_ix, test_ix in cv.split(X):
+                # split data
+                X_train, X_test = X.iloc[train_ix, :], X.iloc[test_ix, :]
+                y_train, y_test = y[train_ix].values, y[test_ix].values
+                # fit model
+                model.fit(X_train, y_train)
+                # evaluate model
+                yhat = model.predict(X_test)
+                # store
+                y_true.append(y_test[0])
+                y_pred.append(yhat[0])
+                if classification:
+                    res_metrics = Metrics.classification(y_true, y_pred, y_pred)
+                else:
+                    res_metrics = Metrics.regression(np.array(y_true), np.array(y_pred))
             model.fit(X,y)
         model = Wrapper(model, preprocessing, res_metrics, columns)
         if classification:

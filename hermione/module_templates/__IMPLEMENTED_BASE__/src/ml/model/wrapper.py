@@ -89,7 +89,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         -------
         None
         """
-        load(path)
+        return load(path)
 
     def save_model(self, path):
         """
