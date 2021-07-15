@@ -310,8 +310,6 @@ class FeatureSelector:
         if not self.fitted:
             raise Exception("Not yet trained.")
 
-        
-        #return self.selection.transform(df)
         return df[self.selected_columns]
     
     def inverse_transform(self, df: pd.DataFrame):
@@ -329,8 +327,6 @@ class FeatureSelector:
         pd.DataFrame
         """
         pass
-
-        #return df
 
     @staticmethod
     def mean_abs_diff(X, y=None):
