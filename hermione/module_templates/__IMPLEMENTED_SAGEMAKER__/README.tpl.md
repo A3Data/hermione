@@ -116,9 +116,9 @@ The bash command will access the Dockerfile in the folder, create the image and 
 
 To test the images in ECR, execute the following notebooks:
   
-- project-name/src/ml/notebooks/Sagemaker_Processor.ipynb
-- project-name/src/ml/notebooks/Sagemaker_Train.ipynb
-- project-name/src/ml/notebooks/Sagemaker_Inference.ipynb
+- project-name/src/ml/notebooks/1_Sagemaker_Processor.ipynb
+- project-name/src/ml/notebooks/2_Sagemaker_Train.ipynb
+- project-name/src/ml/notebooks/3_Sagemaker_Inference.ipynb
 
 ## Stepfunctions
 
@@ -240,5 +240,5 @@ Next, create and attach another new policy to the role you created:
 
 To create and test the Step Functions state machines, execute the following notebooks:
 
-- project-name/src/ml/notebooks/Sagemaker_StepFunctions_Train.ipynb
-- project-name/src/ml/notebooks/Sagemaker_StepFunctions_Inference.ipynb
+- project-name/src/ml/notebooks/4_Sagemaker_StepFunctions_Train.ipynb
+- project-name/src/ml/notebooks/5_Sagemaker_StepFunctions_Inference.ipynb
