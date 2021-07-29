@@ -53,7 +53,8 @@ def new(project_name, implemented):
         }
     os.makedirs(os.path.join(LOCAL_PATH, project_name))
     if is_imp:
-        write_module(os.path.join(LOCAL_PATH, project_name), '__IMPLEMENTED_BASE__', True, custom_inputs)
+        option = click.prompt('Do you want to start with: \n\t(1) Sagemaker \n\t(2) Local version \n', type=int, default=2)
+        implemented_version_type(project_name,custom_inputs,option)
     else:
         write_module(os.path.join(LOCAL_PATH, project_name), '__NOT_IMPLEMENTED_BASE__', True, custom_inputs)
 
@@ -66,7 +67,14 @@ def new(project_name, implemented):
     os.system('git init')
     print("A git repository was created. You should add your files and make your first commit.\n")
     
-
+def implemented_version_type(project_name,custom_inputs,option):
+    """
+    Create a new hermione project
+    """
+    if option == 1:
+        write_module(os.path.join(LOCAL_PATH, project_name), '__IMPLEMENTED_SAGEMAKER__', True, custom_inputs)
+    else:
+        write_module(os.path.join(LOCAL_PATH, project_name), '__IMPLEMENTED_BASE__', True, custom_inputs)
 
 @cli.command()
 def train():
