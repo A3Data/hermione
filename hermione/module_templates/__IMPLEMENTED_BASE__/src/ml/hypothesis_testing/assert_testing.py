@@ -3,6 +3,7 @@ import numpy as np
 import operator
 from ml.visualization.visualization import Visualization
 from ml.hypothesis_testing.hypothesis_testing import Hypothesis_testing
+import warnings
 
 class Assert_hypothesis_test:
   """
@@ -245,7 +246,7 @@ class Assert_hypothesis_test:
             'indicated. In this case, the mann-whitney test is indicated as',
             'it does not depend on the data distribution (non-parametric', \
             'alternative)')
-      result = mann_whitney_2indep(sample1, sample2, alpha, alternative,
+      result = Hypothesis_testing.mann_whitney_2indep(sample1, sample2, alpha, alternative,
                                            show_graph, title, label1, label2)
     return result
 
