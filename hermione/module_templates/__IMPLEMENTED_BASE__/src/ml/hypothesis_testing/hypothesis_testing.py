@@ -2,12 +2,12 @@ import pandas as pd
 import numpy as np
 import pingouin as pg
 import operator
-from scipy.stats import fisher_exact
+from scipy.stats import fisher_exact, pointbiserialr
 from scipy.stats import norm
 from ml.visualization.visualization import Visualization
 
 
-class Hypothesis_testing:
+class HypothesisTester:
   """
   Class to perform hypothesis test
   """
@@ -15,7 +15,7 @@ class Hypothesis_testing:
   @staticmethod
   def define_hypothesis(df, statistic, alternative, paired, alpha):
     """
-    Define the null and alternative hypothesis.
+    Defines the null and alternative hypothesis.
 
     Parameters
     ----------            
@@ -37,35 +37,22 @@ class Hypothesis_testing:
     -------
     pd.DataFrame
     """
-    hypothesis_paired= {
-      'two-sided_H0': f"the {statistic} difference equal to zero",
-      'two-sided_H1': f"the {statistic} difference not equal to zero",
-      'greater_H0': f"the {statistic} difference greater than or equal to zero",
-      'greater_H1': f"the {statistic} difference less than zero",
-      'less_H0': f"the {statistic} difference less than or equal to zero",
-      'less_H1': f"the {statistic} difference greater than zero"
+    paired_text = f"the {statistic} difference" if paired else f"difference in {statistic}"
+    hypothesis= {
+      'two-sided_H0': f"{paired_text} equal to zero",
+      'two-sided_H1': f"{paired_text} not equal to zero",
+      'greater_H0': f"{paired_text} greater than or equal to zero",
+      'greater_H1': f"{paired_text} less than zero",
+      'less_H0': f"{paired_text} less than or equal to zero",
+      'less_H1': f"{paired_text} greater than zero"
     }
-
-    hypothesis_not_paired= {
-      'two-sided_H0': f"difference in {statistic} equal to zero",
-      'two-sided_H1': f"difference in {statistic} not equal to zero",
-      'greater_H0': f"difference in {statistic} greater than or equal to zero",
-      'greater_H1': f"difference in {statistic} less than zero",
-      'less_H0': f"difference in {statistic} less than or equal to zero",
-      'less_H1': f"difference in {statistic} greater than zero"
-    }
-    if paired:
-      df = Hypothesis_testing.test_alternative(df, hypothesis_paired, alternative, alpha)
-    else:
-      df = Hypothesis_testing.test_alternative(df, hypothesis_not_paired, alternative, alpha)
+    df = HypothesisTester.test_alternative(df, hypothesis, alternative, alpha)
     return df
 
   @staticmethod
-  def test_alternative(df, hypothesis, alternative='two-sided',
-                       alpha=0.05):
+  def test_alternative(df, hypothesis, alternative='two-sided', alpha=0.05):
     """
-    Test alternative to define H0 and H1.
-    Validate if the hypothesis was reject or not.
+    Tests the hypothesis using the p-value and adds the conclusion to the results DataFrame.
 
     Parameters
     ----------            
@@ -85,20 +72,11 @@ class Hypothesis_testing:
     -------
     pd.DataFrame
     """
-    if alternative == 'two-sided':
-      df['H0'] = hypothesis['two-sided_H0']
-      df['H1'] = hypothesis['two-sided_H1']
-    elif alternative == 'greater':
-      df['H0'] =  hypothesis['greater_H0']
-      df['H1'] = hypothesis['greater_H1']
-    else:
-      df['H0'] =  hypothesis['less_H0']
-      df['H1'] = hypothesis['less_H1']
-
-    if df['p-val'][0] > alpha:  
-      df['Result'] = f'not reject null hypothesis that the {df["H0"][0]}'
-    else:
-      df['Result'] = f'reject the null hypothesis that the {df["H0"][0]}'
+    df['H0'] = hypothesis[alternative + '_H0']
+    df['H1'] = hypothesis[alternative + '_H1']
+    formatted_alpha = round(alpha*100, 2)
+    conclusion = 'There is no evidence' if df['p-val'][0] > alpha else 'There is evidence'
+    df['Result'] = f'{conclusion} to reject the null hypothesis at {formatted_alpha}% significance'
     return df
 
   @staticmethod
@@ -118,7 +96,7 @@ class Hypothesis_testing:
               (default = 0.05)
       method: string
               Correlation type: pearson, spearman, kendall, bicor, percbend,
-              shepherd or skipped
+              shepherd, skipped or pointbiserial.
       alternative : string
                     Specify whether the alternative hypothesis is `'two-sided'`,
                     `'greater'` or `'less'` to specify the direction of the
@@ -144,16 +122,21 @@ class Hypothesis_testing:
       'less_H0': f"there is no negative {text}",
       'less_H1': f"there is a negative {text}"
     }
-    df = pg.corr(x=sample1, y=sample2, alternative=alternative, method=method)
+    if method == 'pointbiserial':
+      pb_corr = pointbiserialr(sample1, sample2)
+      df = pd.DataFrame(data={'r': [pb_corr.correlation], 'p-val': [pb_corr.pvalue]})
+      df = df.rename({0: 'pointbiserial'})
+    else:
+      df = pg.corr(x=sample1, y=sample2, alternative=alternative, method=method)
     if show_graph:
       Visualization.scatter(x=sample1, y=sample2, xlabel=label1, ylabel=label2, title=title)
-    return Hypothesis_testing.test_alternative(df, hypothesis, alternative, alpha).T
+    return HypothesisTester.test_alternative(df, hypothesis, alternative, alpha).T
 
   @staticmethod
   def normality_test(sample, alpha=0.05, method='shapiro',
                      show_graph=True, title='', label1='', label2=''):
     """
-    Tests the null hypothesis that the data was drawn from a normal distribution
+    Tests the null hypothesis that the data is normally distributed
 
     Parameters
     ----------            
@@ -177,26 +160,25 @@ class Hypothesis_testing:
     pd.DataFrame
     """
     hypothesis = {
-    'two-sided_H0': f"the data was drawn from a normal distribution",
-    'two-sided_H1': f"the data was not drawn from a normal distribution"
+    'two-sided_H0': f"the data is normally distributed",
+    'two-sided_H1': f"the data is not normally distributed"
     }
     sample = np.array(sample)
     np_types = [np.dtype(i) for i in [np.int32, np.int64, np.float32,
                                       np.float64]]
     sample_dtypes = sample.dtype
     if any([not t in np_types for t in [sample_dtypes]]):
-        raise Exception('Non numerical variables... Try using categorical_test \
-                         method instead.')
+        raise Exception('Samples are not numerical. Try using categorical_test', \
+                        'method instead.')
     df = pg.normality(sample)
     df.rename(columns={'pval': 'p-val'}, index={0: 'Normality'}, inplace=True)
     if show_graph:
       Visualization.qqplot(sample)
-    return Hypothesis_testing.test_alternative(df, hypothesis, alpha=alpha).T
+    return HypothesisTester.test_alternative(df, hypothesis, alpha=alpha).T
 
   @staticmethod
   def fisher_exact_test(df, sample1, sample2, alpha=0.05,
-                        alternative='two-sided', show_graph=True, title='',
-                        label1='', label2=''):
+                        show_graph=True, title='', label1='', label2=''):
     """
     Perform a Fisher exact test.
 
@@ -225,32 +207,27 @@ class Hypothesis_testing:
     -------
       pd.DataFrame
     """
-    ##MELHORAR
-    text = 'between the samples'
     hypothesis = {
-      'two-sided_H0': f"there is evidence of dependency {text}",
-      'two-sided_H1': f"there is no evidence of dependency {text}",
-      'greater_H0': f"there is no positive relationship {text}",
-      'greater_H1': f"there is a positive relationship {text}",
-      'less_H0': f"there is no negative relationship {text}",
-      'less_H1': f"there is a negative relationship {text}"
+      'two-sided_H0': "the samples are dependent",
+      'two-sided_H1': "the samples are independent",
     }
     table = pd.crosstab(df[sample1], df[sample2])
-    statistic, p_value = fisher_exact(table, alternative)
-    df_result = pd.DataFrame([( statistic, p_value)],
-                             columns = ['statistic', 'p-val'])
+    statistic, p_value = fisher_exact(table, 'two-sided')
+    df_result = (
+      pd.DataFrame(data={'statistic': [statistic], 'p-val': [p_value]})
+      .rename(columns={0: 'fisher exact'})
+    )
     if show_graph:
       pd.crosstab(df[sample1], df[sample2],
                   normalize='index').plot(kind='bar',color=['r','b'])
 
-    return Hypothesis_testing.test_alternative(df_result, hypothesis, alternative,
-                                 alpha).T.rename(columns={0: 'fisher exact'})
+    return HypothesisTester.test_alternative(df_result, hypothesis, alpha).T
 
   @staticmethod
   def chi2_test(df, sample1, sample2, correction=True, alpha=0.05,
                   show_graph=True, title='', label1='', label2=''):
     """
-    Chi-squared independence tests between two categorical variables.
+    Chi-squared independence test between two categorical variables.
 
     Parameters
     ----------
@@ -277,24 +254,24 @@ class Hypothesis_testing:
     -------
       pd.DataFrame
     """ 
-    ##MELHORAR
     hypothesis = {
-      'two-sided_H0': f"there is evidence of dependency between the samples",
-      'two-sided_H1': f"there is no evidence of dependency between the samples"
+      'two-sided_H0': "the samples are dependent",
+      'two-sided_H1': "the samples are independent"
     }
     expected, observed, stats = pg.chi2_independence(df, sample1, sample2,
                                                      correction)
     p_value = stats.loc[stats['test'] == 'pearson']['pval'][0]
     statistic = stats.loc[stats['test'] == 'pearson']['chi2'][0]
-    df_result = pd.DataFrame([(statistic, p_value)], columns = ['statistic',
-                                                                'p-val'])
+    df_result = (
+      pd.DataFrame(data={'statistic': [statistic], 'p-val': [p_value]})
+      .rename(columns={0: 'chi2'})
+    )
     df_result['Expected Distribution'] = str(expected.values.tolist())
     df_result['Observed Distribution'] = str(observed.values.tolist())
     if show_graph:
       pd.crosstab(df[sample1], df[sample2],
                   normalize='index').plot(kind='bar', color=['r','b'])
-    return Hypothesis_testing.test_alternative(df_result, hypothesis,
-                                 alpha=alpha).T.rename(columns={0: 'chi2'})
+    return HypothesisTester.test_alternative(df_result, hypothesis, alpha=alpha).T
 
   @staticmethod
   def t_test(sample1, sample2, paired=False, alpha=0.05,
@@ -345,7 +322,7 @@ class Hypothesis_testing:
       pd.DataFrame
     """
     confidence = 1 - alpha   
-    result = pg.ttest(sample1, sample2, paired=paired, confidence=confidence,
+    df_result = pg.ttest(sample1, sample2, paired=paired, confidence=confidence,
                       alternative=alternative, correction=correction, r=r)
     if show_graph: 
       if paired:
@@ -353,7 +330,7 @@ class Hypothesis_testing:
         Visualization.histogram(difference, title, label1, label2) 
       else:
         Visualization.density_plot(sample1, sample2, title, label1, label2, fig_size=(5,4))
-    return Hypothesis_testing.define_hypothesis(result, 'mean', alternative, paired, alpha).T
+    return HypothesisTester.define_hypothesis(df_result, 'mean', alternative, paired, alpha).T
 
   @staticmethod
   def non_param_unpaired_CI(sample1, sample2, alpha):
@@ -412,19 +389,19 @@ class Hypothesis_testing:
     -------
     pd.DataFrame
     """
-    result = pg.mwu(sample1, sample2, alternative=alternative)
+    df_result = pg.mwu(sample1, sample2, alternative=alternative)
     if alternative=='two-sided':
-      ci = Hypothesis_testing.non_param_unpaired_CI(sample1, sample2, alpha)
-      result['CI' + str(int((1-alpha)*100)) +'%'] = str([ci[0], ci[1]])
+      ci = HypothesisTester.non_param_unpaired_CI(sample1, sample2, alpha)
+      df_result['CI' + str(int((1-alpha)*100)) +'%'] = str([ci[0], ci[1]])
     if show_graph:
       Visualization.density_plot(sample1, sample2, title, label1, label2, fig_size=(5,4))
-    return Hypothesis_testing.define_hypothesis(result, 'median', alternative, paired=False,
+    return HypothesisTester.define_hypothesis(df_result, 'median', alternative, paired=False,
                                   alpha=alpha).T
 
   @staticmethod
-  def non_param_paired_CI(list1, list2, alpha):
+  def non_param_paired_CI(sample1, sample2, alpha):
     """
-    Confidence interval for differences between the two population.
+    Confidence interval for differences between the two samples.
       
     Parameters
     ----------            
@@ -437,9 +414,9 @@ class Hypothesis_testing:
     -------
     float
     """
-    n = len(list1)      
+    n = len(sample1)      
     N = norm.ppf(1 - alpha/2) 
-    diff_sample = sorted(list(map(operator.sub, list2, list1)))
+    diff_sample = sorted(list(map(operator.sub, sample2, sample1)))
     averages = sorted([(s1+s2)/2 for i, s1 in enumerate(diff_sample) 
                       for _, s2 in enumerate(diff_sample[i:])])
     k = np.math.ceil(n*(n+1)/4 - (N * (n*(n+1)*(2*n+1)/24)**0.5))
@@ -450,7 +427,7 @@ class Hypothesis_testing:
   def wilcoxon_test(sample1, sample2, alpha=0.05, alternative='two-sided',
                     show_graph=True, title='', label1='', label2=''):
     """
-    Wilcoxon: A nonparametric test to compare the medians between two
+    Wilcoxon Test: A nonparametric test to compare the medians between two
     dependent groups. It is the non-parametric version of the paired T-test
 
     Parameters
@@ -478,11 +455,11 @@ class Hypothesis_testing:
     -------
     pd.DataFrame
     """
-    result = pg.wilcoxon(sample1, sample2, alternative=alternative)
-    ci = Hypothesis_testing.non_param_paired_CI(sample1, sample2, alpha)
-    result['CI' + str(int((1-alpha)*100)) +'%'] = str([ci[0], ci[1]])
+    df_result = pg.wilcoxon(sample1, sample2, alternative=alternative)
+    ci = HypothesisTester.non_param_paired_CI(sample1, sample2, alpha)
+    df_result['CI' + str(int((1-alpha)*100)) +'%'] = str([ci[0], ci[1]])
     if show_graph:
       diff_sample = sorted(list(map(operator.sub, sample1, sample2)))
       Visualization.histogram(diff_sample, title, label1, label2, fig_size=(4,3))
-    return Hypothesis_testing.define_hypothesis(result, 'median', alternative, paired=True,
+    return HypothesisTester.define_hypothesis(df_result, 'median', alternative, paired=True,
                                   alpha=alpha).T
