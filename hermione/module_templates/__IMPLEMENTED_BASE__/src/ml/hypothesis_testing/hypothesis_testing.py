@@ -170,7 +170,7 @@ class HypothesisTester:
     if any([not t in np_types for t in [sample_dtypes]]):
         raise Exception('Samples are not numerical. Try using categorical_test', \
                         'method instead.')
-    df = pg.normality(sample)
+    df = pg.normality(sample, method=method)
     df.rename(columns={'pval': 'p-val'}, index={0: 'Normality'}, inplace=True)
     if show_graph:
       Visualization.qqplot(sample)
