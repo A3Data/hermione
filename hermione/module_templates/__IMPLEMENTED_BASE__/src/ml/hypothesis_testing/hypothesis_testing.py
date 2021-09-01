@@ -170,7 +170,7 @@ class HypothesisTester:
     if any([not t in np_types for t in [sample_dtypes]]):
         raise Exception('Samples are not numerical. Try using categorical_test', \
                         'method instead.')
-    df = pg.normality(sample)
+    df = pg.normality(sample, method=method)
     df.rename(columns={'pval': 'p-val'}, index={0: 'Normality'}, inplace=True)
     if show_graph:
       Visualization.qqplot(sample)
@@ -220,8 +220,7 @@ class HypothesisTester:
     if show_graph:
       pd.crosstab(df[sample1], df[sample2],
                   normalize='index').plot(kind='bar',color=['r','b'])
-
-    return HypothesisTester.test_alternative(df_result, hypothesis, alpha).T
+    return HypothesisTester.test_alternative(df=df_result, hypothesis=hypothesis, alpha=alpha).T
 
   @staticmethod
   def chi2_test(df, sample1, sample2, correction=True, alpha=0.05,
@@ -456,8 +455,9 @@ class HypothesisTester:
     pd.DataFrame
     """
     df_result = pg.wilcoxon(sample1, sample2, alternative=alternative)
-    ci = HypothesisTester.non_param_paired_CI(sample1, sample2, alpha)
-    df_result['CI' + str(int((1-alpha)*100)) +'%'] = str([ci[0], ci[1]])
+    if alternative=='two-sided':
+      ci = HypothesisTester.non_param_paired_CI(sample1, sample2, alpha)
+      df_result['CI' + str(int((1-alpha)*100)) +'%'] = str([ci[0], ci[1]])
     if show_graph:
       diff_sample = sorted(list(map(operator.sub, sample1, sample2)))
       Visualization.histogram(diff_sample, title, label1, label2, fig_size=(4,3))

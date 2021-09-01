@@ -93,7 +93,7 @@ class Visualization:
 
   @staticmethod
   def histogram(values, title='', label1='', label2='',
-                fig_size=(4,3), path=None):
+                fig_size=(4,3), path=None, bins=10):
     """
     Histogram plot of a set of values
 
@@ -114,7 +114,7 @@ class Visualization:
     """
     plt.clf()
     f, ax = plt.subplots(1, figsize=fig_size)
-    ax.hist(values, bins=60)
+    ax.hist(values, bins=bins)
     ax.set_title(title)
     plt.xlabel(label1)
     plt.ylabel(label2)
@@ -463,11 +463,10 @@ class Visualization:
     None
     """
     f, ax = plt.subplots(figsize=fig_size)
-    p1=sns.kdeplot(list1, label=label1, shade=True, ax=ax)
-    p1=sns.kdeplot(list2, label=label2, shade=True, ax=ax)
-    plt.xlabel(label1)
-    plt.ylabel(label2)
+    p1=sns.kdeplot(list1, shade=True, ax=ax)
+    p1=sns.kdeplot(list2, shade=True, ax=ax)
     ax.set_title(title)
+    f.legend(labels=[label1, label2], loc="upper right")
     f.tight_layout()
     if(path != None):
       f.savefig(path+'/density_'+label1+'_'+label2+'.png')

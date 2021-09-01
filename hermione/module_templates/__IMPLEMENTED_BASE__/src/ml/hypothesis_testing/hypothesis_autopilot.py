@@ -30,7 +30,7 @@ class HTestAutoPilot:
         return True
     
     @staticmethod
-    def correlation_pilot(sample1, sample2, alpha=0.05,
+    def correlation(sample1, sample2, alpha=0.05,
                         alternative='two-sided',
                         normality_method='shapiro', show_graph=True,
                         title='', label1='', label2=''):
@@ -110,7 +110,7 @@ class HTestAutoPilot:
         return df_result
 
     @staticmethod
-    def categorical_pilot(df, sample1, sample2, alpha=0.05,
+    def categorical(df, sample1, sample2, alpha=0.05,
                           alternative='two-sided', correction=True, 
                           show_graph=True, title='', label1='', label2=''):
         """
@@ -160,26 +160,25 @@ class HTestAutoPilot:
             df_result = df_chi2
         else:
             if len(df[sample1].unique()) == 2 and len(df[sample2].unique()) == 2:
-                warnings.warn("The number of observations is not indicated for the", \
-                            "chi-squared test, cannot garantee a correct inference.", \
-                            "Also using Fisher's exact test.")
+                warnings.warn("The number of observations is not indicated for the " +
+                              "chi-squared test, cannot garantee a correct inference. " +
+                              "Also using Fisher's exact test.")
                 df_fisher = HypothesisTester.fisher_exact_test(
-                    df, 
-                    sample1, 
-                    sample2, 
+                    df,
+                    sample1,
+                    sample2,
                     alpha,
-                    alternative, 
                     show_graph=False
                 )
-                df_result = pd.concat([df_chi2, df_fisher],axis=1)
+                df_result = pd.concat([df_chi2, df_fisher],axis=1).fillna('-')
             else:
-                warnings.warn('The number of observations is not indicated for the', \
-                            'chi-squared test, cannot garantee a correct inference.')
+                warnings.warn("The number of observations is not indicated for the " +
+                              "chi-squared test, cannot garantee a correct inference.")
                 df_result = df_chi2
         return df_result
 
     @staticmethod
-    def independent_means_pilot(sample1, sample2, alpha=0.05,
+    def independent_means(sample1, sample2, alpha=0.05,
                              alternative='two-sided', correction='auto',
                               r=0.707, normality_method='shapiro',
                              show_graph=True, title='', label1='', label2=''):
@@ -254,13 +253,29 @@ class HTestAutoPilot:
                 title=title,
                 label1=label1, 
                 label2=label2
-            )
-        elif (check_norm1==False and len(sample1)>30) or \
-            (check_norm2==False and len(sample2)>30):
+            ):
+        elif (check_norm1==False and len(sample1)<30) or \
+            (check_norm2==False and len(sample2)<30):
             print('At least one of the samples is not normally distributed.', \
                   'However, the t-test can be applied due to central limit theorem', \
                   '(n>30). The Mann-Whitney test is also an option as it does not', \
                   'make any assumptions about data ditribution (non-parametric alternative)')
+            df_result = HypothesisTester.mann_whitney_2indep(
+                sample1, 
+                sample2, 
+                alpha, 
+                alternative,
+                show_graph, 
+                title, 
+                label1, 
+                label2
+            )
+        else:
+            print('At least one of the samples is not normally distributed and due', \
+                    'to the number of observations the central limit theorem does not', \
+                    'apply. In this case, the Mann-Whitney test is used as',
+                    'it does not make any assumptions about data ditribution (non-parametric', \
+                    'alternative)')
             df_result = HypothesisTester.t_test(
                 sample1, 
                 sample2, 
@@ -279,38 +294,19 @@ class HTestAutoPilot:
                 sample2, 
                 alpha, 
                 alternative,
-                show_graph, 
-                title, 
-                label1, 
-                label2
+                show_graph=False
             )
             df_result = (
                 pd.concat([df_result, df_result_non_param],axis=1)
                 .reindex(['T', 'dof','cohen-d', 'BF10', 'power',
-                          'U-val', 'RBC', 'CLES', 'tail',
+                          'U-val', 'RBC', 'CLES',
                           'p-val', 'CI95%', 'H0', 'H1', 'Result'])
                 .fillna('-')
-            )
-        else:
-            print('At least one of the samples is not normally distributed and due', \
-                    'to the number of observations the central limit theorem does not', \
-                    'apply. In this case, the Mann-Whitney test is used as',
-                    'it does not make any assumptions about data ditribution (non-parametric', \
-                    'alternative)')
-            df_result = HypothesisTester.mann_whitney_2indep(
-                sample1, 
-                sample2, 
-                alpha, 
-                alternative,
-                show_graph, 
-                title, 
-                label1, 
-                label2
             )
         return df_result
     
     @staticmethod
-    def dependent_means_pilot(sample1, sample2, alpha=0.05,
+    def dependent_means(sample1, sample2, alpha=0.05,
                            alternative='two-sided', correction='auto', r=0.707,
                            normality_method='shapiro', show_graph=True,
                            title='', label1='', label2=''):
@@ -417,7 +413,7 @@ class HTestAutoPilot:
                 .reindex([
                     'T', 'dof', 'cohen-d', 'BF10',
                     'power','W-val', 'RBC', 'CLES',
-                    'tail', 'p-val', 'CI95%', 'H0', 'H1','Result'
+                    'p-val', 'CI95%', 'H0', 'H1','Result'
                 ])
                 .fillna('-')
             )
