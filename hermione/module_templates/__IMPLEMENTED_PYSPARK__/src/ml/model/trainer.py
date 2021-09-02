@@ -1,253 +1,135 @@
-from joblib import dump, load
-from datetime import date
-import mlflow.pyfunc
-from mlflow import pyfunc
-from interpret.ext.blackbox import TabularExplainer, MimicExplainer
-from interpret.ext.glassbox import *
-import pandas as pd
+from abc import ABC, abstractmethod
+from ml.model.wrapper import Wrapper
+from ml.model.metrics import Metrics
+from pyspark.ml.pipeline import Pipeline
+import statsmodels.formula.api as smf
+from sklearn.model_selection import train_test_split, LeaveOneOut
+import numpy as np
 
-from util import load_yaml, load_json
-
-
-class Wrapper(mlflow.pyfunc.PythonModel):
-    def __init__(self, model=None, metrics=None, columns=None):
+class Trainer(ABC):
+    def __init__(self):
         """
-        Constructor
-
-        Parameters
-        ----------
-        model         :   object
-                          If it's just a model: enter all parameters
-                          if it is more than one model: do not enter parameters
-                          and use the add method to add each of the models
-        metrics       :   dict
-                          Dictionary with the metrics of the result
-                          of the model
-        columns       :   list
-                          list with columns names
-        Returns
-        -------
-        WrapperModel
-        """
-        self.artifacts = dict()
-        self.artifacts["model"] = model
-        self.artifacts["metrics"] = metrics
-        self.artifacts["columns"] = columns
-        self.artifacts["creation_date"] = date.today()
-
-    def predict(self, model_input, included_input=False):
-        """
-        Method that returns the result of the prediction on a dataset
-
-        Parameters
-        ----------
-        df : pd.DataFrame
-             Data to be predicted
-
-        Returns
-        -------
-        list
-        """
-        df_processed = model_input.copy()
-        model = self.artifacts["model"]
-        columns = self.artifacts["columns"]
-        result = model.predict(df_processed[columns])
-        if included_input:
-            model_input['predict'] = result
-            result = model_input
-        return result
-
-    def predict_proba(self, model_input, binary=False):
-        """
-        Method that returns the result of the prediction on a dataset
-
-        Parameters
-        ----------
-        df : pd.DataFrame
-             data to be predicted
-
-        Returns
-        -------
-        list
-        """
-        df_processed = model_input.copy()
-        model = self.artifacts["model"]
-        columns = self.artifacts["columns"]
-        if binary:
-            return model.predict_proba(df_processed[columns])[:, 1]
-        else:
-            return model.predict_proba(df_processed[columns])
-
-    def save_model(self, path):
-        """
-        Saves the model object to a specific path
-
-        Parameters
-        ----------
-        path : str
-               path where the model object will be saved
-
-        Returns
-        -------
+    	Constructor
+    
+    	Parameters
+    	----------    
         None
+             
+    	Returns
+    	-------
+    	Trainer
         """
-        dump(self, path)
-
-    @staticmethod
-    def load_model(path):
+    
+    @abstractmethod
+    def train(self):
         """
-        Loads the model object in a specific path
-
-        Parameters
-        ----------
-        path : str
-               path where the model object will be loaded.
-
-        Returns
-        -------
+        Abstract method that should be implemented in every class that inherits TrainerModel
+    	Parameters
+    	----------    
         None
+             
+    	Returns
+    	-------
+    	None
         """
-        model = load(path)
+        pass
+        
+class SparkTrainer(Trainer):
+        
+    def train(self, df,
+                classification: bool, 
+                algorithm, 
+                preprocessing=None,
+                data_split=('train_test', {'test_size': 0.2}), 
+                **params):
+        """
+    	Method that builds the Sklearn model
+    
+    	Parameters
+    	----------    
+        classification    : bool
+                            if True, classification model training takes place, otherwise Regression
+        model_name        : str
+                            model name
+        data_split        : tuple (strategy: str, params: dict)
+                            strategy of split the data to train your model. 
+                            Strategy: ['train_test', 'cv']
+                            Ex: ('cv', {'cv': 9, 'agg': np.median})
+        preprocessing     : Preprocessing
+                            preprocessed object to be applied
+             
+    	Returns
+    	-------
+    	Wrapper
+        """
+        model = algorithm(**params) #model
+        columns = list(df.columns)
+        if data_split[0] == 'train_test':
+            test_size = data_split['train_test']['test_size']
+            df_train, df_test = df.randomSplit([1 - test_size, test_size], seed = 13)
+            fitted_model = model.fit(df_train)
+            df_pred = fitted_model.transform(df_test)
+            if classification:
+                labelCol = fitted_model.getLabelCol()
+                res_metrics = Metrics.classification(df_pred, labelCol)
+            else:
+                res_metrics = Metrics.regression(y_test.values, y_pred)
+        elif data_split[0] == 'cv':
+            cv = data_split[1]['cv'] if 'cv' in data_split[1] else 5
+            agg_func = data_split[1]['agg'] if 'agg' in data_split[1] else np.mean
+            res_metrics = Metrics.crossvalidation(model, X, y, classification, cv, agg_func)
+            model.fit(X,y)
+
+        elif data_split[0] == 'LOO':
+            cv = LeaveOneOut()
+            # enumerate splits
+            y_true, y_pred = list(), list()
+            for train_ix, test_ix in cv.split(X):
+                # split data
+                X_train, X_test = X.iloc[train_ix, :], X.iloc[test_ix, :]
+                y_train, y_test = y[train_ix].values, y[test_ix].values
+                # fit model
+                model.fit(X_train, y_train)
+                # evaluate model
+                yhat = model.predict(X_test)
+                # store
+                y_true.append(y_test[0])
+                y_pred.append(yhat[0])
+                if classification:
+                    res_metrics = Metrics.classification(y_true, y_pred, y_pred)
+                else:
+                    res_metrics = Metrics.regression(np.array(y_true), np.array(y_pred))
+            model.fit(X,y)
+        model = Wrapper(model, preprocessing, res_metrics, columns)
+        if classification:
+            model.train_interpret(X)
         return model
 
-    def save(self, path):
+class TrainerSklearnUnsupervised(Trainer):
+        
+    def train(self, X,
+                algorithm, 
+                preprocessing=None,
+                **params):
         """
-        Save model as a Wrapper class
-
-        Parameters
-        ----------
-        path : str
-               path where the model object will be loaded.
-
-        Returns
-        -------
-        None
+    	Method that builds the Sklearn model
+    
+    	Parameters
+    	----------    
+        model_name        : str
+                            model name
+        preprocessing     : Preprocessing
+                            preprocessed object to be applied
+             
+    	Returns
+    	-------
+    	Wrapper
         """
-        path_artifacts = path + "_artifacts.pkl"
-        dump(self.artifacts, path_artifacts)
-        content = load_json("config/arquivos.json")
-        conda_env = load_yaml(content["path_yaml"])
-        mlflow.pyfunc.save_model(
-            path=path,
-            python_model=self,
-            artifacts={"model": path_artifacts},
-            conda_env=conda_env,
-        )
-
-    def get_metrics(self):
-        """
-        Return metrics
-
-        Parameters
-        ----------
-        self : object Wrapper
-
-        Returns
-        -------
-        dict
-        """
-        return self.artifacts["metrics"]
-
-    def get_columns(self):
-        """
-        Return columns
-
-        Parameters
-        ----------
-        self : object Wrapper
-
-        Returns
-        -------
-        list
-        """
-        return self.artifacts["columns"]
-
-    def get_model(self):
-        """
-        Return model
-
-        Parameters
-        ----------
-        self : object Wrapper
-
-        Returns
-        -------
-        dict
-        """
-        return self.artifacts["model"]
-
-    def train_interpret(self, X, model="tabular"):
-        """
-        Train a interpret model
-
-        Parameters
-        ----------
-        self    : object Wrapper
-        X       : pd.DataFrame
-                  Data that were used in the train for interpret
-        model   : string, optional
-                  Model to use for the interpret [tabular,mimic_LGBME,
-                  mimic_Linear,mimic_SGDE,mimic_Dec_Tree]
-        Returns
-        -------
-        None
-        """
-        mimic_models = {
-            "mimic_LGBME": LGBMExplainableModel,
-            "mimic_Linear": LinearExplainableModel,
-            "mimic_SGDE": SGDExplainableModel,
-            "mimic_Dec_Tree": DecisionTreeExplainableModel,
-        }
-        if model == "tabular":
-            explainer = TabularExplainer(
-                self.artifacts["model"], X, features=self.artifacts["columns"]
-            )
-        else:
-            explainer = MimicExplainer(
-                self.artifacts["model"],
-                X,
-                mimic_models[model],
-                augment_data=True,
-                max_num_of_augmentations=10,
-                features=self.artifacts["columns"],
-            )
-        self.artifacts["explainer"] = explainer
-
-    def local_interpret(self, X, n_feat=3, norm=True):
-        """
-        Return a local interpret for each row in data
-
-        Parameters
-        ----------
-        self    : object Wrapper
-        X       : array[array], shape (n_linha, n_colunas)
-                  Matrix with the data that were used to return interpret
-        n_feat  : int, optional
-                  Number of features to return
-        norm    : bool, optional
-                  if True, do normalization in the features importances
-
-        Returns
-        -------
-        pd.DataFrame
-        """
-        local_explanation = self.artifacts["explainer"].explain_local(X)
-        n_obs = X.shape[0]
-        predictions = self.artifacts["model"].predict(X)
-        local_values = local_explanation.get_ranked_local_values()
-        local_values = [local_values[predictions[i]][i] for i in range(n_obs)]
-        local_names = local_explanation.get_ranked_local_names()
-        local_names = [local_names[predictions[i]][i] for i in range(n_obs)]
-        if norm:
-            local_values = [
-                [(i - min(l)) / (max(l) - min(l)) for i in l] for l in local_values
-            ]
-        result = [
-            (local_names[i][:n_feat] + local_values[i][:n_feat]) for i in range(n_obs)
-        ]
-        column_names = [
-            f"Importance_{item}_{str(i)}"
-            for item in ["Name", "Value"]
-            for i in range(n_feat)
-        ]
-        return pd.DataFrame(result, columns=column_names)
+        model = algorithm(**params) #model
+        columns = list(X.columns)
+        model.fit(X)
+        labels = model.predict(X)
+        res_metrics = Metrics.clusterization(X, labels)
+        
+        model = Wrapper(model, preprocessing, res_metrics, columns)
+        return model

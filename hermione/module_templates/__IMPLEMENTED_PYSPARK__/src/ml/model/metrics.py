@@ -1,4 +1,6 @@
-from sklearn.metrics import *
+from pyspark.ml.evaluation import BinaryClassificationEvaluator, MulticlassClassificationEvaluator
+from pyspark.mllib.evaluation import MulticlassMetrics
+from tabulate import tabulate
 import numpy as np
 from sklearn.metrics import make_scorer
 from sklearn.model_selection import cross_validate
@@ -128,7 +130,7 @@ class Metrics:
         return results
 
     @classmethod
-    def __multiclass_classification(cls, y_true, y_pred):
+    def __multiclass_classification(cls, df, labelCol, pred_values):
         """
         Calculates some metrics for multiclass classification problems
 
@@ -143,16 +145,46 @@ class Metrics:
         -------
         dict : metrics results
         """
-        results = {'accuracy': accuracy_score(y_true, y_pred),
-                   'f1': f1_score(y_true, y_pred, average='weighted'),
-                   'precision': precision_score(y_true, y_pred,
-                                                average='weighted'),
-                   'recall': recall_score(y_true, y_pred,
-                                          average='weighted')}
-        return results
+        confusion_matrix = (
+            df.withColumnRenamed(labelCol, 'Outcome')
+            .groupby('Outcome')
+            .pivot('prediction', values=pred_values)
+            .count()
+            .orderBy('Outcome')
+        )
+        # Evaluate predicitons
+        results = {
+            'accuracy': [],
+            'f1': [],
+            'weightedPrecision': [],
+            'weightedRecall': [],
+        }
+        for metric in results.keys():
+            metric_calc = []
+            for out in pred_values:
+                evaluator = MulticlassClassificationEvaluator(
+                    labelCol=labelCol, 
+                    metricName=metric, 
+                    metricLabel=out
+                )
+                metric_calc.append(evaluator.evaluate(df))
+            results[metric] = metric_calc
+        metric_list = [
+            [out, precision, recall, f1] 
+            for out, precision, recall, f1 
+            in zip(pred_values, results['weightedPrecision'], results['weightedRecall'], results['f1'])
+        ]
+        # Results
+        print("Confusion Matrix")
+        confusion_matrix.show()
+        print("")
+        print("Results")
+        print(tabulate([results['accuracy']], headers=['Accuracy'], tablefmt='grid'))
+        print("")
+        print(tabulate(metric_list, headers=['Outcome', 'Precision', 'Recall', 'F1'], tablefmt='grid'))
 
     @classmethod
-    def __binary_classification(cls, y_true, y_pred, y_probs):
+    def __binary_classification(cls, df, labelCol, pred_values):
         """
         Calculates some metrics for binary classification problems
 
@@ -167,15 +199,41 @@ class Metrics:
         -------
         dict : metrics results
         """
-        results = {'accuracy': accuracy_score(y_true, y_pred),
-                   'f1': f1_score(y_true, y_pred),
-                   'precision': precision_score(y_true, y_pred),
-                   'recall': recall_score(y_true, y_pred),
-                   'roc_auc': roc_auc_score(y_true, y_probs)}
-        return results
+        confusion_matrix = (
+            df.withColumnRenamed(labelCol, 'Outcome')
+            .groupby('Outcome')
+            .pivot('prediction', values=pred_values)
+            .count()
+            .orderBy('Outcome')
+        )
+        # Evaluate predicitons
+        evaluator = BinaryClassificationEvaluator(labelCol=labelCol)
+        metrics = [c.asDict() for c in confusion_matrix.collect()]
+        tp_vec = [metrics[0]['0'] if value == 0 else metrics[1]['1'] for value in pred_values]
+        fn_vec = [metrics[0]['1'] if value == 0 else metrics[1]['0'] for value in pred_values]
+        fp_vec = [metrics[1]['0'] if value == 0 else metrics[0]['1'] for value in pred_values]
+        # Compute metrics
+        accuracy = sum(tp_vec) / (sum(fn_vec) + sum(fp_vec))
+        recall_vec = [tp / (tp + fn) for tp, fn in zip(tp_vec, fn_vec)]
+        precision_vec = [tp / (tp + fp) for tp, fp in zip(tp_vec, fp_vec)]
+        f1 = [(2 * precision * recall) / (precision + recall) for recall, precision in zip(recall_vec, precision_vec)]
+        roc_auc = evaluator.evaluate(df)
+        metric_list = [
+            [out, precision, recall, f1] 
+            for out, precision, recall, f1 
+            in zip(pred_values, precision_vec, recall_vec, f1)
+        ]
+        # Results
+        print("Confusion Matrix")
+        confusion_matrix.show()
+        print("")
+        print("Results")
+        print(tabulate([accuracy, roc_auc], headers=['Accuracy', 'ROC AUC'], tablefmt='grid'))
+        print("")
+        print(tabulate(metric_list, headers=['Outcome', 'Precision', 'Recall', 'F1'], tablefmt='grid'))
 
     @classmethod
-    def classification(cls, y_true, y_pred, y_probs):
+    def classification(cls, df, labelCol):
         """
         Checks which classification method will be applied:
         binary or multiclass
@@ -193,10 +251,12 @@ class Metrics:
         -------
         dict: metrics results
         """
-        if len(set(y_true)) > 2:
-            results = cls.__multiclass_classification(y_true, y_pred)
+        pred_rows = df.select('prediction').distinct().collect()
+        pred_values = sorted([int(c['prediction']) for c in pred_rows])
+        if len(pred_values) > 2:
+            results = cls.__multiclass_classification(df, labelCol, pred_values)
         else:
-            results = cls.__binary_classification(y_true, y_pred, y_probs)
+            results = cls.__binary_classification(df, labelCol, pred_values)
         return results
 
     @classmethod
