@@ -6,7 +6,7 @@ from interpret.ext.blackbox import TabularExplainer, MimicExplainer
 from interpret.ext.glassbox import *
 import pandas as pd
 
-from util import load_yaml, load_json
+from src.util import load_yaml, load_json
 
 
 class Wrapper(mlflow.pyfunc.PythonModel):

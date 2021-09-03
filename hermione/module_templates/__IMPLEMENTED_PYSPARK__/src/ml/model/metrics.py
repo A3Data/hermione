@@ -228,7 +228,7 @@ class Metrics:
         confusion_matrix.show()
         print("")
         print("Results")
-        print(tabulate([accuracy, roc_auc], headers=['Accuracy', 'ROC AUC'], tablefmt='grid'))
+        print(tabulate([[accuracy, roc_auc]], headers=['Accuracy', 'ROC AUC'], tablefmt='grid'))
         print("")
         print(tabulate(metric_list, headers=['Outcome', 'Precision', 'Recall', 'F1'], tablefmt='grid'))
 

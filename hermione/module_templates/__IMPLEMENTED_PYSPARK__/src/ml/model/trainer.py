@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from ml.model.wrapper import Wrapper
-from ml.model.metrics import Metrics
+from src.ml.model.wrapper import Wrapper
+from src.ml.model.metrics import Metrics
 from pyspark.ml.pipeline import Pipeline
 import statsmodels.formula.api as smf
 from sklearn.model_selection import train_test_split, LeaveOneOut
@@ -65,7 +65,7 @@ class SparkTrainer(Trainer):
         model = algorithm(**params) #model
         columns = list(df.columns)
         if data_split[0] == 'train_test':
-            test_size = data_split['train_test']['test_size']
+            test_size = data_split[1]['test_size']
             df_train, df_test = df.randomSplit([1 - test_size, test_size], seed = 13)
             fitted_model = model.fit(df_train)
             df_pred = fitted_model.transform(df_test)
