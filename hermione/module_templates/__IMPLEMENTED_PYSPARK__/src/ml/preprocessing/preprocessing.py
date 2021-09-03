@@ -5,7 +5,7 @@ from pyspark.ml.feature import (
     OneHotEncoder
 )
 from pyspark.ml.pipeline import Pipeline
-from src.ml.preprocessing.normalizer import SparkScaler
+from src.ml.preprocessing.normalization import SparkScaler
 import logging
 
 logging.getLogger().setLevel(logging.INFO)
