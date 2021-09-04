@@ -1,5 +1,5 @@
 from pyspark.ml.evaluation import BinaryClassificationEvaluator, MulticlassClassificationEvaluator
-from pyspark.mllib.evaluation import MulticlassMetrics
+from pyspark.sql.dataframe import DataFrame
 from tabulate import tabulate
 import numpy as np
 from sklearn.metrics import make_scorer
@@ -130,20 +130,22 @@ class Metrics:
         return results
 
     @classmethod
-    def __multiclass_classification(cls, df, labelCol, pred_values):
+    def __multiclass_classification(cls, df: DataFrame, labelCol: str, pred_values: list):
         """
         Calculates some metrics for multiclass classification problems
 
         Parameters
         ----------
-        y_true    : array
-                    Target values
-        y_pred    : array
-                    Predicted values
+        df         : DataFrame
+            Dataframe with model predictions
+        labelCol   : str
+            Name of the outcome column
+        pred_values   : str
+            Unique list of possible outcome values
 
         Returns
         -------
-        dict : metrics results
+        None
         """
         confusion_matrix = (
             df.withColumnRenamed(labelCol, 'Outcome')
@@ -184,20 +186,22 @@ class Metrics:
         print(tabulate(metric_list, headers=['Outcome', 'Precision', 'Recall', 'F1'], tablefmt='grid'))
 
     @classmethod
-    def __binary_classification(cls, df, labelCol, pred_values):
+    def __binary_classification(cls, df: DataFrame, labelCol: str, pred_values: list):
         """
         Calculates some metrics for binary classification problems
 
         Parameters
         ----------
-        y_true    : array
-                    Target values
-        y_pred    : array
-                    Predicted values
+        df         : DataFrame
+            Dataframe with model predictions
+        labelCol   : str
+            Name of the outcome column
+        pred_values   : str
+            Unique list of possible outcome values
 
         Returns
         -------
-        dict : metrics results
+        None
         """
         confusion_matrix = (
             df.withColumnRenamed(labelCol, 'Outcome')
@@ -233,31 +237,28 @@ class Metrics:
         print(tabulate(metric_list, headers=['Outcome', 'Precision', 'Recall', 'F1'], tablefmt='grid'))
 
     @classmethod
-    def classification(cls, df, labelCol):
+    def classification(cls, df: DataFrame, labelCol: str):
         """
         Checks which classification method will be applied:
         binary or multiclass
 
         Parameters
         ----------
-        y_true    : array
-                    Target values
-        y_pred    : array
-                    Predicted values
-        y_probs   : array
-                    Probabilities values
+        df         : DataFrame
+            Dataframe with model predictions
+        labelCol   : str
+            Name of the outcome column
 
         Returns
         -------
-        dict: metrics results
+        None
         """
         pred_rows = df.select('prediction').distinct().collect()
         pred_values = sorted([int(c['prediction']) for c in pred_rows])
         if len(pred_values) > 2:
-            results = cls.__multiclass_classification(df, labelCol, pred_values)
+            cls.__multiclass_classification(df, labelCol, pred_values)
         else:
-            results = cls.__binary_classification(df, labelCol, pred_values)
-        return results
+            cls.__binary_classification(df, labelCol, pred_values)
 
     @classmethod
     def clusterization(cls, X, labels):

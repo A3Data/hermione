@@ -32,35 +32,32 @@ class SparkPreprocessor:
         Parameters
         ----------
         num_cols   : dict
-                      Receives dict with the name of the normalization to be 
-                      performed and which are the columns
-                      Ex: norm_cols = {'zscore': ['salary', 'price'], 
-                                       'min-max': ['heigth', 'age']}
-        cat_cols : array
-                      Receives an array with columns names to be categorized with One Hot Encoding 
+            Receives dict with the normalization method as keys and columns on 
+            which it will be applied as values
+            Ex: norm_cols = {'zscore': ['salary', 'price'], 
+                            'min-max': ['heigth', 'age']}
+        cat_cols : Union[list, str]
+            Categorical columns present in the model
         Returns
         -------
-        Preprocessing
+        SparkPreprocessor
         """
         self.num_cols = num_cols
         self.cat_cols = cat_cols if not cat_cols or type(cat_cols) is list else [cat_cols]
 
     def categoric(self):
         """
-        Constructor
+        Creates the model responsible to transform strings in categories with `StringIndexer` 
+        and then one-hot-encodes them all using `OneHotEncoder`
 
         Parameters
         ----------
-        norm_cols   : dict
-                      Receives dict with the name of the normalization to be 
-                      performed and which are the columns
-                      Ex: norm_cols = {'zscore': ['salary', 'price'], 
-                                       'min-max': ['heigth', 'age']}
-        oneHot_cols : array
-                      Receives an array with columns names to be categorized with One Hot Encoding 
+        None
+
         Returns
         -------
-        Preprocessing
+        list[Estimator]
+            Returns a list of estimators 
         """
         indexed_cols = [c + '_indexed' for c in self.cat_cols]
         ohe_cols = [c + '_ohe' for c in self.cat_cols]
@@ -78,20 +75,16 @@ class SparkPreprocessor:
     
     def numeric(self):
         """
-        Apply normalization to the selected columns
-        
-    	Parameters
-    	----------            
-        df         : pd.DataFrame
-                     dataframe with columns to be normalized             
-        step_train : bool
-                     if True, the Normalizer is created and applied,
-                     otherwise it is only applied
+        Creates the model responsible to normalize numerical columns
+
+        Parameters
+        ----------
+        None
                      
     	Returns
     	-------
-        pd.DataFrame
-            Normalized dataframe
+        list[Estimator]
+            Returns a list of estimators
         """
         logging.info("Normalizing")
         scalers = []
@@ -105,16 +98,18 @@ class SparkPreprocessor:
         
     	Parameters
     	----------            
-        df         : pd.DataFrame
-                     dataframe with columns to be normalized             
+        df         : pyspark.sql.dataframe.DataFrame
+            dataframe with columns to be preprocessed
+        pipeline   : bool
+            if True, the estimators are wrapped in a Pipeline  
         step_train : bool
-                     if True, data is splited in train and val
+            if True, data is splited in train and val
         val_size : val_size
-                     Size of the validation dataset
+            Size of the validation dataset
                      
     	Returns
     	-------
-        pd.DataFrame
+        pyspark.sql.dataframe.DataFrame
             - One Preprocessed dataframe, if step_train is False
             - Two Preprocessed dataframes, if step_train is True 
         """
