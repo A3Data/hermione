@@ -6,6 +6,16 @@ import statsmodels.formula.api as smf
 from sklearn.model_selection import train_test_split, LeaveOneOut
 import numpy as np
 
+# Add custom method
+from pyspark.ml import Estimator
+
+def fit_transform(self, df):
+    self.model = self.fit(df)
+    self.transform = self.model.transform
+    return self.transform(df)
+
+Estimator.fit_transform = fit_transform
+
 class Trainer(ABC):
     def __init__(self):
         """
