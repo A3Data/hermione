@@ -193,10 +193,10 @@ class HTestAutoPilot:
         return df_result
 
     @staticmethod
-    def independent_means(sample1, sample2, alpha=0.05,
-                          alternative='two-sided', correction='auto',
-                          r=0.707, normality_method='shapiro',
-                          show_graph=True, **kwargs):
+    def independent_difference(sample1, sample2, alpha=0.05,
+                               alternative='two-sided', correction='auto',
+                               r=0.707, normality_method='shapiro',
+                               show_graph=True, **kwargs):
         """
         Autopilot for testing the difference in means for independent samples
 
@@ -300,9 +300,9 @@ class HTestAutoPilot:
         return df_result
 
     @staticmethod
-    def dependent_means(sample1, sample2, alpha=0.05, alternative='two-sided',
-                        correction='auto', r=0.707, normality_method='shapiro',
-                        show_graph=True, **kwargs):
+    def dependent_difference(sample1, sample2, alpha=0.05, alternative='two-sided',
+                             correction='auto', r=0.707, normality_method='shapiro',
+                             show_graph=True, **kwargs):
         """
         Autopilot for testing the difference in means for dependent samples
 
