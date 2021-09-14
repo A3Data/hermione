@@ -201,8 +201,8 @@ class HypothesisTester:
         pd.DataFrame
         """
         hypothesis = {
-          'two-sided_H0': "the samples are dependent",
-          'two-sided_H1': "the samples are independent",
+          'two-sided_H0': "the samples are independent",
+          'two-sided_H1': "the samples are dependent",
         }
         table = pd.crosstab(df[sample1], df[sample2])
         statistic, p_value = fisher_exact(table, 'two-sided')
@@ -252,8 +252,8 @@ class HypothesisTester:
         pd.DataFrame
         """
         hypothesis = {
-          'two-sided_H0': "the samples are dependent",
-          'two-sided_H1': "the samples are independent"
+          'two-sided_H0': "the samples are independent",
+          'two-sided_H1': "the samples are dependent"
         }
         expected, observed, stats = pg.chi2_independence(df, sample1, sample2,
                                                          correction)
