@@ -5,7 +5,7 @@ class AnalysisPage:
 
     def __init__(self):
         st.title("Exploratory Analysis")
-        self.df = load_data('data/raw/train.csv')
+        self.df = load_data('../data/raw/train.csv')
         self.analysis_type = st.sidebar.radio("", ["Dataset Exploration", "Profiling"])
         
     def dataset_explo(self):

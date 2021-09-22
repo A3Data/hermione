@@ -29,10 +29,10 @@ class ModelPage:
 
     def __init__(self):
         st.title("Model Execution")
-        with open('src/config/config.json', 'r') as file:
+        with open('config/config.json', 'r') as file:
             project_name = json.load(file)['project_name']
         mlflow.set_experiment(project_name)
-        self.df = Spreadsheet().get_data('data/raw/train.csv')
+        self.df = Spreadsheet().get_data('../data/raw/train.csv')
         self.algos = {
             'rf':RandomForestClassifier,
             'gb':GradientBoostingClassifier,

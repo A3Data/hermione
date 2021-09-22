@@ -7,7 +7,7 @@ class IntroPage:
         pass
 
     def write(self):
-        image = Image.open("images/hermione_logo.png")
+        image = Image.open("../../../../../images/hermione_logo.png")
         st.title("Hermione Titanic Example")
         st.write("")
         st.image(image, width=500)
