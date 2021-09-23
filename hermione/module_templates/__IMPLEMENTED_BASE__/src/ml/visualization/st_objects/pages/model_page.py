@@ -63,7 +63,7 @@ class ModelPage:
                 mlflow.log_metrics(model.get_metrics())
                 mlflow.sklearn.log_model(model.get_model(), 'model')
                 # Salva o modelo na pasta output
-                model.save_model(f'output/titanic_model_{algo}.pkl')
+                model.save_model(f'../output/titanic_model_{algo}.pkl')
                 my_bar.progress((1 / len(algos.keys())) * (index + 1))
         my_bar.empty()
 
@@ -87,7 +87,7 @@ class ModelPage:
 
     def predict(self, X, model, probs):
         try:
-            model = load(f'output/titanic_model_{model}.pkl')
+            model = load(f'../output/titanic_model_{model}.pkl')
         except:
             st.error('Model not loaded')
         X = self.p.clean_data(X)
@@ -105,7 +105,7 @@ class ModelPage:
         st.write('## Simulator')
         st.write("""Predict the outcome or probability of survival by customizing the input data of individuals""")
         st.write('')
-        model_list = os.listdir('output')
+        model_list = os.listdir('../output')
         avail_algo = [re.search('(?<=model_).+(?=\.pkl)', m).group(0) for m in model_list]
         with st.form(key="predict_form"):
             # New Data

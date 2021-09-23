@@ -1,5 +1,12 @@
 import streamlit as st
 from PIL import Image
+import requests
+from io import BytesIO
+
+url = 'https://github.com/A3Data/hermione/blob/master/images/vertical_logo.png?raw=true'
+response = requests.get(url)
+img = Image.open(BytesIO(response.content))
+img.load()
 
 class IntroPage:
 
@@ -7,10 +14,9 @@ class IntroPage:
         pass
 
     def write(self):
-        image = Image.open("../../../../../images/hermione_logo.png")
         st.title("Hermione Titanic Example")
         st.write("")
-        st.image(image, width=500)
+        st.image(img, width=500)
         st.write("")
         st.write(
             """
