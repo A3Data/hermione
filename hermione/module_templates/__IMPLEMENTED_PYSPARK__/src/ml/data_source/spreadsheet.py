@@ -41,36 +41,60 @@ class Spreadsheet(DataSource):
         """
         return self.spark.read.format(format).options(**kwargs).load(file_path)
 
-    def write_data(self, df, save_path, format, mode, partitions=None) -> None:
+    def write_data(
+        self, 
+        df, 
+        save_path,
+        mode,
+        format = None,
+        partition_col = None,
+        n_partitions = None,
+        **kwargs
+    ) -> None:
         """
-        Save a Spark DataFrame
+        Writes DataFramein the specified destination
         
         Parameters
-        ----------            
+        ----------
+        df : pyspark.sql.dataframe.DataFrame
+            Spark DataFrameto be written
+
         save_path : str
-            Destination path
-        format : str
-            name of the destination file format,  e.g. 'csv', 'parquet'.
+            Path to where data should be written
+
         mode : str
-            specify the mode of writing data, if data already exist in the designed path
+            Specify the mode of writing data, if data already exist in the designed path
             * append: Append the contents of the DataFrame to the existing data
             * overwrite: Overwrite existing data
             * ignore: Silently ignores this operation
-            * error or errorifexists (default case): Raises an error
-        partitions : int
-            number of partitions desired in output files. If greater than `df`'s partitions, 
-            `repartition()` will be used. Else, `coalesce()` will be used.
+            * error or errorifexists (default): Raises an error
+
+        format : str
+            File format of data being written
+        
+        n_partitions : int
+            Number of DataFrame partitions
+        
+        partition_col : str
+                Column to partition DataFrame on writing
+
+        **kwargs:
+            Other options passed to DataFrameWriter.options
 
         Returns
     	-------
         self:
             returns an instance of the object
         """
-        if partitions:
+        if n_partitions:
             df_partitions = df.rdd.getNumPartitions()
-            if df_partitions >= partitions:
-                df.coalesce(partitions).write.format(format).save(save_path, mode=mode)
+            if df_partitions >= n_partitions:
+                df = df.coalesce(n_partitions)
             else:
-                df.repartition(partitions).write.format(format).save(save_path, mode=mode)
-        else:
-            df.write.format(format).save(save_path, mode=mode)
+                df = df.repartition(n_partitions)
+        writer = df.write.options(**kwargs).mode(mode)
+        if partition_col:
+            writer = writer.partitionBy(partition_col)
+        if format:
+            writer = writer.format(format)
+        writer.save(save_path)

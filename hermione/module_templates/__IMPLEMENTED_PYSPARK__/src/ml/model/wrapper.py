@@ -10,7 +10,7 @@ from src.util import load_yaml, load_json
 
 
 class Wrapper(mlflow.pyfunc.PythonModel):
-    def __init__(self, model=None, metrics=None, columns=None):
+    def __init__(self, model=None, preprocessing=None, metrics=None, columns=None):
         """
         Constructor
 
@@ -20,6 +20,8 @@ class Wrapper(mlflow.pyfunc.PythonModel):
                           If it's just a model: enter all parameters
                           if it is more than one model: do not enter parameters and use
                           the add method to add each of the models
+        preprocessing :   Preprocessamento
+                          Preprocessing used in training
         metrics       :   dict
                           Dictionary with the metrics of the result of the model
         columns       :   list
@@ -30,11 +32,12 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         """
         self.artifacts = dict()
         self.artifacts["model"] = model
+        self.artifacts["preprocessing"] = preprocessing
         self.artifacts["metrics"] = metrics
         self.artifacts["columns"] = columns
         self.artifacts["creation_date"] = date.today()
-        
-    def predict(self, model_input, included_input=False):
+
+    def predict(self, model_input):
         """
         Method that returns the result of the prediction on a dataset
 
@@ -50,11 +53,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         df_processed = model_input.copy()
         model = self.artifacts["model"]
         columns = self.artifacts["columns"]
-        result = model.predict(df_processed[columns])
-        if included_input:
-            model_input['predict'] = result
-            result = model_input
-        return result
+        return model.predict(df_processed[columns])
 
     def predict_proba(self, model_input, binary=False):
         """
@@ -76,6 +75,21 @@ class Wrapper(mlflow.pyfunc.PythonModel):
             return model.predict_proba(df_processed[columns])[:, 1]
         else:
             return model.predict_proba(df_processed[columns])
+        
+    def load(self, path):
+        """
+        Load the model object to a specific path
+
+        Parameters
+        ----------
+        path : str
+               path where the model object will be saved
+
+        Returns
+        -------
+        None
+        """
+        return load(path)
 
     def save_model(self, path):
         """
@@ -95,7 +109,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
     @staticmethod
     def load_model(path):
         """
-        Loads the model object in a specific path
+        Loads the model object in a specific path (pyfunc)
 
         Parameters
         ----------
@@ -106,12 +120,12 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         -------
         None
         """
-        model = load(path)
+        model = pyfunc.load_model(path)
         return model
 
     def save(self, path):
         """
-        Save model as a Wrapper class
+        Save model as a Wrapper class (pyfunc)
 
         Parameters
         ----------
@@ -174,6 +188,20 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         dict
         """
         return self.artifacts["model"]
+
+    def get_preprocessing(self):
+        """
+        Return preprocessing instance
+
+        Parameters
+        ----------
+        self : object Wrapper
+
+        Returns
+        -------
+        Preprocessing instance
+        """
+        return self.artifacts["preprocessing"]
 
     def train_interpret(self, X, model="tabular"):
         """

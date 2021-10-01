@@ -53,8 +53,6 @@ class SparkCleaner:
         
         Parameters
         ----------     
-        None
-
         Returns
     	-------
         self:
@@ -78,8 +76,6 @@ class SparkCleaner:
         
         Parameters
         ----------     
-        None
-
         Returns
     	-------
         self:
@@ -115,8 +111,6 @@ class SparkCleaner:
         
         Parameters
         ----------     
-        None
-
         Returns
     	-------
         self:

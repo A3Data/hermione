@@ -25,7 +25,7 @@ class SparkPreprocessor:
     Class to perform data preprocessing before training
     """
     
-    def __init__(self, num_cols: dict = None, cat_cols: str = None):
+    def __init__(self, num_cols = None, cat_cols = None):
         """
         Constructor
 
@@ -52,8 +52,6 @@ class SparkPreprocessor:
 
         Parameters
         ----------
-        None
-
         Returns
         -------
         list[Estimator]
@@ -78,9 +76,7 @@ class SparkPreprocessor:
         Creates the model responsible to normalize numerical columns
 
         Parameters
-        ----------
-        None
-                     
+        ----------   
     	Returns
     	-------
         list[Estimator]
@@ -92,7 +88,7 @@ class SparkPreprocessor:
             scalers.append(SparkScaler(col, method))
         return scalers
     
-    def execute(self, df: DataFrame, pipeline: bool = True, step_train: bool = False, val_size: float = 0.2):
+    def execute(self, df, pipeline = True, step_train = False, val_size = 0.2):
         """
         Apply all preprocessing steps on the Dataframe
         

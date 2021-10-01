@@ -47,7 +47,7 @@ class Trainer(ABC):
 class SparkTrainer(Trainer):
         
     def train(self, df,
-                classification: bool, 
+                classification, 
                 algorithm, 
                 preprocessing=None,
                 data_split=('train_test', {'test_size': 0.2}), 
@@ -61,12 +61,12 @@ class SparkTrainer(Trainer):
                             if True, classification model training takes place, otherwise Regression
         model_name        : str
                             model name
+        preprocessing     : Preprocessing
+                            preprocessed object to be applied
         data_split        : tuple (strategy: str, params: dict)
                             strategy of split the data to train your model. 
                             Strategy: ['train_test', 'cv']
                             Ex: ('cv', {'cv': 9, 'agg': np.median})
-        preprocessing     : Preprocessing
-                            preprocessed object to be applied
              
     	Returns
     	-------
@@ -111,8 +111,8 @@ class SparkTrainer(Trainer):
                     res_metrics = Metrics.regression(np.array(y_true), np.array(y_pred))
             model.fit(X,y)
         model = Wrapper(model, preprocessing, res_metrics, columns)
-        if classification:
-            model.train_interpret(X)
+        #if classification:
+        #    model.train_interpret(X)
         return model
 
 class TrainerSklearnUnsupervised(Trainer):

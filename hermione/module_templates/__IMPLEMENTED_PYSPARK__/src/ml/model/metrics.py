@@ -1,4 +1,9 @@
-from pyspark.ml.evaluation import BinaryClassificationEvaluator, MulticlassClassificationEvaluator
+from pyspark.ml.evaluation import (
+    Evaluator,
+    BinaryClassificationEvaluator as BCEval, 
+    MulticlassClassificationEvaluator as MCEval
+)
+from pyspark.ml.util import MLWriter, MLReader
 from pyspark.sql.dataframe import DataFrame
 from tabulate import tabulate
 import numpy as np
@@ -130,7 +135,7 @@ class Metrics:
         return results
 
     @classmethod
-    def __multiclass_classification(cls, df: DataFrame, labelCol: str, pred_values: list):
+    def __multiclass_classification(cls, df, labelCol, metricLabels):
         """
         Calculates some metrics for multiclass classification problems
 
@@ -140,7 +145,7 @@ class Metrics:
             Dataframe with model predictions
         labelCol   : str
             Name of the outcome column
-        pred_values   : str
+        metricLabels   : str
             Unique list of possible outcome values
 
         Returns
@@ -150,43 +155,33 @@ class Metrics:
         confusion_matrix = (
             df.withColumnRenamed(labelCol, 'Outcome')
             .groupby('Outcome')
-            .pivot('prediction', values=pred_values)
+            .pivot('prediction', values=metricLabels)
             .count()
             .orderBy('Outcome')
+            .fillna(0)
         )
         # Evaluate predicitons
-        results = {
-            'accuracy': [],
-            'f1': [],
-            'weightedPrecision': [],
-            'weightedRecall': [],
-        }
-        for metric in results.keys():
-            metric_calc = []
-            for out in pred_values:
-                evaluator = MulticlassClassificationEvaluator(
-                    labelCol=labelCol, 
-                    metricName=metric, 
-                    metricLabel=out
-                )
-                metric_calc.append(evaluator.evaluate(df))
-            results[metric] = metric_calc
-        metric_list = [
-            [out, precision, recall, f1] 
-            for out, precision, recall, f1 
-            in zip(pred_values, results['weightedPrecision'], results['weightedRecall'], results['f1'])
-        ]
+        metrics = dict(f1='fMeasureByLabel', precision='precisionByLabel', recall='recallByLabel')
+        results = dict()
+        for out in metricLabels:
+            results[out] = dict()
+            for name, metric in metrics.items():
+                evaluator = MCEval(labelCol=labelCol, metricName=metric, metricLabel=out)
+                results[out][name] = evaluator.evaluate(df)
+        metric_list = [[key, value['precision'], value['recall'], value['f1']] for key, value in results.items()]
+        accuracy = MCEval(labelCol=labelCol,  metricName='accuracy', metricLabel=metricLabels[0]).evaluate(df)
         # Results
         print("Confusion Matrix")
         confusion_matrix.show()
         print("")
         print("Results")
-        print(tabulate([results['accuracy']], headers=['Accuracy'], tablefmt='grid'))
+        print(tabulate([[accuracy]], headers=['Accuracy'], tablefmt='grid'))
         print("")
         print(tabulate(metric_list, headers=['Outcome', 'Precision', 'Recall', 'F1'], tablefmt='grid'))
+        return results
 
     @classmethod
-    def __binary_classification(cls, df: DataFrame, labelCol: str, pred_values: list):
+    def __binary_classification(cls, df, labelCol, metricLabels):
         """
         Calculates some metrics for binary classification problems
 
@@ -196,45 +191,35 @@ class Metrics:
             Dataframe with model predictions
         labelCol   : str
             Name of the outcome column
-        pred_values   : str
+        metricLabels   : str
             Unique list of possible outcome values
 
         Returns
         -------
         None
         """
-        confusion_matrix = (
-            df.withColumnRenamed(labelCol, 'Outcome')
-            .groupby('Outcome')
-            .pivot('prediction', values=pred_values)
-            .count()
-            .orderBy('Outcome')
-        )
-        # Evaluate predicitons
-        evaluator = BinaryClassificationEvaluator(labelCol=labelCol)
-        metrics = [c.asDict() for c in confusion_matrix.collect()]
-        tp_vec = [metrics[0]['0'] if value == 0 else metrics[1]['1'] for value in pred_values]
-        fn_vec = [metrics[0]['1'] if value == 0 else metrics[1]['0'] for value in pred_values]
-        fp_vec = [metrics[1]['0'] if value == 0 else metrics[0]['1'] for value in pred_values]
-        # Compute metrics
-        accuracy = sum(tp_vec) / (sum(fn_vec) + sum(fp_vec))
-        recall_vec = [tp / (tp + fn) for tp, fn in zip(tp_vec, fn_vec)]
-        precision_vec = [tp / (tp + fp) for tp, fp in zip(tp_vec, fp_vec)]
-        f1 = [(2 * precision * recall) / (precision + recall) for recall, precision in zip(recall_vec, precision_vec)]
-        roc_auc = evaluator.evaluate(df)
-        metric_list = [
-            [out, precision, recall, f1] 
-            for out, precision, recall, f1 
-            in zip(pred_values, precision_vec, recall_vec, f1)
-        ]
+        metrics = ['accuracy', 'roc_auc', 'precision', 'recall', 'f1']
+        results = dict()
+        results['labels'] = {key:{} for key in metricLabels}
+        for metric in metrics:
+            evaluator = BinaryEvaluator(metric, labelCol)
+            res = evaluator.evaluate(df)
+            if metric in ['accuracy', 'roc_auc']:
+                results[metric] = res
+            else:
+                for index, label in enumerate(metricLabels):
+                    results['labels'][label][metric] = res[index]
+        metric_list = [[key, value['precision'], value['recall'], value['f1']] for key, value in results['labels'].items()]
         # Results
         print("Confusion Matrix")
-        confusion_matrix.show()
+        cm = evaluator._create_confusion_matrix(df)
+        cm.show()
         print("")
         print("Results")
-        print(tabulate([[accuracy, roc_auc]], headers=['Accuracy', 'ROC AUC'], tablefmt='grid'))
+        print(tabulate([[results['accuracy'], results['roc_auc']]], headers=['Accuracy', 'ROC AUC'], tablefmt='grid'))
         print("")
         print(tabulate(metric_list, headers=['Outcome', 'Precision', 'Recall', 'F1'], tablefmt='grid'))
+        return results
 
     @classmethod
     def classification(cls, df: DataFrame, labelCol: str):
@@ -253,12 +238,12 @@ class Metrics:
         -------
         None
         """
-        pred_rows = df.select('prediction').distinct().collect()
-        pred_values = sorted([int(c['prediction']) for c in pred_rows])
-        if len(pred_values) > 2:
-            cls.__multiclass_classification(df, labelCol, pred_values)
+        pred_rows = df.select(labelCol).distinct().collect()
+        metricLabels = sorted([int(c[labelCol]) for c in pred_rows])
+        if len(metricLabels) > 2:
+            return cls.__multiclass_classification(df, labelCol, metricLabels)
         else:
-            cls.__binary_classification(df, labelCol, pred_values)
+            return cls.__binary_classification(df, labelCol, metricLabels)
 
     @classmethod
     def clusterization(cls, X, labels):
@@ -281,3 +266,65 @@ class Metrics:
                                                   metric='euclidean'),
                    'calinski_harabaz': calinski_harabaz_score(X, labels)}
         return results
+
+class BinaryEvaluator(Evaluator, MLWriter, MLReader):
+    
+    def __init__(self, metricName, labelCol, metricLabel=None):
+        
+        self.metricName = metricName
+        self.labelCol = labelCol
+        self.metricLabel = metricLabel
+        if metricName not in ['accuracy', 'precision', 'recall', 'f1','roc_auc']:
+            raise Exception('Metric not available. Please, choose one from accuracy, precision, recall, F1 or ROC AUC.')
+        
+    def _evaluate(self):
+        super()._evaluate()
+
+    def isLargerBetter(self):
+        return True
+    
+    def _create_confusion_matrix(self, df):
+        
+        metricLabels = df.select(self.labelCol).distinct().collect()
+        self.metricLabels = sorted([int(c[self.labelCol]) for c in metricLabels])
+        cm = (
+            df.withColumnRenamed(self.labelCol, 'Outcome')
+            .groupby('Outcome')
+            .pivot('prediction', values=self.metricLabels)
+            .count()
+            .orderBy('Outcome')
+            .fillna(0)
+        )
+        return cm
+    
+    def _get_metric(self, df):
+        
+        cm = self._create_confusion_matrix(df)
+        metrics = [c.asDict() for c in cm.collect()]
+        true_vec = [metrics[0]['0'] if value == 0 else metrics[1]['1'] for value in self.metricLabels]
+        false_vec = [metrics[1]['0'] if value == 0 else metrics[0]['1'] for value in self.metricLabels]
+        if self.metricName == 'accuracy':
+            return sum(true_vec) / (sum(false_vec) + sum(true_vec))
+        elif self.metricName == 'precision':
+            return [_safe_division(t, t + f) for t, f in zip(true_vec, false_vec)]
+        elif self.metricName == 'recall':
+            return [_safe_division(t, t + f) for t, f in zip(true_vec, false_vec[::-1])]
+        elif self.metricName == 'f1':
+            precision_vec = [_safe_division(t, t + f) for t, f in zip(true_vec, false_vec)]
+            recall_vec = [_safe_division(t, t + f) for t, f in zip(true_vec, false_vec[::-1])]
+            return [_safe_division(2 * precision * recall, precision + recall) for recall, precision in zip(recall_vec, precision_vec)]
+        elif self.metricName == 'roc_auc':
+            evaluator = BCEval(labelCol=self.labelCol)
+            return evaluator.evaluate(df)
+        
+    def evaluate(self, df):
+        
+        if self.metricLabel is None:
+            return self._get_metric(df)
+        else:
+            return self._get_metric(df)[self.metricLabel]
+
+
+def _safe_division(numerator, denominator):
+    denominator = denominator if denominator != 0 else 1
+    return numerator / denominator

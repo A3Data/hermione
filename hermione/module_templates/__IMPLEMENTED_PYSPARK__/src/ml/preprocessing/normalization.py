@@ -6,13 +6,13 @@ from pyspark.ml.feature import (
     StandardScaler,
     RobustScaler,
 )
-from pyspark.ml.util import MLWriter
+from pyspark.ml.util import MLWriter, MLReader
 from pyspark.ml.pipeline import Pipeline
 from typing import Union
 
-class SparkScaler(Estimator, MLWriter):
+class SparkScaler(Estimator, MLWriter, MLReader):
 
-    def __init__(self, cols: Union[list, str], method: str, vec_name: str = None):
+    def __init__(self, cols, method, vec_name = None):
         """ 
         Constructor
         
@@ -48,8 +48,6 @@ class SparkScaler(Estimator, MLWriter):
         
     	Parameters
     	----------            
-        None          
-                     
     	Returns
     	-------
         SparkScaler
@@ -62,8 +60,6 @@ class SparkScaler(Estimator, MLWriter):
         
     	Parameters
     	----------            
-        None          
-                     
     	Returns
     	-------
         SparkScaler
@@ -80,8 +76,6 @@ class SparkScaler(Estimator, MLWriter):
         
     	Parameters
     	----------            
-        None          
-                     
     	Returns
     	-------
         SparkScaler
@@ -92,7 +86,7 @@ class SparkScaler(Estimator, MLWriter):
             .setOutputCol(f'{self.method_name}_scaled')
         )
 
-    def fit(self, df: DataFrame, **kwargs):
+    def fit(self, df, **kwargs):
         """
         Generates normalization object for each column
         
@@ -100,7 +94,10 @@ class SparkScaler(Estimator, MLWriter):
     	----------            
         df         : pd.DataFrame
             dataframe with columns to be normalized             
-                     
+        
+        **kwargs:
+            Other arguments passed to the Estimator
+
     	Returns
     	-------
         pyspark.ml.base.Transformer
@@ -112,7 +109,7 @@ class SparkScaler(Estimator, MLWriter):
         self.model = pipeline.fit(df)
         return self.model
 
-    def transform(self, df: DataFrame):
+    def transform(self, df):
         """
         Apply normalization to the selected columns
         
@@ -131,14 +128,17 @@ class SparkScaler(Estimator, MLWriter):
         except:
             raise Exception('Model no fit! Run `fit()` method before trying to `transform()`')
 
-    def fit_transform(self, df: DataFrame, **kwargs):
+    def fit_transform(self, df, **kwargs):
         """
         Generates the normalization model and apply it to the selected columns
         
     	Parameters
     	----------            
         df         : pyspark.sql.dataframe.DataFrame
-            dataframe with columns to be normalized             
+            dataframe with columns to be normalized
+
+        **kwargs:
+            Other arguments passed to the Estimator      
                      
     	Returns
     	-------
