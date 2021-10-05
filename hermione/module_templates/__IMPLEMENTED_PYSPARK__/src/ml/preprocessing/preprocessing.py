@@ -1,8 +1,8 @@
-from pyspark.sql.dataframe import DataFrame
 from pyspark.ml.feature import (
     VectorAssembler, 
     StringIndexer, 
-    OneHotEncoder
+    OneHotEncoder,
+    Imputer
 )
 from pyspark.ml.pipeline import Pipeline
 from src.ml.preprocessing.normalization import SparkScaler
@@ -25,7 +25,7 @@ class SparkPreprocessor:
     Class to perform data preprocessing before training
     """
     
-    def __init__(self, num_cols = None, cat_cols = None):
+    def __init__(self, num_cols = None, cat_cols = None, impute_strategy=None):
         """
         Constructor
 
@@ -36,14 +36,25 @@ class SparkPreprocessor:
             which it will be applied as values
             Ex: norm_cols = {'zscore': ['salary', 'price'], 
                             'min-max': ['heigth', 'age']}
+
         cat_cols : Union[list, str]
             Categorical columns present in the model
+
+        impute_strategy: str
+            Strategy for completing missing values on numerical columns. Supports `mean`, `median` and `mode`.
+
         Returns
         -------
         SparkPreprocessor
         """
         self.num_cols = num_cols
         self.cat_cols = cat_cols if not cat_cols or type(cat_cols) is list else [cat_cols]
+        if impute_strategy:
+            self.imputer = (
+                Imputer(strategy=impute_strategy)
+                .setInputCols(self.num_cols)
+                .setOutputCols(self.num_cols)
+            )
 
     def categoric(self):
         """
@@ -57,6 +68,7 @@ class SparkPreprocessor:
         list[Estimator]
             Returns a list of estimators 
         """
+        logging.info("Treating categorical data...")
         indexed_cols = [c + '_indexed' for c in self.cat_cols]
         ohe_cols = [c + '_ohe' for c in self.cat_cols]
         self.indexer = StringIndexer(
@@ -111,10 +123,12 @@ class SparkPreprocessor:
         """
         estimators = []
         input_cols = []
-        if self.cat_cols:
+        if self.cat_cols and None not in self.cat_cols:
             estimators = estimators + self.categoric()
             input_cols = input_cols + self.ohe_cols
         if self.num_cols:
+            if self.imputer:
+                estimators.append(self.imputer)
             estimators = estimators + self.numeric()
             num_input_cols = [method + '_scaled' for method in self.num_cols.keys()]
             input_cols = input_cols + num_input_cols

@@ -1,138 +1,85 @@
 from pyspark.ml.evaluation import (
     Evaluator,
     BinaryClassificationEvaluator as BCEval, 
-    MulticlassClassificationEvaluator as MCEval
+    MulticlassClassificationEvaluator as MCEval,
+    RegressionEvaluator
 )
+from pyspark.ml.param import Param
+import pyspark.sql.functions as f
+from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
 from pyspark.ml.util import MLWriter, MLReader
 from pyspark.sql.dataframe import DataFrame
 from tabulate import tabulate
 import numpy as np
-from sklearn.metrics import make_scorer
-from sklearn.model_selection import cross_validate
 
 
 class Metrics:
 
     @classmethod
-    def smape(cls, A, F):
-        """
-        Calculates the smape value between the real and the predicted
-
-        Parameters
-        ----------
-        A : array
-            Target values
-        F : array
-            Predicted values
-
-        Returns
-        -------
-        float: smape value
-        """
-        return 100/len(A) * np.sum(np.abs(F - A) / (np.abs(A) + np.abs(F)))
-
-    @classmethod
-    def __custom_score(cls, y_true, y_pred):
-        """
-        Creates a custom metric
-
-        Parameters
-        ----------
-        y_true : array
-                 Target values
-        y_pred : array
-                 Predicted values
-
-        Returns
-        -------
-        sklearn.metrics
-        """
-        #return sklearn.metrics.fbeta_score(y_true, y_pred, 2)
-        pass
-
-    @classmethod
-    def customized(cls, y_true, y_pred):
-        """
-        Creates a custom metric
-
-        Parameters
-        ----------
-        y_true : array
-                 Target values
-        y_pred : array
-                 Predicted values
-
-        Returns
-        -------
-        float
-        """
-        custom_metric = make_scorer(cls.__custom_score, greater_is_better=True)
-        return custom_metric
-
-    @classmethod
-    def mape(cls, y_true, y_pred):
-        """
-        Calculates the map value between the real and the predicted
-
-        Parameters
-        ----------
-        y_true : array
-                 Target values
-        y_pred : array
-                 Predicted values
-
-        Returns
-        -------
-        float : value of mape
-        """
-        y_true, y_pred = np.array(y_true), np.array(y_pred)
-        return np.mean(np.abs(((y_true+1) - (y_pred+1)) / (y_true+1))) * 100
-
-    @classmethod
-    def regression(cls, y_true, y_pred):
+    def regression(cls, df, labelCol):
         """
         Calculates some metrics for regression problems
 
         Parameters
         ----------
-        y_true : array
-                 Target values
-        y_pred : array
-                 Predicted values
+        df         : DataFrame
+            Dataframe with model predictions
+        labelCol   : str
+            Name of the outcome column
+        metricLabels   : str
+            Unique list of possible outcome values
 
         Returns
         -------
-        dict : metrics results
+        None
         """
-        results = {'mean_absolute_error': round(mean_absolute_error(
-            y_true, y_pred), 7),
-                    'root_mean_squared_error': round(np.sqrt(
-                          mean_squared_error(y_true, y_pred)), 7),
-                    'r2': round(r2_score(y_true, y_pred), 7),
-                    'smape': round(cls.smape(y_true, y_pred), 7),
-                    'mape': round(cls.mape(y_true, y_pred), 7)
-                     }
+        metrics = ['rmse', 'mse', 'mae', 'mape', 'smape', 'weighted_mape', 'r2', 'var']
+        results = dict()
+        for metric in metrics:
+            if metric in ['mape', 'smape', 'weighted_mape']:
+                evaluator = CustomRegressionEvaluator(labelCol=labelCol, metricName=metric)
+            else:
+                evaluator = RegressionEvaluator(labelCol=labelCol, metricName=metric)
+            results[metric] = evaluator.evaluate(df)
+        metric_list = [[key, value] for key, value in results.items()]
+        # Results
+        print("Results")
+        print("")
+        print(tabulate(metric_list, headers=['Metric', 'Value'], tablefmt='grid'))
         return results
 
     @classmethod
-    def crossvalidation(cls, model, X, y, classification: bool,
-                        cv=5, agg=np.mean):
-        if classification:
-            if len(set(y)) > 2:
-                metrics = ['accuracy', 'f1_weighted',
-                           'recall_weighted', 'precision_weighted']
-            else:
-                metrics = ['accuracy', 'f1', 'recall', 'precision', 'roc_auc']
+    def crossvalidation(cls, model, df, classification, numFolds=5, param_grid=None, evaluator=None, **kwargs):
+        
+        if param_grid:
+            grid = ParamGridBuilder()
+            for param, values in param_grid.items():
+                param_instance = Param(model, param, None)
+                grid = grid.addGrid(param_instance, values)
+            grid = grid.build()
         else:
-            metrics = ['mean_absolute_error', 'r2', 'root_mean_squared_error',
-                       'smape', 'mape']
-        res_metrics = cross_validate(model, X, y, cv=cv,
-                                     return_train_score=False,
-                                     scoring=metrics)
-        results = {metric.replace("test_", ""): round(agg(
-            res_metrics[metric]), 7)
-                   for metric in res_metrics}
-        return results
+            grid = ParamGridBuilder().build()
+
+        if not evaluator:
+            labelCol = model.getLabelCol()
+            if classification:
+                label_rows = df.select(labelCol).distinct().collect()
+                metricLabels = sorted([int(c[labelCol]) for c in label_rows])
+                if len(metricLabels) > 2:
+                    evaluator = MCEval(labelCol=labelCol)
+                else:
+                    evaluator = BCEval(labelCol=labelCol)
+            else:
+                evaluator = RegressionEvaluator(labelCol=labelCol)
+        cv = CrossValidator(estimator=model, evaluator=evaluator, numFolds=numFolds, estimatorParamMaps=grid, **kwargs)
+        cv = cv.fit(df)
+        bestModel = cv.bestModel
+        metricName = evaluator.getMetricName()
+        results = {
+            metricName: max(cv.avgMetrics),
+            'params': {param: bestModel.getOrDefault(param) for param in param_grid.keys()},
+        }
+        return (bestModel, results)
 
     @classmethod
     def __multiclass_classification(cls, df, labelCol, metricLabels):
@@ -202,7 +149,7 @@ class Metrics:
         results = dict()
         results['labels'] = {key:{} for key in metricLabels}
         for metric in metrics:
-            evaluator = BinaryEvaluator(metric, labelCol)
+            evaluator = CustomBinaryEvaluator(metric, labelCol)
             res = evaluator.evaluate(df)
             if metric in ['accuracy', 'roc_auc']:
                 results[metric] = res
@@ -238,8 +185,8 @@ class Metrics:
         -------
         None
         """
-        pred_rows = df.select(labelCol).distinct().collect()
-        metricLabels = sorted([int(c[labelCol]) for c in pred_rows])
+        label_rows = df.select(labelCol).distinct().collect()
+        metricLabels = sorted([int(c[labelCol]) for c in label_rows])
         if len(metricLabels) > 2:
             return cls.__multiclass_classification(df, labelCol, metricLabels)
         else:
@@ -267,7 +214,7 @@ class Metrics:
                    'calinski_harabaz': calinski_harabaz_score(X, labels)}
         return results
 
-class BinaryEvaluator(Evaluator, MLWriter, MLReader):
+class CustomBinaryEvaluator(Evaluator, MLWriter, MLReader):
     
     def __init__(self, metricName, labelCol, metricLabel=None):
         
@@ -328,3 +275,46 @@ class BinaryEvaluator(Evaluator, MLWriter, MLReader):
 def _safe_division(numerator, denominator):
     denominator = denominator if denominator != 0 else 1
     return numerator / denominator
+
+class CustomRegressionEvaluator(Evaluator, MLWriter, MLReader):
+    
+    def __init__(self, metricName, labelCol):
+        
+        self.metricName = metricName
+        self.labelCol = labelCol
+        if metricName not in ['mape', 'smape', 'weighted_mape']:
+            raise Exception('Metric not available. Please, choose one from mape or smape')
+        
+    def _evaluate(self):
+        super()._evaluate()
+
+    def isLargerBetter(self):
+        return False
+    
+    def getMetricName(self):
+
+        return self.metricName
+    
+    def _get_metric(self, df):
+        
+        metrics = (
+            df
+            .withColumn('mape', f.abs(((f.col(self.labelCol) + 1) - (f.col('prediction') + 1)) / (f.col(self.labelCol) + 1)) *100)
+            .withColumn('abs_dif', f.abs(f.col('prediction') - f.col(self.labelCol)))
+            .withColumn('abs_label', f.abs(f.col(self.labelCol)))
+            .withColumn('smape', (f.col('abs_dif') / (f.col('abs_label') + f.abs(f.col('prediction'))))*100)
+            .agg(f.mean('mape').alias('mape'), 
+                 f.mean('smape').alias('smape'),
+                 (f.sum('abs_dif')/f.sum('abs_label')).alias('weighted_mape'))
+            .collect()[0]
+        )
+        if self.metricName == 'mape':
+            return metrics['mape']
+        elif self.metricName == 'smape':
+            return metrics['smape']
+        elif self.metricName == 'weighted_mape':
+            return metrics['weighted_mape']
+        
+    def evaluate(self, df):
+        
+        return self._get_metric(df)

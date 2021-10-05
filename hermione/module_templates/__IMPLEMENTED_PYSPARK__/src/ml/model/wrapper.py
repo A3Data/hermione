@@ -1,16 +1,13 @@
 from joblib import dump, load
 from datetime import date
-import mlflow.pyfunc
+import mlflow.spark
 from mlflow import pyfunc
-from interpret.ext.blackbox import TabularExplainer, MimicExplainer
-from interpret.ext.glassbox import *
-import pandas as pd
 
 from src.util import load_yaml, load_json
 
 
 class Wrapper(mlflow.pyfunc.PythonModel):
-    def __init__(self, model=None, preprocessing=None, metrics=None, columns=None):
+    def __init__(self, model=None, metrics=None):
         """
         Constructor
 
@@ -20,21 +17,16 @@ class Wrapper(mlflow.pyfunc.PythonModel):
                           If it's just a model: enter all parameters
                           if it is more than one model: do not enter parameters and use
                           the add method to add each of the models
-        preprocessing :   Preprocessamento
-                          Preprocessing used in training
         metrics       :   dict
                           Dictionary with the metrics of the result of the model
-        columns       :   list
-                          list with columns names
         Returns
         -------
         WrapperModel
         """
         self.artifacts = dict()
         self.artifacts["model"] = model
-        self.artifacts["preprocessing"] = preprocessing
+        self.artifacts['model_instance'] = type(model)
         self.artifacts["metrics"] = metrics
-        self.artifacts["columns"] = columns
         self.artifacts["creation_date"] = date.today()
 
     def predict(self, model_input):
@@ -50,10 +42,10 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         -------
         list
         """
-        df_processed = model_input.copy()
         model = self.artifacts["model"]
-        columns = self.artifacts["columns"]
-        return model.predict(df_processed[columns])
+        df_pred = model.transform(model_input)
+        pred_row = df_pred.select('prediction').collect()
+        return [c['prediction'] for c in pred_row]
 
     def predict_proba(self, model_input, binary=False):
         """
@@ -68,13 +60,13 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         -------
         list
         """
-        df_processed = model_input.copy()
         model = self.artifacts["model"]
-        columns = self.artifacts["columns"]
+        df_pred = model.transform(model_input)
+        pred_row = df_pred.select('probability').collect()
         if binary:
-            return model.predict_proba(df_processed[columns])[:, 1]
+            return [c['probability'][1] for c in pred_row]
         else:
-            return model.predict_proba(df_processed[columns])
+            return[c['probability'][1] for c in pred_row]
         
     def load(self, path):
         """
@@ -85,13 +77,13 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         path : str
                path where the model object will be saved
 
-        Returns
+        Returns b
         -------
         None
         """
-        return load(path)
+        return self.artifacts['model_instance'].load(path)
 
-    def save_model(self, path):
+    def save(self, path):
         """
         Saves the model object to a specific path
 
@@ -104,10 +96,10 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         -------
         None
         """
-        dump(self, path)
+        self.artifacts['model'].save(path)
 
     @staticmethod
-    def load_model(path):
+    def load_mlflow(path):
         """
         Loads the model object in a specific path (pyfunc)
 
@@ -120,10 +112,9 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         -------
         None
         """
-        model = pyfunc.load_model(path)
-        return model
+        return mlflow.spark.load_model(path)
 
-    def save(self, path):
+    def save_mlflow(self, path):
         """
         Save model as a Wrapper class (pyfunc)
 
@@ -140,10 +131,9 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         dump(self.artifacts, path_artifacts)
         content = load_json("config/arquivos.json")
         conda_env = load_yaml(content["path_yaml"])
-        mlflow.pyfunc.save_model(
+        mlflow.spark.save_model(
+            self.artifacts['model'],
             path=path,
-            python_model=self,
-            artifacts={"model": path_artifacts},
             conda_env=conda_env,
         )
 
@@ -161,20 +151,6 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         """
         return self.artifacts["metrics"]
 
-    def get_columns(self):
-        """
-        Return columns
-
-        Parameters
-        ----------
-        self : object Wrapper
-
-        Returns
-        -------
-        list
-        """
-        return self.artifacts["columns"]
-
     def get_model(self):
         """
         Return model
@@ -189,9 +165,9 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         """
         return self.artifacts["model"]
 
-    def get_preprocessing(self):
+    def get_model_instance(self):
         """
-        Return preprocessing instance
+        Return model
 
         Parameters
         ----------
@@ -199,82 +175,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
 
         Returns
         -------
-        Preprocessing instance
+        dict
         """
-        return self.artifacts["preprocessing"]
+        return self.artifacts["model_instance"]
 
-    def train_interpret(self, X, model="tabular"):
-        """
-        Train a interpret model
-
-        Parameters
-        ----------
-        self    : object Wrapper
-        X       : pd.DataFrame
-                  Data that were used in the train for interpret
-        model   : string, optional
-                  Model to use for the interpret [tabular,mimic_LGBME,
-                  mimic_Linear,mimic_SGDE,mimic_Dec_Tree]
-        Returns
-        -------
-        None
-        """
-        mimic_models = {
-            "mimic_LGBME": LGBMExplainableModel,
-            "mimic_Linear": LinearExplainableModel,
-            "mimic_SGDE": SGDExplainableModel,
-            "mimic_Dec_Tree": DecisionTreeExplainableModel,
-        }
-        if model == "tabular":
-            explainer = TabularExplainer(
-                self.artifacts["model"], X, features=self.artifacts["columns"]
-            )
-        else:
-            explainer = MimicExplainer(
-                self.artifacts["model"],
-                X,
-                mimic_models[model],
-                augment_data=True,
-                max_num_of_augmentations=10,
-                features=self.artifacts["columns"],
-            )
-        self.artifacts["explainer"] = explainer
-
-    def local_interpret(self, X, n_feat=3, norm=True):
-        """
-        Return a local interpret for each row in data
-
-        Parameters
-        ----------
-        self    : object Wrapper
-        X       : array[array], shape (n_linha, n_colunas)
-                  Matrix with the data that were used to return interpret
-        n_feat  : int, optional
-                  Number of features to return
-        norm    : bool, optional
-                  if True, do normalization in the features importances
-
-        Returns
-        -------
-        pd.DataFrame
-        """
-        local_explanation = self.artifacts["explainer"].explain_local(X)
-        n_obs = X.shape[0]
-        predictions = self.artifacts["model"].predict(X)
-        local_values = local_explanation.get_ranked_local_values()
-        local_values = [local_values[predictions[i]][i] for i in range(n_obs)]
-        local_names = local_explanation.get_ranked_local_names()
-        local_names = [local_names[predictions[i]][i] for i in range(n_obs)]
-        if norm:
-            local_values = [
-                [(i - min(l)) / (max(l) - min(l)) for i in l] for l in local_values
-            ]
-        result = [
-            (local_names[i][:n_feat] + local_values[i][:n_feat]) for i in range(n_obs)
-        ]
-        column_names = [
-            f"Importance_{item}_{str(i)}"
-            for item in ["Name", "Value"]
-            for i in range(n_feat)
-        ]
-        return pd.DataFrame(result, columns=column_names)

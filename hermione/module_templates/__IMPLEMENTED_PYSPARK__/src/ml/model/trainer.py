@@ -48,8 +48,7 @@ class SparkTrainer(Trainer):
         
     def train(self, df,
                 classification, 
-                algorithm, 
-                preprocessing=None,
+                algorithm,
                 data_split=('train_test', {'test_size': 0.2}), 
                 **params):
         """
@@ -66,54 +65,27 @@ class SparkTrainer(Trainer):
         data_split        : tuple (strategy: str, params: dict)
                             strategy of split the data to train your model. 
                             Strategy: ['train_test', 'cv']
-                            Ex: ('cv', {'cv': 9, 'agg': np.median})
+                            Ex: ('cv', {'numFolds': 9, 'agg': np.median})
              
     	Returns
     	-------
     	Wrapper
         """
         model = algorithm(**params) #model
-        columns = list(df.columns)
         if data_split[0] == 'train_test':
             test_size = data_split[1]['test_size']
             df_train, df_test = df.randomSplit([1 - test_size, test_size], seed = 13)
             fitted_model = model.fit(df_train)
             df_pred = fitted_model.transform(df_test)
+            labelCol = fitted_model.getLabelCol()
             if classification:
-                labelCol = fitted_model.getLabelCol()
                 res_metrics = Metrics.classification(df_pred, labelCol)
             else:
-                res_metrics = Metrics.regression(y_test.values, y_pred)
+                res_metrics = Metrics.regression(df_pred, labelCol)
         elif data_split[0] == 'cv':
-            cv = data_split[1]['cv'] if 'cv' in data_split[1] else 5
-            agg_func = data_split[1]['agg'] if 'agg' in data_split[1] else np.mean
-            res_metrics = Metrics.crossvalidation(model, X, y, classification, cv, agg_func)
-            model.fit(X,y)
-
-        elif data_split[0] == 'LOO':
-            cv = LeaveOneOut()
-            # enumerate splits
-            y_true, y_pred = list(), list()
-            for train_ix, test_ix in cv.split(X):
-                # split data
-                X_train, X_test = X.iloc[train_ix, :], X.iloc[test_ix, :]
-                y_train, y_test = y[train_ix].values, y[test_ix].values
-                # fit model
-                model.fit(X_train, y_train)
-                # evaluate model
-                yhat = model.predict(X_test)
-                # store
-                y_true.append(y_test[0])
-                y_pred.append(yhat[0])
-                if classification:
-                    res_metrics = Metrics.classification(y_true, y_pred, y_pred)
-                else:
-                    res_metrics = Metrics.regression(np.array(y_true), np.array(y_pred))
-            model.fit(X,y)
-        model = Wrapper(model, preprocessing, res_metrics, columns)
-        #if classification:
-        #    model.train_interpret(X)
-        return model
+            fitted_model, res_metrics = Metrics.crossvalidation(model, df, classification, **data_split[1])
+        final_model = Wrapper(fitted_model, res_metrics)
+        return final_model
 
 class TrainerSklearnUnsupervised(Trainer):
         
