@@ -2,7 +2,8 @@ from pyspark.ml.evaluation import (
     Evaluator,
     BinaryClassificationEvaluator as BCEval, 
     MulticlassClassificationEvaluator as MCEval,
-    RegressionEvaluator
+    RegressionEvaluator,
+    ClusteringEvaluator
 )
 from pyspark.ml.param import Param
 import pyspark.sql.functions as f
@@ -193,25 +194,24 @@ class Metrics:
             return cls.__binary_classification(df, labelCol, metricLabels)
 
     @classmethod
-    def clusterization(cls, X, labels):
+    def clusterization(cls, df, distanceMeasure='squaredEuclidean'):
         """
         Calculates some metrics on clustering quality
 
         Parameters
         ----------
-        X      : array[array], shape (n_linha, n_colunas)
-                 Matrix with the values that were used in the cluster
-        labels : array, shape (n_linha, 1)
-                 Vector with labels selected by the clustering method
-                 (eg KMeans)
+        df         : DataFrame
+            Dataframe with model predictions
 
         Returns
         -------
         dict : metrics results
         """
-        results = {'silhouette': silhouette_score(X, labels,
-                                                  metric='euclidean'),
-                   'calinski_harabaz': calinski_harabaz_score(X, labels)}
+        evaluator = ClusteringEvaluator(distanceMeasure=distanceMeasure)
+        results = {
+            'silhouette': evaluator.evaluate(df),
+            'distanceMeasure': distanceMeasure
+        }
         return results
 
 class CustomBinaryEvaluator(Evaluator, MLWriter, MLReader):

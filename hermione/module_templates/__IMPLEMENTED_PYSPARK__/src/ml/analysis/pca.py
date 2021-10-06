@@ -1,10 +1,9 @@
-import pandas as pd
-from sklearn.decomposition import PCA as PCA_sklearn
-from sklearn import metrics
+from pyspark.ml.feature import PCA
+from pyspark.ml.functions import vector_to_array
 
-class PCA:
+class SparkPCA:
     
-    def __init__(self, columns, prefix="prefix", k=2):
+    def __init__(self, inputCol, k=2):
         """
         Constructor
         
@@ -21,9 +20,9 @@ class PCA:
     	-------
     	PCA
         """
-        self.columns = columns
-        self.prefix = prefix
         self.k = k
+        self.inputCol = inputCol
+        self.pca = PCA(inputCol=inputCol, outputCol = "components")
 
     
     def __find_k(self, df, threshold):
@@ -39,15 +38,16 @@ class PCA:
     	-------
     	int
         """
-        self.pca = PCA_sklearn(n_components=len(self.columns))
-        self.pca.fit(df[ self.columns ].values)
-        for i in range(len(self.columns)-1):
-            if self.pca.explained_variance_ratio_[i]+self.pca.explained_variance_ratio_[i+1] < threshold:
-                if i == 0:
-                    raise Expecption("Not reduced by poor explicability")
-                return i+1
+        n_features = len(df.select(self.inputCol).limit(1).collect()[0][self.inputCol])
+        for i in range(n_features):
+            pca = self.pca.setK(i + 1)
+            ev = sum(pca.fit(df).explainedVariance)
+            if ev < threshold:
+                continue
+            else:
+                return i + 1
     
-    def __check(self, df: pd.DataFrame):
+    def __check(self, df):
         """
         Check dataframe contains all columns
 
@@ -60,12 +60,12 @@ class PCA:
     	-------
     	bool
         """
-        if not all(col in list(df.columns) for col in self.columns):
-            raise Exception('Missing columns') 
+        if self.inputCol not in df.columns:
+            raise Exception(f'Missing inputCol `{self.inputCol}`') 
         return True
 
 
-    def transform(self, df: pd.DataFrame):
+    def transform(self, df):
         """
         Transform the data
         
@@ -79,15 +79,16 @@ class PCA:
     	None
         """
         self.__check(df)
-        if self.pca is None:
-            raise Exception("Error - object not fitted")
-        reduced = self.pca.transform(df[self.columns].values)
-        for col in range(self.k):
-            df[self.prefix+"_"+str(col)] = [line[col] for line in reduced]
-        df.drop(self.columns, axis=1, inplace=True)
+        if isinstance(self.model, PCA):
+            raise Exception('Estimator not fitted.')
+        df_pred = self.model.transform(df)
+        for comp in range(self.model.getK()):
+            comp_number = comp + 1
+            df_pred = df_pred.withColumn(f'cmp_{comp_number}', vector_to_array('components').getItem(comp))
+        return df_pred.drop('components')
 
 
-    def fit(self, df : pd.DataFrame, threshold=0.4):
+    def fit(self, df):
         """
         Compute PCA object
 
@@ -101,13 +102,14 @@ class PCA:
     	None
         """
         self.__check(df)
-        if self.k is None:
-            self.k = self.__find_k(df,threshold)
-        self.pca = PCA_sklearn(n_components=self.k)
-        self.pca.fit(df[ self.columns ].values)
+        if type(self.k) is float and (self.k >= 0 and self.k <= 1):
+            self.k = self.__find_k(df, self.k)
+        pca = self.pca.setK(self.k)
+        self.model = pca.fit(df)
+        self.__report()
        
 
-    def fit_transform (self, df : pd.DataFrame, threshold=0.4):
+    def fit_transform (self, df):
         """
         Fit to data, then transform it.
 
@@ -121,17 +123,18 @@ class PCA:
     	None
         """
         self.__check(df)
-        if self.k is None:
-            self.k = self.__find_k(df,threshold)
-        self.pca = PCA_sklearn(n_components=self.k)
-        self.pca.fit(df[ self.columns ].values)
-        self.transform(df)
-        self.report()
-
-
-
+        if type(self.k) is float and (self.k >= 0 and self.k <= 1):
+            self.k = self.__find_k(df, self.k)
+        pca = self.pca.setK(self.k)
+        self.model = pca.fit(df)
+        self.__report()
+        df_pred = self.model.transform(df)
+        for comp in range(self.model.getK()):
+            comp_number = comp + 1
+            df_pred = df_pred.withColumn(f'cmp_{comp_number}', vector_to_array('components').getItem(comp))
+        return df_pred.drop('components')
     
-    def report(self):
+    def __report(self):
         """
         Returns explained variance
 
@@ -143,7 +146,5 @@ class PCA:
     	-------
     	None
         """
-        for col in range(self.k):
-            print("Explained variance ({col}): {ratio}".
-                  format(col = self.prefix+"_"+str(col),
-                         ratio = str(self.pca.explained_variance_ratio_[col])))
+        for col, ratio in zip(range(self.k), self.model.explainedVariance):
+            print(f"Explained variance ({col + 1}): {ratio}")

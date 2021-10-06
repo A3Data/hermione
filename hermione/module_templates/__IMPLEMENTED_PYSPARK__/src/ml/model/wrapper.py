@@ -1,6 +1,7 @@
 from joblib import dump, load
 from datetime import date
 import mlflow.spark
+import pyspark.sql.functions as f
 from mlflow import pyfunc
 
 from src.util import load_yaml, load_json
@@ -44,8 +45,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         """
         model = self.artifacts["model"]
         df_pred = model.transform(model_input)
-        pred_row = df_pred.select('prediction').collect()
-        return [c['prediction'] for c in pred_row]
+        return df_pred.select(*model_input.columns, 'prediction')
 
     def predict_proba(self, model_input, binary=False):
         """
@@ -62,11 +62,10 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         """
         model = self.artifacts["model"]
         df_pred = model.transform(model_input)
-        pred_row = df_pred.select('probability').collect()
         if binary:
-            return [c['probability'][1] for c in pred_row]
+            return df_pred.select(*model_input.columns, f.col('probability').getItem(1))
         else:
-            return[c['probability'][1] for c in pred_row]
+            return df_pred.select(*model_input.columns, 'probability')
         
     def load(self, path):
         """
@@ -83,7 +82,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         """
         return self.artifacts['model_instance'].load(path)
 
-    def save(self, path):
+    def save(self, path, overwrite=False):
         """
         Saves the model object to a specific path
 
@@ -96,7 +95,10 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         -------
         None
         """
-        self.artifacts['model'].save(path)
+        writer = self.artifacts['model'].write()
+        if overwrite:
+            writer = writer.overwrite()
+        writer.save(path)
 
     @staticmethod
     def load_mlflow(path):
