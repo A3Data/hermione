@@ -2,7 +2,7 @@ from joblib import dump, load
 from datetime import date
 import mlflow.spark
 import pyspark.sql.functions as f
-from mlflow import pyfunc
+from pyspark.ml.functions import vector_to_array
 
 from src.util import load_yaml, load_json
 
@@ -63,7 +63,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         model = self.artifacts["model"]
         df_pred = model.transform(model_input)
         if binary:
-            return df_pred.select(*model_input.columns, f.col('probability').getItem(1))
+            return df_pred.select(*model_input.columns, vector_to_array(f.col('probability')).getItem(1).alias('probability'))
         else:
             return df_pred.select(*model_input.columns, 'probability')
         

@@ -305,7 +305,7 @@ class CustomRegressionEvaluator(Evaluator, MLWriter, MLReader):
             .withColumn('smape', (f.col('abs_dif') / (f.col('abs_label') + f.abs(f.col('prediction'))))*100)
             .agg(f.mean('mape').alias('mape'), 
                  f.mean('smape').alias('smape'),
-                 (f.sum('abs_dif')/f.sum('abs_label')).alias('weighted_mape'))
+                 (100 * (f.sum('abs_dif')/f.sum('abs_label'))).alias('weighted_mape'))
             .collect()[0]
         )
         if self.metricName == 'mape':

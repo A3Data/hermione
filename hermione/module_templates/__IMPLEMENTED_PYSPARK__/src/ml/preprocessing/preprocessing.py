@@ -39,7 +39,10 @@ class SparkPreprocessor(CustomEstimator):
         -------
         SparkPreprocessor
         """
-        self.num_cols = {key: (value if type(value) is list else [value]) for key, value in num_cols.items()}
+        self.num_cols = {
+            key: (value if type(value) is list else [value]) 
+            for key, value in num_cols.items()
+        } if num_cols else None
         self.cat_cols = cat_cols if not cat_cols or type(cat_cols) is list else [cat_cols]
         pipeline = self.__prepare_transformers(impute_strategy)
         super().__init__(pipeline)
