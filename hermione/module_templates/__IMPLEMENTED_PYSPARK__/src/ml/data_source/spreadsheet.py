@@ -1,5 +1,5 @@
 from pyspark.sql.dataframe import DataFrame
-from ml.data_source.base import DataSource
+from .base import DataSource
 
 
 class Spreadsheet(DataSource):

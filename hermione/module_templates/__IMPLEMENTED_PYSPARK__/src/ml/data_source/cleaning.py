@@ -1,10 +1,9 @@
 import pyspark.sql.functions as f
-from pyspark.sql.window import Window
-from data_source import FlatFile
-from spark_utils import unidecode_udf, convert_decimal_udf
+from .spreadsheet import Spreadsheet
+from ...spark_utils import unidecode_udf, convert_decimal_udf
 
 FILE_PATHS = {
-    'data': 'path/to/file'
+    'data': '../../../data/raw/raw_train.csv'
 }
 
 class SparkCleaner:
@@ -27,9 +26,11 @@ class SparkCleaner:
             returns an instance of the object
         """
         self.spark = spark_session
-        self.ff_source = FlatFile(spark_session)
-        self.read_options = {}
-        self.save_path = 'destination/path'
+        self.ss_source = Spreadsheet(spark_session)
+        self.read_options = {
+            'header': True
+        }
+        self.save_path = 'teste'
 
     def read_data(self, format) -> None:
         """
@@ -45,7 +46,7 @@ class SparkCleaner:
         self:
             returns an instance of the object
         """
-        self.df = self.ff_source.read_data(FILE_PATHS['data'], format, **self.read_options)
+        self.df = self.ss_source.get_data(FILE_PATHS['data'], format, **self.read_options)
 
     def clean_types(self) -> None:
         """
@@ -58,13 +59,17 @@ class SparkCleaner:
         self:
             returns an instance of the object
         """
-        str_cols = []
+        str_cols = ['Sex']
         for c in str_cols:
             self.df = self.df.withColumn(c, unidecode_udf(f.initcap(f.trim(c))))
 
         dbl_cols = []
         for c in dbl_cols:
             self.df = self.df.withColumn(c, convert_decimal_udf(f.col(c)))
+
+        int_cols = ['Pclass', 'Age', 'Survived']
+        for c in int_cols:
+            self.df = self.df.withColumn(c, f.col(c).cast('int'))
 
         date_cols = []
         for c in date_cols:
@@ -103,7 +108,7 @@ class SparkCleaner:
         self:
             returns an instance of the object
         """
-        self.ff_source.write_data(self.df_cleaned, self.save_path, format, mode)
+        self.ss_source.write_data(self.df_cleaned, self.save_path, mode, format)
     
     def clean(self) -> None:
         """

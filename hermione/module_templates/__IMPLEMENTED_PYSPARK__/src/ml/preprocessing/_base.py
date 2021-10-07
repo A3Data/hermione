@@ -1,28 +1,46 @@
-
 from pyspark.ml.base import Estimator
-from pyspark.ml.util import MLWriter, MLReader, Identifiable
-from pyspark.ml.pipeline import Pipeline
+from pyspark.ml.util import MLWriter, MLReader
 
-
-class CustomEstimator(Estimator, MLWriter, MLReader, Identifiable):
-
-    def __init__(self, pipeline) -> None:
-        self.__pipeline = pipeline
+class CustomEstimator(Estimator, MLWriter, MLReader):
 
     def __repr__(self):
         return f'{self.__class__}'
-    
-    def _fit(self):
+
+    def assert_method(self, valid_methods, method):
+        """ 
+        Assert if it the input method is valid.
+        
+    	Parameters
+    	----------          
+        method_dict : Iterable[str]
+            iterable of valid methods
+
+        method  : str
+            input method
+
+    	Returns
+    	-------
         """
-        Implements abstract method
+        options = '`' + '`, `'.join(valid_methods) + '`.'
+        if method not in valid_methods:
+            raise Exception(f'Method not supported. Choose one from {options}')
+
+    def assert_columns(self, df_columns):
+        """ 
+        Assert if it the DataFrame has the columns to be normalized.
         
     	Parameters
     	----------            
+        df  : pyspark.sql.dataframe.DataFrame
+            input Spark DataFrame
+
     	Returns
     	-------
-        SparkScaler
         """
-        super()._fit()
+        options = '`' + '`, `'.join(df_columns) + '`.'
+        for col in self.estimator_cols:
+            if col not in df_columns:
+                raise Exception(f'Column `{col}` not present in the DataFrame. Avaliable columns are {options}')
 
     def fit(self, df):
         """
@@ -37,7 +55,8 @@ class CustomEstimator(Estimator, MLWriter, MLReader, Identifiable):
     	-------
         self
         """
-        self.__pipeline = self.__pipeline.fit(df)
+        self.assert_columns(df.columns)
+        self.estimator = self._fit().fit(df)
         return self
 
     def transform(self, df):
@@ -53,15 +72,21 @@ class CustomEstimator(Estimator, MLWriter, MLReader, Identifiable):
     	-------
         pyspark.sql.dataframe.DataFrame
         """
-        if isinstance(self.__pipeline, Pipeline):
+        if hasattr(self, 'estimator'):
+            df_cols = df.columns
+            self.assert_columns(df_cols)
+            df = self.estimator.transform(df)
+            return df.select(*df_cols, *self.final_cols)
+        else:
             raise Exception('Estimator not yet fitted.')
-        return self.__pipeline.transform(df)
 
     def fit_transform(self, df):
         """
         Fit estimators and transform the Dataframe
         
     	Parameters
+    	----------            
+        ----------   
     	----------            
         df  : pyspark.sql.dataframe.DataFrame
             input Spark DataFrame to be transformed
@@ -70,6 +95,9 @@ class CustomEstimator(Estimator, MLWriter, MLReader, Identifiable):
     	-------
         pyspark.sql.dataframe.DataFrame
         """
-        if isinstance(self.__pipeline, Pipeline):
-            self.__pipeline = self.__pipeline.fit(df)
-        return self.__pipeline.transform(df)
+        df_cols = df.columns
+        self.assert_columns(df_cols)
+        self.fit(df)
+        df = self.estimator.transform(df)
+        return df.select(*df_cols, *self.final_cols)
+    

@@ -2,7 +2,7 @@ from pyspark.ml.feature import Word2Vec, Tokenizer, HashingTF, IDF, CountVectori
 from pyspark.ml.pipeline import Pipeline
 from ._base import CustomEstimator
 
-class TextVectorizer(CustomEstimator):
+class SparkVectorizer(CustomEstimator):
     
     def __init__(self, inputCol, method, tokenized = False, **kwargs):
         """
@@ -28,19 +28,29 @@ class TextVectorizer(CustomEstimator):
             'tfidf': CountVectorizer,
             'word2vec': Word2Vec,
         }
-        if method not in methods_dict.keys():
-            options = '`' + '`, `'.join(methods_dict.keys()) + '`.'
-            raise Exception(f'Method not supported. Choose one from {options}')
-        algorithm = methods_dict[method](inputCol=inputCol, outputCol='word_vectors', **kwargs)
+        self.assert_method(methods_dict.keys(), method)
+        self.algorithm = methods_dict[method](inputCol=inputCol, outputCol='word_vectors', **kwargs)
+        self.estimator_cols = [inputCol]
+        self.final_cols = ['tokens', 'word_vectors'] if not tokenized else ['word_vectors']
+
+    def _fit(self):
+        """
+        Prepare the estimators
+        
+    	Parameters
+    	----------            
+    	Returns
+    	-------
+        pyspark.ml.pipeline.Pipeline
+        """
         stages = []
-        if not tokenized:
-            tokenizer = Tokenizer(inputCol=inputCol, outputCol='tokens')
-            algorithm = algorithm.setInputCol('tokens')
+        if not self.tokenized:
+            tokenizer = Tokenizer(inputCol=self.inputCol, outputCol='tokens')
+            algorithm = self.algorithm.setInputCol('tokens')
             stages.append(tokenizer)
         stages.append(algorithm)
-        if method in ['hashing_tfidf', 'tfidf']:
+        if isinstance(self.algorithm, (HashingTF, CountVectorizer)):
             algorithm = algorithm.setOutputCol('unscaled_vectors')
             idf = IDF(inputCol="unscaled_vectors", outputCol="word_vectors")
             stages.append(idf)
-        pipeline = Pipeline(stages=stages)
-        super().__init__(pipeline)
+        return Pipeline(stages=stages)

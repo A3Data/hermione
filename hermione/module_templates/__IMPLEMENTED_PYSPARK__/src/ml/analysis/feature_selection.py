@@ -1,6 +1,6 @@
 from pyspark.ml.feature import UnivariateFeatureSelector, VectorAssembler
 
-class FeatureSelector:
+class SparkFS:
     
     def __init__(
         self, 
@@ -48,7 +48,7 @@ class FeatureSelector:
         )
         return selector.fit(df).transform(df).select(*df.columns, 'selected_categorical')
         
-    def select(self, df):
+    def transform(self, df):
         """
         Identify the features to be selected.
         

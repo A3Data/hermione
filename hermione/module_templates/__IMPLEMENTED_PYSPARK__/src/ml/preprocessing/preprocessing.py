@@ -5,7 +5,6 @@ from pyspark.ml.feature import (
     Imputer
 )
 from ._base import CustomEstimator
-from pyspark.ml.util import MLWriter, MLReader
 from pyspark.ml.pipeline import Pipeline
 from src.ml.preprocessing.normalization import SparkScaler
 import logging
@@ -23,11 +22,11 @@ class SparkPreprocessor(CustomEstimator):
 
         Parameters
         ----------
-        num_cols   : dict
+        num_cols   : Dict[str]
             Receives dict with the normalization method as keys and columns on 
             which it will be applied as values
             Ex: norm_cols = {'zscore': ['salary', 'price'], 
-                            'min-max': ['heigth', 'age']}
+                             'min-max': ['heigth', 'age']}
 
         cat_cols : Union[list, str]
             Categorical columns present in the model
@@ -37,53 +36,15 @@ class SparkPreprocessor(CustomEstimator):
 
         Returns
         -------
-        SparkPreprocessor
         """
         self.num_cols = {
             key: (value if type(value) is list else [value]) 
             for key, value in num_cols.items()
         } if num_cols else None
         self.cat_cols = cat_cols if not cat_cols or type(cat_cols) is list else [cat_cols]
-        pipeline = self.__prepare_transformers(impute_strategy)
-        super().__init__(pipeline)
-
-    def __prepare_transformers(self, impute_strategy):
-        """
-        Prepare the transformer for preprocessing the DataFrames
-        
-    	Parameters
-    	----------            
-        impute_strategy: str
-            Strategy for completing missing values on numerical columns. Supports `mean`, `median` and `mode`.
-
-    	Returns
-    	-------
-        pyspark.ml.pipeline.Pipeline | list[pyspark.ml.Estimator]
-        """
-        estimators = []
-        input_cols = []
-        if self.cat_cols and None not in self.cat_cols:
-            estimators = estimators + self.__categoric()
-            input_cols = input_cols + self.ohe_cols
-        if self.num_cols:
-            if impute_strategy:
-                cols = [c for sublist in self.num_cols.values() for c in sublist]
-                imputer = (
-                    Imputer(strategy=impute_strategy)
-                    .setInputCols(cols)
-                    .setOutputCols(cols)
-                )
-                estimators.append(imputer)
-            estimators = estimators + self.__numeric()
-            num_input_cols = [method + '_scaled' for method in self.num_cols.keys()]
-            input_cols = input_cols + num_input_cols
-        self.assembler = VectorAssembler(
-            inputCols=input_cols, 
-            outputCol="features", 
-            handleInvalid = 'skip'
-        )
-        estimators.append(self.assembler)
-        return Pipeline(stages=estimators)
+        self.impute_strategy = impute_strategy
+        input_cols = [c for sbl in self.num_cols.values() for c in sbl] + self.cat_cols
+        self.estimator_cols = list(set(input_cols))
 
     def __categoric(self):
         """
@@ -122,8 +83,41 @@ class SparkPreprocessor(CustomEstimator):
         list[Estimator]
             Returns a list of estimators
         """
-        scalers = []
-        for method, col in self.num_cols.items():
-            scalers.append(SparkScaler(col, method))
-        return scalers
-    
+        scaler = SparkScaler(self.num_cols)
+        return scaler._fit()
+
+    def _fit(self):
+        """
+        Prepare the estimators
+        
+    	Parameters
+    	----------            
+    	Returns
+    	-------
+        pyspark.ml.pipeline.Pipeline
+        """
+        estimators = []
+        input_cols = []
+        if self.cat_cols and None not in self.cat_cols:
+            estimators.extend(self.__categoric())
+            input_cols.extend(self.ohe_cols)
+        if self.num_cols:
+            if self.impute_strategy:
+                cols = list(set([c for sublist in self.num_cols.values() for c in sublist]))
+                imputer = (
+                    Imputer(strategy=self.impute_strategy)
+                    .setInputCols(cols)
+                    .setOutputCols(cols)
+                )
+                estimators.append(imputer)
+            estimators.append(self.__numeric())
+            num_input_cols = [method + '_scaled' for method in self.num_cols.keys()]
+            input_cols.extend(num_input_cols)
+        self.assembler = VectorAssembler(
+            inputCols=input_cols, 
+            outputCol="features", 
+            handleInvalid = 'skip'
+        )
+        estimators.append(self.assembler)
+        self.final_cols = input_cols + ['features']
+        return Pipeline(stages=estimators)
