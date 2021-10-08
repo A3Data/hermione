@@ -1,7 +1,0 @@
-{
-"project_name": "hermione_pyspark",
-            "env_path": "hermione_pyspark/hermione_pyspark_env",
-            "files_path": "../data/raw/",
-            "key": "<<<<key>>>>",
-            "user": "<<<<user>>>>"
-            }
