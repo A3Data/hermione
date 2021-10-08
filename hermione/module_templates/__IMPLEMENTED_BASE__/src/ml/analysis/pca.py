@@ -84,7 +84,7 @@ class PCA:
         reduced = self.pca.transform(df[self.columns].values)
         for col in range(self.k):
             df[self.prefix+"_"+str(col)] = [line[col] for line in reduced]
-        return df.drop(columns = self.columns.values)
+        return df.drop(columns = self.columns)
 
 
     def fit(self, df : pd.DataFrame, threshold=0.4):

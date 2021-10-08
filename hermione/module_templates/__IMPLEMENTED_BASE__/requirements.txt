@@ -28,3 +28,5 @@ great-expectations
 tensorflow
 umap-learn
 keras
+pingouin==0.4.0
+mpmath

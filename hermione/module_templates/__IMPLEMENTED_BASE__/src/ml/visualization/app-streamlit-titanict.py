@@ -1,3 +1,6 @@
+import sys
+import os
+sys.path.append(os.path.abspath(''))
 import streamlit as st
 from ml.visualization.st_objects.pages.intro import IntroPage
 from ml.visualization.st_objects.pages.exploration import AnalysisPage
