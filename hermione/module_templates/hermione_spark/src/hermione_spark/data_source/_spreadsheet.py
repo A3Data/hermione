@@ -4,23 +4,20 @@ from .._base import DataSource
 
 class SparkSpreadsheet(DataSource):
     """
-    Class for reading flat files with Spark
+    Class used to read data from flat files
+    
+    Parameters
+    ----------            
+    spark_session  :   pyspark.sql.session.SparkSession
+        SparkSession used to read data
+    
+    Examples
+    --------
+    >>> ss_source = SpaekSpreadsheet(spark_session)
+    >>> df = ss_source.get_data('/path/to/file', 'csv', header=True)
     """
-
     def __init__(self, spark_session) -> None:
-        """
-        Instantiate class
-        
-        Parameters
-        ----------            
-        spark_session  :   pyspark.sql.session.SparkSession
-            SparkSession used to read data
 
-        Returns
-    	-------
-        self:
-            returns an instance of the object
-        """
         self.spark = spark_session
 
     def get_data(self, file_path, format, **kwargs) -> DataFrame:
@@ -37,7 +34,7 @@ class SparkSpreadsheet(DataSource):
             Additional reading options passed to `options()`.
         Returns
         -------
-        pyspark.sql.DataFrame
+        pyspark.sql.dataframe.DataFrame
         """
         return self.spark.read.format(format).options(**kwargs).load(file_path)
 
@@ -83,8 +80,6 @@ class SparkSpreadsheet(DataSource):
 
         Returns
     	-------
-        self:
-            returns an instance of the object
         """
         if n_partitions:
             df_partitions = df.rdd.getNumPartitions()

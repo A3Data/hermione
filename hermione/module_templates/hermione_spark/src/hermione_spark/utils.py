@@ -5,6 +5,8 @@ from unidecode import unidecode
 import numpy as np
 import os
 import re
+import yaml
+import json
 
 def get_spark_versions() -> 'list[str]':
     spark_home = os.environ['SPARK_HOME']
@@ -19,6 +21,17 @@ if int(spark_version[0]) < 3:
         return f(self)
 
     DataFrame.transform = transform
+
+def load_yaml(filepath):
+    with open(filepath, 'r') as stream:
+        return yaml.safe_load(stream)
+
+
+def load_json(filepath):
+    """Load a json file."""
+    with open(filepath, "r", encoding='utf8') as fp:
+        obj = json.load(fp)
+    return obj
 
 # UDFs
 

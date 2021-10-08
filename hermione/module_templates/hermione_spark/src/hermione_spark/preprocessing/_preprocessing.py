@@ -5,13 +5,13 @@ from pyspark.ml.feature import (
     Imputer
 )
 from pyspark.ml.pipeline import Pipeline
-from .._base import CustomEstimator
+from .._base import CustomEstimator, Asserter
 from ._normalization import SparkScaler
 import logging
 
 logging.getLogger().setLevel(logging.INFO)
 
-class SparkPreprocessor(CustomEstimator):
+class SparkPreprocessor(CustomEstimator, Asserter):
     """
     Class to perform data preprocessing before training
     """
@@ -37,13 +37,25 @@ class SparkPreprocessor(CustomEstimator):
         Returns
         -------
         """
-        self.num_cols = {
-            key: (value if type(value) is list else [value]) 
-            for key, value in num_cols.items()
-        } if num_cols else None
-        self.cat_cols = cat_cols if not cat_cols or type(cat_cols) is list else [cat_cols]
+        input_cols = []
+        if num_cols:
+            self.assert_type(num_cols, dict, 'num_cols')
+            self.num_cols = {
+                key: (value if type(value) is list else [value]) 
+                for key, value in num_cols.items()
+            }
+            input_cols.extend([c for sbl in self.num_cols.values() for c in sbl])
+        else:
+            self.num_cols = None
+        if cat_cols:
+            self.assert_type(cat_cols, (list, str), 'cat_cols')
+            self.cat_cols = cat_cols if type(cat_cols) is list else [cat_cols]
+            input_cols.extend(self.cat_cols)
+        else:
+            self.cat_cols = None
+        if not cat_cols and not num_cols:
+            raise Exception('Provide atleast one set of columns to preprocess.')
         self.impute_strategy = impute_strategy
-        input_cols = [c for sbl in self.num_cols.values() for c in sbl] + self.cat_cols
         self.estimator_cols = list(set(input_cols))
 
     def __categoric(self):

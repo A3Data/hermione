@@ -3,23 +3,21 @@ from .._base import DataSource
 
 class SparkDataBase(DataSource):
     """
-    Class for data from databases with Spark
+    Class used to read data from databases
+    
+    Parameters
+    ----------            
+    spark_session  :   pyspark.sql.session.SparkSession
+        SparkSession used to read data
+    
+    Examples
+    --------
+    >>> db_source = SparkDataBase(spark_session)
+    >>> df = db_source.get_data()
     """
 
     def __init__(self, spark_session) -> None:
-        """
-        Instantiate class
-        
-        Parameters
-        ----------            
-        spark_session  :   pyspark.sql.session.SparkSession
-            SparkSession used to read data
 
-        Returns
-    	-------
-        self:
-            returns an instance of the object
-        """
         self.spark = spark_session
     
     def get_data(self)-> DataFrame:
@@ -28,13 +26,9 @@ class SparkDataBase(DataSource):
         
         Parameters
         -----------         
-        arg : type
-              description
-        
         Returns
         -------
-        pd.DataFrame    
-            Dataframe with data
+        pyspark.sql.dataframe.DataFrame 
         """
         pass
     

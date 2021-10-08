@@ -1,4 +1,4 @@
-from .._base import CustomEstimator
+from .._base import CustomEstimator, Asserter
 from pyspark.ml.feature import (
     VectorAssembler,
     MinMaxScaler,
@@ -8,7 +8,7 @@ from pyspark.ml.feature import (
 )
 from pyspark.ml.pipeline import Pipeline
 
-class SparkScaler(CustomEstimator):
+class SparkScaler(CustomEstimator, Asserter):
 
     def __init__(self, mapping):
         """ 
@@ -25,6 +25,7 @@ class SparkScaler(CustomEstimator):
     	Returns
     	-------
         """
+        self.assert_type(mapping, dict, 'mapping')
         self.mapping = {
             key: (value if type(value) is list else [value]) 
             for key, value in mapping.items()

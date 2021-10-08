@@ -7,24 +7,39 @@ FILE_PATHS = {
 }
 
 class SparkCleaner:
-    """ 
+    """
     Class used to clean perform basic cleaning with Spark
+    
+    Parameters
+    ----------            
+    spark_session  :   pyspark.sql.session.SparkSession
+        SparkSession used to read data
+
+    Attributes
+    ----------
+    df : pyspark.sql.dataframe.DataFrame
+        Base Spark DataFrame read from raw
+
+    df_cleaned : pyspark.sql.dataframe.DataFrame
+        Cleaned Spark DataFrame
+
+    read_options : dict
+        Dict with options passed to SparkSession.DataFrameWriter
+    
+    save_path : str
+        Path to where the final files should be written
+
+    ss_source : SparkSpreadsheet
+        Object used to read and write data
+    
+    Examples
+    --------
+    >>> cleaner = SparkCleaner(spark_session)
+    >>> cleaner.clean()
     """
 
     def __init__(self, spark_session) -> None:
-        """
-        Instantiates class
-        
-        Parameters
-        ----------     
-        spark_session  :   pyspark.sql.session.SparkSession
-            SparkSession that is used to manipulate data.
-        
-        Returns
-    	-------
-        self:
-            returns an instance of the object
-        """
+
         self.spark = spark_session
         self.ss_source = SparkSpreadsheet(spark_session)
         self.read_options = {

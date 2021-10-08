@@ -40,11 +40,28 @@ class Trainer(ABC):
         """
         pass
          
+class Asserter:
 
-class CustomEstimator(Estimator, MLWriter, MLReader):
+    def assert_type(self, value, _type, name):
+        """ 
+        Assert if it the input value is of the correct type.
+        
+    	Parameters
+    	----------          
+        value : obj
+            Any python object
 
-    def __repr__(self):
-        return f'{self.__class__}'
+        _type  : any
+            the desired type of the value
+
+        name : str
+            Name of the input
+
+    	Returns
+    	-------
+        """
+        if not isinstance(value, _type):
+            raise TypeError(f'Input `{name}` must be of type {_type}.')
 
     def assert_method(self, valid_methods, method):
         """ 
@@ -63,7 +80,7 @@ class CustomEstimator(Estimator, MLWriter, MLReader):
         """
         options = '`' + '`, `'.join(valid_methods) + '`.'
         if method not in valid_methods:
-            raise Exception(f'Method not supported. Choose one from {options}')
+            raise ValueError(f'Method not supported. Choose one from {options}')
 
     def assert_columns(self, df_columns):
         """ 
@@ -80,7 +97,12 @@ class CustomEstimator(Estimator, MLWriter, MLReader):
         options = '`' + '`, `'.join(df_columns) + '`.'
         for col in self.estimator_cols:
             if col not in df_columns:
-                raise Exception(f'Column `{col}` not present in the DataFrame. Avaliable columns are {options}')
+                raise ValueError(f'Column `{col}` not present in the DataFrame. Avaliable columns are {options}')
+
+class CustomEstimator(Estimator, MLWriter, MLReader):
+
+    def __repr__(self):
+        return f'{self.__class__}'
 
     def fit(self, df):
         """

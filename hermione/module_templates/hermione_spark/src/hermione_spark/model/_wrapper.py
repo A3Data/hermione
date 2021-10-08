@@ -4,7 +4,7 @@ import mlflow.spark
 import pyspark.sql.functions as f
 from pyspark.ml.functions import vector_to_array
 
-from src.util import load_yaml, load_json
+from ..utils import load_yaml, load_json
 
 
 class SparkWrapper(mlflow.pyfunc.PythonModel):
