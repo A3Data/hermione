@@ -2,13 +2,15 @@ import pyspark.sql.functions as f
 import pyspark.sql.types as t
 from pyspark.sql.dataframe import DataFrame
 from unidecode import unidecode
+from typing import List
 import numpy as np
 import os
 import re
 import yaml
 import json
 
-def get_spark_versions() -> 'list[str]':
+def get_spark_versions() -> List[str]:
+    """get spark and hadoop versions"""
     spark_home = os.environ['SPARK_HOME']
     spark_version = re.search('(?<=spark-).+(?=-bin)', spark_home).group(0)
     hadoop_version = re.search('(?<=hadoop).+', spark_home).group(0)
@@ -23,6 +25,7 @@ if int(spark_version[0]) < 3:
     DataFrame.transform = transform
 
 def load_yaml(filepath):
+    """Load a yaml file."""
     with open(filepath, 'r') as stream:
         return yaml.safe_load(stream)
 
@@ -37,6 +40,7 @@ def load_json(filepath):
 
 @f.udf(returnType=t.StringType())
 def unidecode_udf(string):
+    """Spark UDF to remove special characters from string columns"""
     if not string:
         return None
     else:
@@ -44,6 +48,7 @@ def unidecode_udf(string):
 
 @f.udf(returnType=t.DoubleType())
 def convert_decimal_udf(string):
+    """Spark UDF to convert comma-separated decimal numbers to point-separated decimal numbers"""
     if string is None:
         return None
     else:
@@ -52,6 +57,7 @@ def convert_decimal_udf(string):
 
 @f.udf(returnType=t.FloatType())
 def array_product_udf(array):
+    """Spark UDF to return the product of an array of numeric values"""
     if not array:
         return None
     else:
@@ -61,6 +67,7 @@ def array_product_udf(array):
 
 @f.udf(returnType=t.FloatType())
 def array_sum_udf(array):
+    """Spark UDF to return the sum of an array of numeric values"""
     if not array:
         return None
     else:
@@ -71,6 +78,7 @@ def array_sum_udf(array):
 # Custom methods
 
 def df_from_struct(cols, extract_col, explode) -> DataFrame:
+    """Function used in the `DataFrame.tranform()` to extract columns from a struc column"""
     def _(df):
         if explode:
             df = df.withColumn(extract_col, f.explode(extract_col))
@@ -86,6 +94,7 @@ def df_from_struct(cols, extract_col, explode) -> DataFrame:
     return _
 
 def renamer(dict) -> DataFrame:
+    """Function used in the `DataFrame.tranform()` to rename columns based on a dictionary mapping"""
     def _(df):
         for c, n in dict.items():
             df = df.withColumnRenamed(c, n)
@@ -94,6 +103,7 @@ def renamer(dict) -> DataFrame:
 
 
 def unpivot(*args, col_name="categorias", value_name="valor") -> DataFrame:
+    """Function used in the `DataFrame.tranform()` to unpivot columns, that is, convert columns in rows"""
     if not args[0]:
         key_cols = []
     else:
