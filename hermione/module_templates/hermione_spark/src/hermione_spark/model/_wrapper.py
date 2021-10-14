@@ -8,22 +8,27 @@ from ..utils import load_yaml, load_json
 
 
 class SparkWrapper(mlflow.pyfunc.PythonModel):
-    def __init__(self, model=None, metrics=None):
-        """
-        Constructor
+    """
+    Class used to store artifacts of models fitted using Spark ML
+    
+    Parameters
+    ----------            
+    model : object
+        If it's just a model: enter all parameters
+        if it is more than one model: do not enter parameters and use
+        the add method to add each of the models
+        
+    metrics : Dict[object]
+        Dictionary with the metrics of the model's result
 
-        Parameters
-        ----------
-        model         :   object
-                          If it's just a model: enter all parameters
-                          if it is more than one model: do not enter parameters and use
-                          the add method to add each of the models
-        metrics       :   dict
-                          Dictionary with the metrics of the result of the model
-        Returns
-        -------
-        WrapperModel
-        """
+    Attributes
+    ----------
+    artifacts : Dict[object]
+        Dict with the main artifacts related to the model.
+    """
+
+    def __init__(self, model=None, metrics=None):
+
         self.artifacts = dict()
         self.artifacts["model"] = model
         self.artifacts['model_instance'] = type(model)
@@ -32,16 +37,16 @@ class SparkWrapper(mlflow.pyfunc.PythonModel):
 
     def predict(self, model_input):
         """
-        Method that returns the result of the prediction on a dataset
+        Method that returns the result of the prediction on a Spark DataFrame
 
         Parameters
         ----------
-        df : pd.DataFrame
-             Data to be predicted
+        df : pyspark.sql.dataframe.DataFrame
+            Data to be predicted
 
         Returns
         -------
-        list
+        pyspark.sql.dataframe.DataFrame
         """
         model = self.artifacts["model"]
         df_pred = model.transform(model_input)
@@ -49,16 +54,16 @@ class SparkWrapper(mlflow.pyfunc.PythonModel):
 
     def predict_proba(self, model_input, binary=False):
         """
-        Method that returns the result of the prediction on a dataset
+        Method that returns the result of the prediction on a Spark DataFrame
 
         Parameters
         ----------
-        df : pd.DataFrame
-             data to be predicted
+        df : pyspark.sql.dataframe.DataFrame
+            Data to be predicted
 
         Returns
         -------
-        list
+        pyspark.sql.dataframe.DataFrame
         """
         model = self.artifacts["model"]
         df_pred = model.transform(model_input)
@@ -69,16 +74,16 @@ class SparkWrapper(mlflow.pyfunc.PythonModel):
         
     def load(self, path):
         """
-        Load the model object to a specific path
+        Load the model object from a specific path
 
         Parameters
         ----------
         path : str
-               path where the model object will be saved
+            Path where the model object is stored
 
         Returns b
         -------
-        None
+        Model
         """
         return self.artifacts['model_instance'].load(path)
 
@@ -89,11 +94,10 @@ class SparkWrapper(mlflow.pyfunc.PythonModel):
         Parameters
         ----------
         path : str
-               path where the model object will be saved
+            Path to where the model object should be saved
 
         Returns
         -------
-        None
         """
         writer = self.artifacts['model'].write()
         if overwrite:
@@ -103,12 +107,12 @@ class SparkWrapper(mlflow.pyfunc.PythonModel):
     @staticmethod
     def load_mlflow(path):
         """
-        Loads the model object in a specific path (pyfunc)
+        Loads the model object from a specific path (pyfunc)
 
         Parameters
         ----------
         path : str
-               path where the model object will be loaded.
+            Path where the model object is stored
 
         Returns
         -------
@@ -123,7 +127,7 @@ class SparkWrapper(mlflow.pyfunc.PythonModel):
         Parameters
         ----------
         path : str
-               path where the model object will be loaded.
+            Path to where the model object should be saved
 
         Returns
         -------
@@ -145,11 +149,9 @@ class SparkWrapper(mlflow.pyfunc.PythonModel):
 
         Parameters
         ----------
-        self : object Wrapper
-
         Returns
         -------
-        dict
+        Dict[object]
         """
         return self.artifacts["metrics"]
 
@@ -159,11 +161,9 @@ class SparkWrapper(mlflow.pyfunc.PythonModel):
 
         Parameters
         ----------
-        self : object Wrapper
-
         Returns
         -------
-        dict
+        Model
         """
         return self.artifacts["model"]
 
@@ -173,11 +173,9 @@ class SparkWrapper(mlflow.pyfunc.PythonModel):
 
         Parameters
         ----------
-        self : object Wrapper
-
         Returns
         -------
-        dict
+        Model
         """
         return self.artifacts["model_instance"]
 

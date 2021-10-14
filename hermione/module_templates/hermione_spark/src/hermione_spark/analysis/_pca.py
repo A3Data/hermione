@@ -5,7 +5,7 @@ from .._base import Asserter
 
 class SparkPCA(Asserter):
     """
-    Class used to perform Principal Components Analysis with Spark
+    Class used to perform Principal Components Analysis with Spark ML
     
     Parameters
     ----------            
@@ -19,10 +19,13 @@ class SparkPCA(Asserter):
     Attributes
     ----------
     estimator_cols : list[str]
-        List of strings that are necessary to execute the model. Used to assert if columns are in the DataFrame to be fitted or transformed.
+        List of strings with the columns that are necessary to execute the model. Used to assert if columns are in the DataFrame to be fitted or transformed.
 
     estimator : pyspark.ml.pipeline.PipelineModel
         Fitted pipeline with a VectorAssembler transformer and a PCAModel
+
+    k : int | float
+        Number of desired components
     
     pca : pyspark.ml.feature.PCA
         Estimator used to fit the model
@@ -36,6 +39,16 @@ class SparkPCA(Asserter):
     >>> df = spark.createDataFrame(data, ['id', "num_col1", "num_col2", 'num_col3', 'num_col4'])
     >>> pca = SparkPCA(["num_col1", "num_col2", 'num_col3', 'num_col4'], .7)
     >>> pca.fit_transform(df).show()
+    Explained variance (1): 0.6742215494358871
+    Explained variance (2): 0.2439515744953364
+    +---+--------+--------+--------+--------+------------------+-------------------+
+    | id|num_col1|num_col2|num_col3|num_col4|             cmp_1|              cmp_2|
+    +---+--------+--------+--------+--------+------------------+-------------------+
+    |  1|     0.0|     5.0|    12.0|   102.0| 70.07001321358567|-20.436957033967012|
+    |  2|     1.0|    54.0|    27.0|   142.0|132.72695970656463|  -37.4676157300962|
+    |  3|     9.0|    27.0|    34.0|    98.0| 82.98490516179737| -42.84278493554484|
+    |  4|     8.0|     9.0|    52.0|   112.0| 78.12025454767982|-61.822109086408844|
+    +---+--------+--------+--------+--------+------------------+-------------------+
     """
     def __init__(self, inputCols, k=2):
 

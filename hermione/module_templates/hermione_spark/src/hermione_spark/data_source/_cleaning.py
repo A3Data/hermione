@@ -29,6 +29,9 @@ class SparkCleaner:
     save_path : str
         Path to where the final files should be written
 
+    spark  :   pyspark.sql.session.SparkSession
+        SparkSession used to read data
+
     ss_source : SparkSpreadsheet
         Object used to read and write data
     

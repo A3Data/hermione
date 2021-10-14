@@ -1,26 +1,58 @@
 from pyspark.ml.feature import Word2Vec, Tokenizer, HashingTF, IDF, CountVectorizer
 from pyspark.ml.pipeline import Pipeline
-from .._base import CustomEstimator
+from .._base import CustomEstimator, Asserter
 
-class SparkVectorizer(CustomEstimator):
+class SparkVectorizer(CustomEstimator, Asserter):
+    """
+    Class used to vectorize text data using Spark ML
     
+    Parameters
+    ----------            
+    inputCol : str
+        Column that should be used in the vectorization
+
+    method : str
+        The vectorizer algorithm. Supported methods are "tfidf", "hashing_tfidf" and "word2vec".
+
+    tokenized : bool
+        Boolean indicating if the text column already is tokenized or not.
+
+    **kwargs : object
+        Other arguments passed to the vectorizer algorithm
+
+    Attributes
+    ----------
+    algorithm: str
+        Strategy for completing missing values on numerical columns. Supports "mean", "median" and "mode".
+
+    estimator_cols : list[str]
+        List of strings with the columns that are necessary to execute the model. Used to assert if columns are in the DataFrame to be fitted or transformed.
+
+    final_cols : list[str]
+        List of strings with the columns that should be appended to the resulting DataFrame.
+    
+    inputCol : str
+        Column that should be used in the vectorization
+    
+    tokenized : bool
+        Boolean indicating if the text column already is tokenized or not.
+    
+    Examples
+    --------
+    >>> data = [(1,'Using Spark is really cool'), (2, 'Hermione is such a great tool'), (3, 'Data science is nice'), ]
+    >>> df = spark.createDataFrame(data, ['id', "text"])
+    >>> vectorizer = SparkVectorizer('text', 'tfidf')
+    >>> vectorizer.fit_transform(df).show()
+    +---+--------------------+--------------------+--------------------+
+    | id|                text|              tokens|        word_vectors|
+    +---+--------------------+--------------------+--------------------+
+    |  1|Using Spark is re...|[using, spark, is...|(13,[0,2,4,8,9],[...|
+    |  2|Hermione is such ...|[hermione, is, su...|(13,[0,1,3,5,7,11...|
+    |  3|Data science is nice|[data, science, i...|(13,[0,6,10,12],[...|
+    +---+--------------------+--------------------+--------------------+
+    """
     def __init__(self, inputCol, method, tokenized = False, **kwargs):
-        """
-        Constructor
-        
-    	Parameters
-    	----------            
-        vectorizer_cols : dict
-                       Receives a dict with the name of the vectorizer to be 
-                       performed and which are the columns
-                       Ex: vectorizer_cols = {'embedding_median': ['col'], 
-                                              'embedding_mean': ['col'],
-                                              'tf_idf': ['col'],
-                                              'bag_of_words' : [col]}
-    	Returns
-    	-------
-        Normalization
-        """
+
         self.inputCol = inputCol
         self.tokenized = tokenized
         methods_dict = {

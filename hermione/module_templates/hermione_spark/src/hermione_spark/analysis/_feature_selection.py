@@ -4,11 +4,11 @@ from .._base import Asserter
 
 class SparkFS(Asserter):
     """
-    Class used to perform Feature Selection with Spark
+    Class used to perform Feature Selection with Spark ML
     
     Parameters
     ----------            
-    mapping : Dict
+    mapping : Dict[object]
         Dictionary with information concerning the selection. It should be in the following format:
 
         * <key> str : column types to be selected. One of "categorical" or "continuous".
@@ -32,7 +32,16 @@ class SparkFS(Asserter):
     Attributes
     ----------
     estimator_cols : list[str]
-        List of strings that are necessary to execute the model. Used to assert if columns are in the DataFrame to be fitted or transformed.
+        List of strings with the columns that are necessary to execute the model. Used to assert if columns are in the DataFrame to be fitted or transformed.
+    
+    labelCol : str
+        The column of interest, with which each column to be selected will be tested
+    
+    labelType : str
+        The type of `labelCol`. Available values are "categorical" or "continuous".
+
+    mapping : Dict[object]
+        Dictionary with information concerning the selection
 
     Examples
     --------
@@ -52,6 +61,14 @@ class SparkFS(Asserter):
     ... }
     >>> selector = SparkFS(mapping, 'label', 'categorical')
     >>> selector.transform(df).show()
+    +---+--------+--------+--------+--------+-----+-----------------+
+    | id|num_col1|num_col2|cat_col1|cat_col2|label|selected_features|
+    +---+--------+--------+--------+--------+-----+-----------------+
+    |  1|     0.0|     5.0|       0|       0|    0|        [5.0,0.0]|
+    |  2|     1.0|    54.0|       0|       1|    1|       [54.0,0.0]|
+    |  3|     9.0|    27.0|       1|       0|    1|       [27.0,1.0]|
+    |  4|     8.0|     9.0|       1|       1|    0|        [9.0,1.0]|
+    +---+--------+--------+--------+--------+-----+-----------------+
     """
     def __init__(self, mapping, labelCol, labelType):
 

@@ -78,7 +78,7 @@ class SparkCluster:
         K : Iterable[int]
             possible values of k
 
-        wss : Iterable[double] 
+        wss : Iterable[float] 
             The respective Within-Cluster-Sum of Squared Errors (WSS) for each value of k in `K`.
 
         Returns
@@ -107,7 +107,7 @@ class SparkCluster:
         K : Iterable[int]
             possible values of k
 
-        sil : Iterable[double] 
+        sil : Iterable[float] 
             The respective average silhouette for each value of k in `K`.
 
         Returns

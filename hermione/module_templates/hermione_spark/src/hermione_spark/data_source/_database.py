@@ -10,6 +10,11 @@ class SparkDataBase(DataSource):
     spark_session  :   pyspark.sql.session.SparkSession
         SparkSession used to read data
     
+    Attributes
+    ----------
+    spark  :   pyspark.sql.session.SparkSession
+        SparkSession used to read data
+
     Examples
     --------
     >>> db_source = SparkDataBase(spark_session)
