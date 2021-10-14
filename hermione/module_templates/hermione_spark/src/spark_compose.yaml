@@ -7,4 +7,6 @@ services:
       - "8888:8888"
     volumes:
       - ./ml/notebooks/:/home/jovyan/work/
+      - ../src/hermione_spark/:/home/jovyan/hermione_spark/
+      - ../src/config/:/home/jovyan/config/
       - ../data/:/home/jovyan/data/
