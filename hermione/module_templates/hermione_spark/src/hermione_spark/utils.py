@@ -4,21 +4,10 @@ from pyspark.sql.dataframe import DataFrame
 from unidecode import unidecode
 from typing import List
 import numpy as np
-import os
-import re
 import yaml
 import json
 
-def get_spark_versions() -> List[str]:
-    """get spark and hadoop versions"""
-    spark_home = os.environ['SPARK_HOME']
-    spark_version = re.search('(?<=spark-).+(?=-bin)', spark_home).group(0)
-    hadoop_version = re.search('(?<=hadoop).+', spark_home).group(0)
-    return (spark_version, hadoop_version)
-
-spark_version, hadoop_version = get_spark_versions()
-
-if int(spark_version[0]) < 3:
+if not hasattr(DataFrame, 'transform'):
     def transform(self, f) -> DataFrame:
         return f(self)
 

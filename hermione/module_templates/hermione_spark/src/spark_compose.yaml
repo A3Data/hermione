@@ -1,12 +1,15 @@
 services:
   webapp:
     container_name: pyspark_notebook
-    image: jupyter/pyspark-notebook
+    build:
+      context: .
+      dockerfile: ../src/hermione_spark/pyspark_notebook/Dockerfile
+    image: pyspark_notebook
     command: start.sh jupyter lab --LabApp.token=''
     ports:
       - "8888:8888"
     volumes:
       - ./ml/notebooks/:/home/jovyan/work/
-      - ../src/hermione_spark/:/home/jovyan/hermione_spark/
-      - ../src/config/:/home/jovyan/config/
+      - ./hermione_spark/:/home/jovyan/hermione_spark/
+      - ./config/:/home/jovyan/config/
       - ../data/:/home/jovyan/data/
