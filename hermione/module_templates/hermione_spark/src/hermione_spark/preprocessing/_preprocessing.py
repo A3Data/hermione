@@ -24,7 +24,7 @@ class SparkPreprocessor(CustomEstimator, Asserter):
     cat_cols : Union[list, str]
         Categorical columns present in the model
 
-    impute_strategy: str
+    input_strategy: str
         Strategy for completing missing values on numerical columns. Supports "mean", "median" and "mode".
 
     Attributes
@@ -38,7 +38,7 @@ class SparkPreprocessor(CustomEstimator, Asserter):
     final_cols : list[str]
         List of strings with the columns that should be appended to the resulting DataFrame.
 
-    impute_strategy: str
+    input_strategy: str
         Strategy for completing missing values on numerical columns. Supports "mean", "median" and "mode".
     
     num_cols   : Dict[str]
@@ -62,7 +62,7 @@ class SparkPreprocessor(CustomEstimator, Asserter):
     |  4|     8.0|     9.0|       b|       e|(2,[1],[1.0])|(3,[2],[1.0])|[0.75192061774140...|[0.0,1.0,0.0,0.0,...|
     +---+--------+--------+--------+--------+-------------+-------------+--------------------+--------------------+
     """
-    def __init__(self, num_cols = None, cat_cols = None, impute_strategy=None):
+    def __init__(self, num_cols = None, cat_cols = None, input_strategy=None):
 
         input_cols = []
         if num_cols:
@@ -82,7 +82,7 @@ class SparkPreprocessor(CustomEstimator, Asserter):
             self.cat_cols = None
         if not cat_cols and not num_cols:
             raise Exception('Provide atleast one set of columns to preprocess.')
-        self.impute_strategy = impute_strategy
+        self.input_strategy = input_strategy
         self.estimator_cols = list(set(input_cols))
 
     def __categoric(self):
@@ -140,10 +140,10 @@ class SparkPreprocessor(CustomEstimator, Asserter):
             estimators.extend(self.__categoric())
             input_cols.extend(self.ohe_cols)
         if self.num_cols:
-            if self.impute_strategy:
+            if self.input_strategy:
                 cols = list(set([c for sublist in self.num_cols.values() for c in sublist]))
                 imputer = (
-                    Imputer(strategy=self.impute_strategy)
+                    Imputer(strategy=self.input_strategy)
                     .setInputCols(cols)
                     .setOutputCols(cols)
                 )

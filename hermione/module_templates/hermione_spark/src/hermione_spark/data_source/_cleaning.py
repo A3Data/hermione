@@ -3,7 +3,7 @@ from ._spreadsheet import SparkSpreadsheet
 from ..utils import unidecode_udf, convert_decimal_udf
 
 FILE_PATHS = {
-    'data': '../../../data/raw/raw_train.csv'
+    'data': '../../../data/raw/train.csv'
 }
 
 class SparkCleaner:
@@ -48,7 +48,7 @@ class SparkCleaner:
         self.read_options = {
             'header': True
         }
-        self.save_path = 'teste'
+        self.save_path = '../../../data/refined/train'
 
     def read_data(self, format) -> None:
         """
@@ -77,15 +77,15 @@ class SparkCleaner:
         self:
             returns an instance of the object
         """
-        str_cols = ['Sex']
+        str_cols = ['Sex', 'Name']
         for c in str_cols:
             self.df = self.df.withColumn(c, unidecode_udf(f.initcap(f.trim(c))))
 
-        dbl_cols = []
+        dbl_cols = ['Fare']
         for c in dbl_cols:
             self.df = self.df.withColumn(c, convert_decimal_udf(f.col(c)))
 
-        int_cols = ['Pclass', 'Age', 'Survived']
+        int_cols = ['PassengerId', 'Pclass', 'Age', 'Survived', 'SibSp', 'Parch']
         for c in int_cols:
             self.df = self.df.withColumn(c, f.col(c).cast('int'))
 
@@ -104,9 +104,20 @@ class SparkCleaner:
         self:
             returns an instance of the object
         """
-        self.df_cleaned = self.df
+        predicate = """
+            CASE WHEN Embarked = 'S' THEN 'Southampton'
+                 WHEN Embarked = 'Q' THEN 'Queenstown'
+                 WHEN Embarked = 'C' THEN 'Cherbourg'
+                 ELSE 'Unknown'
+            END
+        """
+        self.df_cleaned = (
+            self.df
+            .withColumn('Embarked', f.expr(predicate))
+            .withColumn('total_relatives', f.col('SibSp') + f.col('Parch'))
+        )
 
-    def write_data(self, format, mode='error') -> None:
+    def write_data(self, format, mode) -> None:
         """
         Saves intermediate DataFrames generated in this process.
         
@@ -128,12 +139,19 @@ class SparkCleaner:
         """
         self.ss_source.write_data(self.df_cleaned, self.save_path, mode, format)
     
-    def clean(self) -> None:
+    def clean(self, mode='error') -> None:
         """
         Wrapper for running cleaner.
         
         Parameters
-        ----------     
+        ----------
+        mode : str
+            specify the mode of writing data, if data already exist in the designed path
+            * append: Append the contents of the DataFrame to the existing data
+            * overwrite: Overwrite existing data
+            * ignore: Silently ignores this operation
+            * error or errorifexists (default case): Raises an error
+           
         Returns
     	-------
         self:
@@ -142,4 +160,4 @@ class SparkCleaner:
         self.read_data('csv')
         self.clean_types()
         self.clean_specific()
-        self.write_data('parquet')
+        self.write_data('parquet', mode)

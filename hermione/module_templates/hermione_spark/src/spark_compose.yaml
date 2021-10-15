@@ -9,7 +9,5 @@ services:
     ports:
       - "8888:8888"
     volumes:
-      - ./ml/notebooks/:/home/jovyan/work/
-      - ./hermione_spark/:/home/jovyan/hermione_spark/
-      - ./config/:/home/jovyan/config/
+      - ../src/:/home/jovyan/work/
       - ../data/:/home/jovyan/data/
