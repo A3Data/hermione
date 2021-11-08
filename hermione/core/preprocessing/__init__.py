@@ -1,11 +1,9 @@
-from .preprocessing import Preprocessor
-from .normalization import Normalizer
-from .text_vectorizer import TextVectorizer
-from .datadrift import DataDrift
+from ._normalization import Normalizer
+from ._text_vectorizer import TextVectorizer
+from ._datadrift import DataDrift
 
 
 __all__ = [
-    'Preprocessor',
     'Normalizer',
     'TextVectorizer',
     'DataDrift'

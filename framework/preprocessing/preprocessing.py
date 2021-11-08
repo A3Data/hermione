@@ -1,6 +1,6 @@
 import pandas as pd
 
-from .normalization import Normalizer
+from hermione.core.analysis import Normalizer
 from category_encoders import *
 import logging
 

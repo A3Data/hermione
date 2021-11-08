@@ -1,10 +1,10 @@
-from .cluster import Clusterer
-from .dimensionality_reduction import Autoencoder, DimensionalityReducer
-from .feature_selection import FeatureSelector
-from .hypothesis_autopilot import HTestAutoPilot
-from .hypothesis_testing import HypothesisTester
-from pca import PCAReducer
-from vif import VIF
+from ._cluster import Clusterer
+from ._dimensionality_reduction import Autoencoder, DimensionalityReducer
+from ._feature_selection import FeatureSelector
+from ._hypothesis_autopilot import HTestAutoPilot
+from ._hypothesis_testing import HypothesisTester
+from ._pca import PCAReducer
+from ._vif import VIF
 
 
 __all__ = [

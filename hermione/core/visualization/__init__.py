@@ -1,4 +1,4 @@
-from .visualization import Visualizer
+from ._visualization import Visualizer
 
 
 __all__ = [

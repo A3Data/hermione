@@ -1,6 +1,6 @@
-from .metrics import Metrics
-from .trainer import TrainerSklearn, TrainerSklearnUnsupervised
-from .wrapper import Wrapper
+from ._metrics import Metrics
+from ._trainer import TrainerSklearn, TrainerSklearnUnsupervised
+from ._wrapper import Wrapper
 
 
 __all__ = [
