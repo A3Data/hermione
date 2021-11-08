@@ -1,0 +1,11 @@
+services:
+  webapp:
+    container_name: pyspark_notebook
+    build: .
+    image: pyspark_notebook
+    command: start.sh jupyter lab --LabApp.token=''
+    ports:
+      - "8888:8888"
+    volumes:
+      - ../src/:/home/jovyan/work/
+      - ../data/:/home/jovyan/data/
