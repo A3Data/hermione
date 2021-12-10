@@ -10,7 +10,7 @@ from sklearn.manifold import SpectralEmbedding
 from sklearn.manifold import TSNE
 from umap import UMAP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from .pca import PCA
+from ._pca import PCAReducer
 import keras
 import numpy as np
 import pandas as pd
@@ -82,7 +82,7 @@ class DimensionalityReducer:
         """
         self.reducer = reducer
         self.reducers = {'factor_analysis': FactorAnalysis, 
-                         'pca': PCA,
+                         'pca': PCAReducer,
                          'ica': FastICA,
                          'isomap': Isomap,
                          'locally_linear_embedding': LocallyLinearEmbedding,

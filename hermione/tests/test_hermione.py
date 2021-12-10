@@ -1,20 +1,20 @@
 from click.testing import CliRunner
-from hermione.cli import cli, logo
+from hermione.cli import main, logo
 import os
 
 def test_installation_ok():
     runner = CliRunner()
-    res = runner.invoke(cli)
+    res = runner.invoke(main)
     assert res.exit_code == 0
 
 def test_train_command_ok():
     runner = CliRunner()
-    res = runner.invoke(cli, ['train'])
+    res = runner.invoke(main, ['train'])
     assert res.exit_code == 0
 
 def test_info():
     runner = CliRunner()
-    res = runner.invoke(cli, ['info'])
+    res = runner.invoke(main, ['info'])
     assert logo in res.output
 
 def test_implementation_script_folders():

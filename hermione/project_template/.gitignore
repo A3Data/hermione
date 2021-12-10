@@ -4,5 +4,8 @@ __pycache__/
 .vscode/ 
 catboost_info/ 
 .metaflow 
-data/ 
+../hermione/project_template/data/
 *_env/
+.eggs/
+*.egg-info/
+.idea/

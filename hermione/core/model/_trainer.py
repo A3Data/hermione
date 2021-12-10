@@ -1,6 +1,6 @@
-from ...base import Trainer
-from .wrapper import Wrapper
-from .metrics import Metrics
+from ..base import Trainer
+from ._wrapper import Wrapper
+from ._metrics import Metrics
 import statsmodels.formula.api as smf
 from sklearn.model_selection import train_test_split, LeaveOneOut
 import numpy as np

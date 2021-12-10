@@ -1,10 +1,8 @@
 import click
 import os
-import re
-import sys
-from .writer import *
-from .module_writer import modules_autocomplete, write_module
-from .__init__ import __version__ as version
+from datetime import datetime
+from hermione.cli.module_writer import modules_autocomplete, write_module
+
 
 LOCAL_PATH = os.getcwd()
 
@@ -17,7 +15,7 @@ logo = r"""
 | | | |  __/ |  | | | | | | | (_) | | | |  __/
 |_| |_|\___|_|  |_| |_| |_|_|\___/|_| |_|\___|
 v{}
-""".format(version)
+""".format(0)
 
 
 @click.group()
@@ -51,12 +49,11 @@ def new(project_name, implemented):
         'project_name':project_name, 
         "project_start_date": datetime.today().strftime("%B %d, %Y")
         }
-    os.makedirs(os.path.join(LOCAL_PATH, project_name))
     if is_imp:
         option = click.prompt('Do you want to start with: \n\t(1) Sagemaker \n\t(2) Local version \n', type=int, default=2)
-        implemented_version_type(project_name,custom_inputs,option)
+        implemented_version_type(project_name, custom_inputs, option)
     else:
-        write_module(os.path.join(LOCAL_PATH, project_name), '__NOT_IMPLEMENTED_BASE__', True, custom_inputs)
+        raise NotImplementedError()
 
     print(f'Creating virtual environment {project_name}_env')
     os.chdir(project_name)
@@ -65,6 +62,7 @@ def new(project_name, implemented):
 
     # Create git repo
     os.system('git init')
+    os.system('pip install -e .')
     print("A git repository was created. You should add your files and make your first commit.\n")
     
 def implemented_version_type(project_name,custom_inputs,option):
@@ -72,7 +70,7 @@ def implemented_version_type(project_name,custom_inputs,option):
     Create a new hermione project
     """
     if option == 1:
-        write_module(os.path.join(LOCAL_PATH, project_name), '__IMPLEMENTED_SAGEMAKER__', True, custom_inputs)
+        raise NotImplementedError()
     else:
         write_module(os.path.join(LOCAL_PATH, project_name), '__IMPLEMENTED_BASE__', True, custom_inputs)
 
@@ -81,7 +79,7 @@ def train():
     """
     Execute the script in train.py. One should be at src directory
     """
-    if not os.path.exists('./train.py'):
+    if not os.path.exists('../project_template/scripts/train.py'):
         click.echo("You gotta have an src/train.py file")
     else:
         os.system('python ./train.py')
@@ -94,7 +92,7 @@ def predict():
     Execute the script in predict.py to make batch predictions. 
     One should be at src directory
     """
-    if not os.path.exists('./predict.py'):
+    if not os.path.exists('../project_template/scripts/predict.py'):
         click.echo("You gotta have an src/predict.py file")
     else:
         print("Making predictions: ")

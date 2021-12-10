@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import operator
 import warnings
-from .hypothesis_testing import HypothesisTester
+from ._hypothesis_testing import HypothesisTester
 
 
 class HTestAutoPilot:

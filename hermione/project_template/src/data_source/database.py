@@ -1,5 +1,5 @@
 import pandas as pd
-from hermione.base import DataSource
+from ..base import DataSource
 
 class DataBase(DataSource):
     
