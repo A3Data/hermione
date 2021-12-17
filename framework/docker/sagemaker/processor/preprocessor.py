@@ -8,9 +8,8 @@ import json
 from joblib import dump, load
 import great_expectations as ge
 
-from ml.preprocessing.preprocessing import Preprocessing
-from ml.preprocessing.dataquality import DataQuality
-from ml.data_source.spreadsheet import Spreadsheet
+from hermione.core.preprocessing import DataDrift, Preprocessor
+from data_source.spreadsheet import Spreadsheet
 
 logging.getLogger().setLevel('INFO')
 
@@ -18,9 +17,9 @@ path_input = '/opt/ml/processing/input/'
 path_output = '/opt/ml/processing/output/'
 date = date.today().strftime('%Y%m%d')
 
-def data_quality(df, step_train):
+def data_drift(df, step_train):
     """
-    If True, it creates the DataQuality object,
+    If True, it creates the DataDrift object,
     otherwise it loads an existing one
 
     Parameters
@@ -32,7 +31,7 @@ def data_quality(df, step_train):
 
     """
     if step_train:
-        dq = DataQuality(discrete_cat_cols=['Sex', 'Pclass', 'Survived'])
+        dq = DataDrift(discrete_cat_cols=['Sex', 'Pclass', 'Survived'])
         df_ge = dq.perform(df)
         df_ge.save_expectation_suite(path_output +
                                      'expectations/expectations.json')
@@ -61,7 +60,7 @@ def preprocessing(df, step_train):
     if step_train:
         norm_cols = {'min-max': ['Age']}
         oneHot_cols = ['Pclass', 'Sex']
-        p = Preprocessing(norm_cols, oneHot_cols)
+        p = Preprocessor(norm_cols, oneHot_cols)
         train, test_train = p.execute(df, step_train=True, val_size=0.2)
         logging.info("Saving")
         dump(p, path_output+'preprocessing/preprocessing.pkl')
@@ -95,7 +94,7 @@ if __name__ == '__main__':
     df = Spreadsheet().get_data(file)
 
     logging.info("Data Quality")
-    data_quality(df, step_train)
+    data_drift(df, step_train)
 
     logging.info("Preprocessing")
     preprocessing(df, step_train)

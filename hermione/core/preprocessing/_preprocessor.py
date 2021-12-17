@@ -1,31 +1,29 @@
 import pandas as pd
-
-from ml.preprocessing.normalization import Normalizer
-from sklearn.preprocessing import OneHotEncoder
+from hermione.core.preprocessing import Normalizer
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import OneHotEncoder
 from category_encoders import *
 import logging
 
 logging.getLogger().setLevel(logging.INFO)
 
-class Preprocessing:
+class Preprocessor:
     """
     Class to perform data preprocessing before training
     """
-    
+
     def __init__(self, norm_cols=None, oneHot_cols=None):
         """
         Constructor
-
         Parameters
         ----------
         norm_cols   : dict
-                      Receives dict with the name of the normalization to be 
-                      performed and which are the columns
-                      Ex: norm_cols = {'zscore': ['salary', 'price'], 
-                                       'min-max': ['heigth', 'age']}
+                        Receives dict with the name of the normalization to be 
+                        performed and which are the columns
+                        Ex: norm_cols = {'zscore': ['salary', 'price'], 
+                                        'min-max': ['heigth', 'age']}
         oneHot_cols : array
-                      Receives an array with columns names to be categorized with One Hot Encoding 
+                        Receives an array with columns names to be categorized with One Hot Encoding 
         Returns
         -------
         Preprocessing
@@ -53,18 +51,16 @@ class Preprocessing:
         df_copy['Pclass'] = df_copy.Pclass.astype('object')
         df_copy = df_copy.dropna()
         return df_copy
-    
-    def categ_encoding_oneHot(self, df: pd.DataFrame, step_train = False):
+
+    def one_hot(self, df: pd.DataFrame, step_train = False):
         """
         Perform encoding of the categorical variables using One Hot Encoding
-
         Parameters
         ----------            
         df           : pd.Dataframe
                        Dataframe to be processed 
         step_train   : bool
                        if True, the fit function is executed 
-
         Returns
     	-------
         pd.Dataframe
@@ -125,7 +121,7 @@ class Preprocessing:
             - Two Preprocessed dataframes, if step_train is True 
         """
         df = self.clean_data(df)
-        df = self.categ_encoding_oneHot(df, step_train)
+        df = self.one_hot(df, step_train)
         
         if step_train:
             logging.info("Divide train and test")
@@ -138,4 +134,3 @@ class Preprocessing:
             X = self.normalize(df, step_train = False)
             logging.info(f"shape {X.shape}")
             return X
-            

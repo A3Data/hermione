@@ -10,7 +10,7 @@ from sklearn.manifold import SpectralEmbedding
 from sklearn.manifold import TSNE
 from umap import UMAP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
-from .pca import PCA
+from ._pca import PCA
 import keras
 import numpy as np
 import pandas as pd
