@@ -8,8 +8,7 @@ import json
 from joblib import dump, load
 import great_expectations as ge
 
-from preprocessing.preprocessing import Preprocessor
-from hermione.core.preprocessing import DataDrift
+from hermione.core.preprocessing import DataDrift, Preprocessor
 from data_source.spreadsheet import Spreadsheet
 
 logging.getLogger().setLevel('INFO')

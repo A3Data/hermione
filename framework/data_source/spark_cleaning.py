@@ -1,5 +1,5 @@
 import pyspark.sql.functions as f
-from hermione.spark import SparkSpreadsheet
+from hermione.spark.data_source import SparkSpreadsheet
 from hermione.spark.spark_utils import unidecode_udf, convert_decimal_udf
 
 FILE_PATHS = {
