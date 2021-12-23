@@ -7,7 +7,7 @@ from joblib import load
 from six import StringIO
 import pandas as pd
 
-from ml.model.wrapper import Wrapper
+from hermione.core.model import Wrapper
 from sagemaker_inference.default_inference_handler import DefaultInferenceHandler
 from sagemaker_inference.default_handler_service import DefaultHandlerService
 from sagemaker_inference import content_types, errors, transformer, encoder, decoder

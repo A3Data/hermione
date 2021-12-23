@@ -207,6 +207,6 @@ class Metrics:
     	dict : metrics results
     	"""
         results = {'silhouette': silhouette_score(X, labels, metric='euclidean'),
-                   'calinski_harabaz': calinski_harabaz_score(X, labels)
+                   'calinski_harabasz': calinski_harabasz_score(X, labels)
                   }
         return results

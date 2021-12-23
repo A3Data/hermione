@@ -2,14 +2,14 @@ import sys
 sys.path.append("src/")
 
 import os
-from util import *
+from hermione.utils import *
 import traceback
 
 import logging
 import pandas as pd
 
 from sklearn.metrics import *
-from ml.model.trainer import TrainerSklearn
+from hermione.core.model import Metrics, Wrapper
 from sklearn.ensemble import RandomForestClassifier
 
 logging.getLogger().setLevel('INFO')
@@ -66,13 +66,22 @@ def train():
         # Define the target and columns to be used in the train
         target = "Survived"
         columns = train.columns.drop(target)
+        classification=True
 
         logging.info("Training the model")
-        model = TrainerSklearn().train(train, val, target, classification=True,
-                                       algorithm=RandomForestClassifier,
-                                       columns=columns)
+        model = RandomForestClassifier()
+        X_train, y_train = (train[columns], train[target])
+        X_val, y_val = (val[columns], val[target])
+        model.fit(X_train, y_train)
+        y_pred = model.predict(X_val)
+        y_probs = model.predict_proba(X_val)[:, 1]
+        if classification:
+            res_metrics = Metrics.classification(y_val.values, y_pred, y_probs)
+        else:
+            res_metrics = Metrics.regression(y_val.values, y_pred)
+        model = Wrapper(model, metrics=res_metrics, columns=columns)
 
-        # Salve the model and metrics
+        # Save the model and metrics
         logging.info("Saving")
         model.save_model(os.path.join(model_path, 'model.pkl'))
         metrics = model.artifacts["metrics"]

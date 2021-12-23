@@ -100,6 +100,5 @@ class TrainerSklearnUnsupervised(Trainer):
         model.fit(X)
         labels = model.predict(X)
         res_metrics = Metrics.clusterization(X, labels)
-        
         model = Wrapper(model, preprocessing, res_metrics, columns)
         return model

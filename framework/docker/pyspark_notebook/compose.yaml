@@ -1,0 +1,14 @@
+services:
+  webapp:
+    container_name: pyspark_notebook
+    build: .
+    command: start.sh jupyter lab --LabApp.token=''
+    ports:
+      - "8888:8888"
+    volumes:
+      - ${NOTEBOOKS_PATH}:/home/jovyan/work/notebooks/
+      - ${DATA_PATH}:/home/jovyan/work/data/
+    environment:
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      PYARROW_IGNORE_TIMEZONE: 1

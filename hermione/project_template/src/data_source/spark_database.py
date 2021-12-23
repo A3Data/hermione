@@ -1,5 +1,5 @@
 from pyspark.sql.dataframe import DataFrame
-from ...base import DataSource
+from hermione.base import DataSource
 
 class SparkDataBase(DataSource):
     """
