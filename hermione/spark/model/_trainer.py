@@ -1,6 +1,6 @@
 from ._wrapper import SparkWrapper
 from ._metrics import SparkMetrics
-from ...base import Trainer
+from hermione.core.base import Trainer
         
 class SparkTrainer(Trainer):
     """Class used to train supervised models with Spark ML"""

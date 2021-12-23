@@ -1,6 +1,6 @@
 from pyspark.ml.feature import UnivariateFeatureSelector, VectorAssembler
 from pyspark.ml.pipeline import Pipeline
-from ...base import Asserter
+from hermione.core.base import Asserter
 
 class SparkFS(Asserter):
     """

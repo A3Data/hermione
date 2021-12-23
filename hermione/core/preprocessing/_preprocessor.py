@@ -1,5 +1,5 @@
 import pandas as pd
-from hermione.core.preprocessing import Normalizer
+from ._preprocessing import Normalizer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from category_encoders import *

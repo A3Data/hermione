@@ -4,8 +4,7 @@ import mlflow.spark
 import pyspark.sql.functions as f
 from pyspark.ml.functions import vector_to_array
 
-from ...utils import load_yaml, load_json
-
+from hermione.core.utils import load_yaml, load_json
 
 class SparkWrapper(mlflow.pyfunc.PythonModel):
     """

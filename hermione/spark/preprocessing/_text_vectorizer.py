@@ -1,7 +1,8 @@
 from pyspark.ml.feature import Word2Vec, Tokenizer, HashingTF, IDF, CountVectorizer
 from pyspark.ml.pipeline import Pipeline
 from .._base import CustomEstimator
-from ...base import Asserter
+from hermione.core.base import Asserter
+
 
 class SparkVectorizer(CustomEstimator, Asserter):
     """

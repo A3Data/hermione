@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import re
 import os
 
-exec(open('hermione/version.py').read())
+exec(open('hermione/_version.py').read())
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()

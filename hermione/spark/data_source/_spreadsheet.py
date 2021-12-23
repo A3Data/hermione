@@ -1,6 +1,5 @@
 from pyspark.sql.dataframe import DataFrame
-from ...base import DataSource
-
+from hermione.core.base import DataSource
 
 class SparkSpreadsheet(DataSource):
     """
