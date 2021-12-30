@@ -2,10 +2,11 @@ import shutil
 import os
 import errno
 from ._context import context
+import sys
 from contextlib import contextmanager
 from abc import ABCMeta, abstractmethod
 from jinja2 import Template
-
+from .exceptions import ProjectDirAlreadyExistsException
 
 def copy_folder(src, dst, dirs_exist_ok):
     shutil.copytree(src, dst, dirs_exist_ok=dirs_exist_ok)
@@ -86,6 +87,8 @@ class ProjectTemplate(RendererContext):
         super(ProjectTemplate, self).__init__()
 
     def create_project(self, project_path, project_name, context_data=None):
+        if os.path.exists(os.path.join(project_path, project_name)):
+            raise ProjectDirAlreadyExistsException
         with context(**context_data, project_name=project_name):
             self.project_name = project_name
             os.chdir(project_path)

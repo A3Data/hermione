@@ -41,4 +41,5 @@ ENV PYTHONPATH="/opt/ml/:${PATH}"
 EXPOSE 5000
 
 # Execution command
-CMD ["gunicorn", "-w", "3", "-b", ":5000", "-t", "360", "--reload", "wsgi:app"]
+
+CMD ["uvicorn", "api.app:app", "--host", "0.0.0.0", "--port", "5000"]
