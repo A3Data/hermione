@@ -1,7 +1,7 @@
 from pyspark.ml.feature import PCA, Imputer
 from pyspark.ml.pipeline import Pipeline
 from pyspark.ml.functions import vector_to_array
-from ...base import Asserter
+from hermione.core.base import Asserter
 from ..preprocessing._normalization import SparkScaler
 
 class SparkPCA(Asserter):

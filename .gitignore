@@ -5,3 +5,4 @@ __pycache__/
 */.ipynb_checkpoints/*
 hermione/module_templates/__IMPLEMENTED_SAGEMAKER__/.ipynb_checkpoints/*
 .env
+.idea

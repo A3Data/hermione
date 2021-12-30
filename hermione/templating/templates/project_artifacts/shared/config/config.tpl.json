@@ -1,0 +1,8 @@
+{
+"project_name": "{{ context.project_name }}",
+            "env_path": "{{ context.project_name }}/{{ context.project_name }}_env",
+            "files_path": "../data/raw/",
+            "key": "<<<<key>>>>",
+            "user": "<<<<user>>>>"
+            }
+

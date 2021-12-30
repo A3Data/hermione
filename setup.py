@@ -34,7 +34,7 @@ setup(
     ],
     entry_points='''
         [console_scripts]
-        hermione=hermione.cli:cli
+        hermione=hermione.cli.main:cli
     ''',
     python_requires='>=3.6'
 )

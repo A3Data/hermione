@@ -1,0 +1,11 @@
+.ipynb_checkpoints 
+mlruns/ 
+__pycache__/ 
+.vscode/ 
+catboost_info/ 
+.metaflow 
+../hermione/project_template/data/
+*_env/
+.eggs/
+*.egg-info/
+.idea/

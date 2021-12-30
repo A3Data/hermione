@@ -6,7 +6,7 @@ from pyspark.ml.feature import (
 )
 from pyspark.ml.pipeline import Pipeline
 from .._base import CustomEstimator
-from ...base import Asserter
+from hermione.core.base import Asserter
 from ._normalization import SparkScaler
 import logging
 

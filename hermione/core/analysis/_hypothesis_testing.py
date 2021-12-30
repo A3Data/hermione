@@ -4,7 +4,7 @@ import pingouin as pg
 import operator
 from scipy.stats import fisher_exact, pointbiserialr
 from scipy.stats import norm
-from ..visualization._visualization import Visualizer
+from ..visualization import Visualizer
 
 
 class HypothesisTester:

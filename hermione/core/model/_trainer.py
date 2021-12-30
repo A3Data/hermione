@@ -1,4 +1,4 @@
-from ...base import Trainer
+from ..base import Trainer
 from ._wrapper import Wrapper
 from ._metrics import Metrics
 import statsmodels.formula.api as smf
