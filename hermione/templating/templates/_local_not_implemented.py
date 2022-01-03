@@ -14,11 +14,8 @@ def build_local_not_implemented_template():
             RenderTemplateFile(artifacts.get_path("local_not_implemented", "tests/test_project.py"))
         with CreateDir("data"):
             for data_dir in ["raw", "processed", "output"]:
-                with CreateDir(data_dir):
-                    CreateFile(".gitkeep")
-        with RenderTemplateDir(artifacts.get_path("local_not_implemented", "api")):
-            RenderTemplateFile(artifacts.get_path("shared", "api/wsgi.py"))
-        for module in ["notebooks", "scripts"]:
+                CreateDir(data_dir)
+        for module in ["api", "notebooks", "scripts"]:
             RenderTemplateDir(artifacts.get_path("local_not_implemented", module))
         with RenderTemplateDir(artifacts.get_hermione_src_dir(), "src"):
             RenderTemplateDir(artifacts.get_path("shared", "src/data_source"))

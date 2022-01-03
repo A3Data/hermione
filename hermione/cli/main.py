@@ -1,10 +1,9 @@
 import click
 import os
 import sys
+import json
 from datetime import datetime
-from hermione.templating import build_local_not_implemented_template,\
-    build_local_implemented_template,\
-    build_sagemaker_template
+from hermione.templating import create_project, ProjectDirAlreadyExistsException
 from hermione._version import __version__ as version
 
 LOCAL_PATH = os.getcwd()
@@ -32,6 +31,35 @@ def info():
     """
     click.echo(logo)
 
+
+def start_new_project(project_name, template, context_data):
+    try:
+        create_project(
+            LOCAL_PATH,
+            project_name,
+            template,
+            context_data=context_data,
+            output_blueprint=True
+        )
+    except ProjectDirAlreadyExistsException:
+        click.echo(
+            f'Error: Cannot create new project. Folder {project_name} already exists'
+        )
+        sys.exit(-1)
+
+    print(f'Creating virtual environment {project_name}_env')
+    os.chdir(project_name)
+    env_name = f"{project_name}_env"
+    os.system(f"python -m venv {env_name}")
+    if template in ["local_implemented", "local_not_implemented"]:
+        os.system(f"python -m venv {env_name}")
+        os.system(f"{project_name}_env/bin/python -m pip install -e .")
+
+    # Create git repo
+    os.system('git init')
+    print("A git repository was created. You should add your files and make your first commit.\n")
+
+
 @cli.command()
 @click.argument('project_name')
 @click.option('-imp', '--implemented', 'implemented', prompt='Do you want to start with an implemented example (recommended) [y/n]?', 
@@ -45,40 +73,39 @@ def new(project_name, implemented):
     else:
         is_imp = False
 
-    if os.path.exists(project_name):
-        click.echo(
-            f'Error: Cannot create new project. Folder {project_name} already exists'
-        )
-        sys.exit(-1)
-    click.echo(f"Creating project {project_name}")
-
     if is_imp:
         option = click.prompt('Do you want to start with: \n\t(1) Sagemaker \n\t(2) Local version \n', type=int, default=2)
         if option == 1:
-            template = build_sagemaker_template()
+            template = "sagemaker"
         else:
-            template = build_local_implemented_template()
+            template = "local_implemented"
     else:
-        template = build_local_not_implemented_template()
+        template = "local_not_implemented"
 
-    template.create_project(
-        LOCAL_PATH, project_name,
+    start_new_project(
+        project_name,
+        template,
         context_data={
             "project_start_date": datetime.now().strftime("%B %d, %Y")
-        })
+        }
+    )
 
-    print(f'Creating virtual environment {project_name}_env')
-    os.chdir(project_name)
-    env_name = f"{project_name}_env"
-    os.system(f"python -m venv {env_name}")
-    if template.name in ["local_implemented_template", "local_not_implemented_template"]:
-        os.system(f"python -m venv {env_name}")
-        os.system(f"{project_name}_env/bin/python -m pip install -e .")
 
-    # Create git repo
-    os.system('git init')
-    print("A git repository was created. You should add your files and make your first commit.\n")
-    
+@cli.command()
+@click.argument('blueprint_file_path', type=click.Path(exists=True, dir_okay=False, readable=True))
+def from_blueprint(blueprint_file_path):
+    """
+    Create a new hermione project from blueprint
+    """
+    with open(blueprint_file_path) as json_file:
+        blueprint = json.load(json_file)
+        start_new_project(
+            blueprint["project_name"],
+            blueprint["template"],
+            blueprint["context_data"]
+        )
+
+
 
 @cli.command()
 def train():

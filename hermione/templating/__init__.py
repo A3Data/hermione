@@ -1,10 +1,7 @@
-from .templates import build_local_implemented_template,\
-                        build_local_not_implemented_template,\
-                        build_sagemaker_template
-
+from .rendering import create_project
+from .epoximise.exceptions import ProjectDirAlreadyExistsException
 
 __all__ = [
-    'build_local_implemented_template',
-    'build_local_not_implemented_template',
-    'build_sagemaker_template',
+    create_project,
+    ProjectDirAlreadyExistsException
 ]

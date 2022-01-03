@@ -10,9 +10,9 @@ def build_local_implemented_template():
         )
         with CreateDir("config"):
             RenderTemplateFile(artifacts.get_path("shared", "config/config.tpl.json"))
-        for module in ["api", "dashboard", "data", "pyspark"]:
+        for module in ["dashboard", "data", "pyspark"]:
             RenderTemplateDir(artifacts.get_path("shared", module))
-        for module in ["notebooks", "scripts"]:
+        for module in ["api", "notebooks", "scripts"]:
             RenderTemplateDir(artifacts.get_path("local_implemented", module))
         with RenderTemplateDir(artifacts.get_path("shared", "tests")):
             RenderTemplateFile(artifacts.get_path("local_implemented", "tests/test_project.py"))
