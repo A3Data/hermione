@@ -1,6 +1,7 @@
 import shutil
 import os
 import errno
+from typing import Optional, List
 from ._context import context
 import sys
 from contextlib import contextmanager
@@ -35,44 +36,53 @@ def create_folder(path):
     return True
 
 
-class Renderer(metaclass=ABCMeta):
-    def __init__(self):
-        self.root_renderer = None
-
+class Node(metaclass=ABCMeta):
     @abstractmethod
-    def _render(self, **kwargs):
-        pass
+    def eval(self, **kwargs):
+        raise NotImplementedError()
 
 
-class RendererContext(Renderer, metaclass=ABCMeta):
-    def __init__(self):
-        super(RendererContext, self).__init__()
-        self.children = []
+class ChildNode(Node, metaclass=ABCMeta):
+    def __init__(self, parent: Optional[Node] = None):
+        self.parent = parent
 
-    def add_new_renderer(self, child):
-        child.root_renderer = self
+
+class BranchNode(ChildNode, metaclass=ABCMeta):
+    def __init__(self, parent: Optional["BranchNode"] = None):
+        super().__init__(parent=parent)
+        self.children: List[Node] = []
+
+    def add_child(self, child: Node):
+        child.parent = self
         self.children.append(child)
 
+
+class TerminalNode(ChildNode, metaclass=ABCMeta):
+    def __init__(self, parent: Optional[BranchNode] = None):
+        super().__init__(parent=parent)
+
+
+class ChangeDirectory(BranchNode, metaclass=ABCMeta):
     @contextmanager
-    def _set_as_current_workspace(self):
-        with context(current_workspace=self):
+    def _set_as_active_workspace(self):
+        with context(active_workspace=self):
             yield self
 
     @abstractmethod
-    def _render_context(self):
-        pass
+    def _eval_self(self):
+        raise NotImplementedError()
 
-    def _render(self, **kwargs):
+    def eval(self, **kwargs):
         curdir = os.getcwd()
-        new_work_dir = self._render_context()
+        new_work_dir = self._eval_self()
         new_work_space_path = os.path.normpath(os.path.join(curdir, new_work_dir))
         os.chdir(new_work_space_path)
         for child in self.children:
-            child._render()
+            child.eval()
         os.chdir(curdir)
 
     def __enter__(self):
-        self._ctx = self._set_as_current_workspace()
+        self._ctx = self._set_as_active_workspace()
         return self._ctx.__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:  # type: ignore
@@ -80,11 +90,11 @@ class RendererContext(Renderer, metaclass=ABCMeta):
         del self._ctx
 
 
-class ProjectTemplate(RendererContext):
+class ProjectTemplate(ChangeDirectory):
     def __init__(self, name):
+        super().__init__()
         self.name = name
         self.project_name = None
-        super(ProjectTemplate, self).__init__()
 
     def create_project(self, project_path, project_name, context_data=None):
         if os.path.exists(os.path.join(project_path, project_name)):
@@ -93,75 +103,78 @@ class ProjectTemplate(RendererContext):
             self.project_name = project_name
             os.chdir(project_path)
             create_folder(project_name)
-            self._render()
+            self.eval()
 
-    def _render_context(self):
+    def _eval_self(self):
         return self.project_name
 
 
-def context_renderer(cls):
+def active_workspace_as_parent(cls: ChildNode):
     class_init = cls.__dict__.get('__init__')
 
     def __init__(self, *args, **kwargs):
-        current_workspace = context.get("current_workspace", None)
-        if current_workspace:
-            current_workspace.add_new_renderer(self)
         if class_init:
             class_init(self, *args, **kwargs)
-
+        current_workspace = context.get("active_workspace", None)
+        if current_workspace and not self.parent:
+            self.parent = current_workspace
+            if isinstance(current_workspace, BranchNode):
+                current_workspace.add_child(self)
     setattr(cls, '__init__', __init__)
     return cls
 
 
-@context_renderer
-class CreateDir(RendererContext):
+@active_workspace_as_parent
+class CreateDir(ChangeDirectory):
     def __init__(self, dirname):
-        super(CreateDir, self).__init__()
+        super().__init__()
         self.dirname = dirname
 
-    def _render_context(self):
+    def _eval_self(self):
         create_folder(self.dirname)
         return self.dirname
 
 
-@context_renderer
-class CreateFile(Renderer):
+@active_workspace_as_parent
+class CreateFile(TerminalNode):
     def __init__(self, filename):
-        super(CreateFile, self).__init__()
+        super().__init__(parent=parent)
         self.filename = filename
 
-    def _render(self, **kwargs):
+    def eval(self, **kwargs):
         open(self.filename, 'a').close()
 
 
-@context_renderer
-class RenderTemplateDir(RendererContext):
+@active_workspace_as_parent
+class CopyDir(ChangeDirectory):
     def __init__(self, src, dst=None, merge_if_exists=False):
-        super(RenderTemplateDir, self).__init__()
+        super().__init__()
         self.merge_if_exists = merge_if_exists
         self.src = src
         self.dst = dst if dst else os.path.basename(os.path.normpath(src))
 
-    def _render_context(self):
+    def _eval_self(self):
         copy_folder(self.src, self.dst, dirs_exist_ok=self.merge_if_exists)
         return self.dst
 
 
-@context_renderer
-class RenderTemplateFile(Renderer):
+@active_workspace_as_parent
+class CopyFile(TerminalNode):
     def __init__(self, src, dst=None):
-        super(RenderTemplateFile, self).__init__()
+        super().__init__()
         self.src = src
         self.dst = dst if dst else os.path.basename(os.path.normpath(src))
 
-    def _render(self, **kwargs):
+    def eval(self, **kwargs):
         copy_file(self.src, self.dst, context_data=context)
 
 
-@context_renderer
-class RenderTemplateFiles:
-    def __init__(self, targets):
-        self.renderers = [RenderTemplateFile(target) for target in targets]
+@active_workspace_as_parent
+class Hook(TerminalNode):
+    def __init__(self, hook_callable, **kwargs):
+        super().__init__()
+        self.kwargs = kwargs
+        self.hook_callable = hook_callable
 
-    def _render(self, **kwargs):
-        pass
+    def eval(self, **kwargs):
+        self.hook_callable(**self.kwargs)

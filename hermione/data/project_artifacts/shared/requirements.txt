@@ -1,3 +1,4 @@
+hermione-ml==0.9.2
 category-encoders==2.4.0
 coverage==6.3.2
 matplotlib==3.5.1

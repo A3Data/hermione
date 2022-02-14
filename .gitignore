@@ -3,6 +3,7 @@ __pycache__/
 .vscode/
 .ipynb_checkpoints
 */.ipynb_checkpoints/*
-hermione/module_templates/__IMPLEMENTED_SAGEMAKER__/.ipynb_checkpoints/*
 .env
 .idea
+build
+dist

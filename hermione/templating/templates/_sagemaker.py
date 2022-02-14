@@ -1,14 +1,14 @@
 from ..epoximise.templating import *
-from ._utils import ArtifactsPathLoader
+from ._project_artifacts import get_artefact_full_path
+from ._hooks import CreateVirtualEnv, InitializeGitRepository
 
 
 def build_sagemaker_template():
-    artifacts = ArtifactsPathLoader()
     with ProjectTemplate("sagemaker_template") as template:
-        RenderTemplateFiles(
-            artifacts.get_paths("sagemaker", ["build_and_push.sh", "README.md", "requirements.txt"])
-        )
+        for file_name in ["build_and_push.sh", "README.md", "requirements.txt"]:
+            CopyFile(get_artefact_full_path("sagemaker", file_name))
         for module in ["data", "inference", "processor", "src", "train"]:
-            RenderTemplateDir(artifacts.get_path("sagemaker", module))
+            CopyDir(get_artefact_full_path("sagemaker", module))
+        CreateVirtualEnv()
+        InitializeGitRepository()
     return template
-
