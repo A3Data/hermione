@@ -11,9 +11,11 @@ def create_virtual_env():
 
 
 def install_project_locally():
+    print(f'Installing project locally')
     project_name = os.path.basename(os.getcwd())
     env_name = f"{project_name}_env"
-    executable_path = os.path.join(env_name, "bin", "python")
+    executable_path_folder = "Scripts" if os.path.exists(os.path.join(env_name, "Scripts")) else "bin"
+    executable_path = os.path.join(env_name, executable_path_folder, "python")
     os.system(f"{executable_path} -m pip install -e .")
 
 
