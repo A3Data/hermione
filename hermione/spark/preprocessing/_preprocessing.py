@@ -1,9 +1,4 @@
-from pyspark.ml.feature import (
-    VectorAssembler, 
-    StringIndexer, 
-    OneHotEncoder,
-    Imputer
-)
+from pyspark.ml.feature import VectorAssembler, StringIndexer, OneHotEncoder, Imputer
 from pyspark.ml.pipeline import Pipeline
 from .._base import CustomEstimator
 from hermione.core.base import Asserter
@@ -12,12 +7,13 @@ import logging
 
 logging.getLogger().setLevel(logging.INFO)
 
+
 class SparkPreprocessor(CustomEstimator, Asserter):
     """
     Class used to preprocess data before training, using Spark ML
-    
+
     Parameters
-    ----------            
+    ----------
     num_cols   : Dict[str]
         Receives dict with the normalization method as keys and columns on which it will be applied as values
         Ex: norm_cols = {'zscore': ['salary', 'price'], 'min-max': ['heigth', 'age']}
@@ -32,7 +28,7 @@ class SparkPreprocessor(CustomEstimator, Asserter):
     ----------
     cat_cols : Union[list, str]
         Categorical columns present in the model
-    
+
     estimator_cols : list[str]
         List of strings with the columns that are necessary to execute the model. Used to assert if columns are in the DataFrame to be fitted or transformed.
 
@@ -41,13 +37,13 @@ class SparkPreprocessor(CustomEstimator, Asserter):
 
     input_strategy: str
         Strategy for completing missing values on numerical columns. Supports "mean", "median" and "mode".
-    
+
     num_cols   : Dict[str]
         Receives dict with the normalization method as keys and columns on which it will be applied as values
 
     ohe_cols   : list[str]
         List of strings with the names of the categorical columns that where one-hot encoded.
-    
+
     Examples
     --------
     >>> data = [(1, 0.0, 5.0, 'a', 'c'), (2, 1.0, 54.0, 'b', 'd'), (3, 9.0, 27.0, 'a', 'd'), (4, 8.0, 9.0, 'b', 'e')]
@@ -63,26 +59,27 @@ class SparkPreprocessor(CustomEstimator, Asserter):
     |  4|     8.0|     9.0|       b|       e|(2,[1],[1.0])|(3,[2],[1.0])|[0.75192061774140...|[0.0,1.0,0.0,0.0,...|
     +---+--------+--------+--------+--------+-------------+-------------+--------------------+--------------------+
     """
-    def __init__(self, num_cols = None, cat_cols = None, input_strategy=None):
+
+    def __init__(self, num_cols=None, cat_cols=None, input_strategy=None):
 
         input_cols = []
         if num_cols:
-            self.assert_type(num_cols, dict, 'num_cols')
+            self.assert_type(num_cols, dict, "num_cols")
             self.num_cols = {
-                key: (value if type(value) is list else [value]) 
+                key: (value if type(value) is list else [value])
                 for key, value in num_cols.items()
             }
             input_cols.extend([c for sbl in self.num_cols.values() for c in sbl])
         else:
             self.num_cols = None
         if cat_cols:
-            self.assert_type(cat_cols, (list, str), 'cat_cols')
+            self.assert_type(cat_cols, (list, str), "cat_cols")
             self.cat_cols = cat_cols if type(cat_cols) is list else [cat_cols]
             input_cols.extend(self.cat_cols)
         else:
             self.cat_cols = None
         if not cat_cols and not num_cols:
-            raise Exception('Provide atleast one set of columns to preprocess.')
+            raise Exception("Provide atleast one set of columns to preprocess.")
         self.input_strategy = input_strategy
         self.estimator_cols = list(set(input_cols))
 
@@ -95,30 +92,25 @@ class SparkPreprocessor(CustomEstimator, Asserter):
         Returns
         -------
         list[Estimator]
-            Returns a list of estimators 
+            Returns a list of estimators
         """
-        indexed_cols = [c + '_indexed' for c in self.cat_cols]
-        ohe_cols = [c + '_ohe' for c in self.cat_cols]
+        indexed_cols = [c + "_indexed" for c in self.cat_cols]
+        ohe_cols = [c + "_ohe" for c in self.cat_cols]
         indexer = StringIndexer(
-            inputCols = self.cat_cols,
-            outputCols=indexed_cols,
-            handleInvalid = 'keep'
+            inputCols=self.cat_cols, outputCols=indexed_cols, handleInvalid="keep"
         )
-        ohe = OneHotEncoder(
-            inputCols = indexed_cols,
-            outputCols=ohe_cols
-        )
+        ohe = OneHotEncoder(inputCols=indexed_cols, outputCols=ohe_cols)
         self.ohe_cols = ohe_cols
         return [indexer, ohe]
-    
+
     def __numeric(self):
         """
         Creates the model responsible to normalize numerical columns
 
         Parameters
-        ----------   
-    	Returns
-    	-------
+        ----------
+        Returns
+        -------
         list[Estimator]
             Returns a list of estimators
         """
@@ -128,11 +120,11 @@ class SparkPreprocessor(CustomEstimator, Asserter):
     def _fit(self):
         """
         Prepare the estimators
-        
-    	Parameters
-    	----------            
-    	Returns
-    	-------
+
+        Parameters
+        ----------
+        Returns
+        -------
         pyspark.ml.pipeline.Pipeline
         """
         estimators = []
@@ -142,7 +134,9 @@ class SparkPreprocessor(CustomEstimator, Asserter):
             input_cols.extend(self.ohe_cols)
         if self.num_cols:
             if self.input_strategy:
-                cols = list(set([c for sublist in self.num_cols.values() for c in sublist]))
+                cols = list(
+                    set([c for sublist in self.num_cols.values() for c in sublist])
+                )
                 imputer = (
                     Imputer(strategy=self.input_strategy)
                     .setInputCols(cols)
@@ -150,13 +144,11 @@ class SparkPreprocessor(CustomEstimator, Asserter):
                 )
                 estimators.append(imputer)
             estimators.append(self.__numeric())
-            num_input_cols = [method + '_scaled' for method in self.num_cols.keys()]
+            num_input_cols = [method + "_scaled" for method in self.num_cols.keys()]
             input_cols.extend(num_input_cols)
         assembler = VectorAssembler(
-            inputCols=input_cols, 
-            outputCol="features", 
-            handleInvalid = 'skip'
+            inputCols=input_cols, outputCol="features", handleInvalid="skip"
         )
         estimators.append(assembler)
-        self.final_cols = input_cols + ['features']
+        self.final_cols = input_cols + ["features"]
         return Pipeline(stages=estimators)

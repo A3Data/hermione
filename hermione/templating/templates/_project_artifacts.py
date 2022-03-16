@@ -3,7 +3,9 @@ import hermione
 
 HERMIONE_DIR = hermione.__path__[0]
 
-ARTIFACTS_DIR = os.path.normpath(os.path.join(HERMIONE_DIR, 'data', 'project_artifacts'))
+ARTIFACTS_DIR = os.path.normpath(
+    os.path.join(HERMIONE_DIR, "data", "project_artifacts")
+)
 
 
 def get_artefact_full_path(artifact_type, artifact):

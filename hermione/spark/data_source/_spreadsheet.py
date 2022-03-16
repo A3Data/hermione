@@ -1,12 +1,13 @@
 from pyspark.sql.dataframe import DataFrame
 from hermione.core.base import DataSource
 
+
 class SparkSpreadsheet(DataSource):
     """
     Class used to read data from flat files
-    
+
     Parameters
-    ----------            
+    ----------
     spark_session  :   pyspark.sql.session.SparkSession
         SparkSession used to read data
 
@@ -14,12 +15,13 @@ class SparkSpreadsheet(DataSource):
     ------------
     spark  :   pyspark.sql.session.SparkSession
         SparkSession used to read data
-    
+
     Examples
     --------
     >>> ss_source = SpaekSpreadsheet(spark_session)
     >>> df = ss_source.get_data('/path/to/file', 'csv', header=True)
     """
+
     def __init__(self, spark_session) -> None:
 
         self.spark = spark_session
@@ -27,14 +29,14 @@ class SparkSpreadsheet(DataSource):
     def get_data(self, file_path, format, **kwargs) -> DataFrame:
         """
         Read a Spark DataFrame
-        
+
         Parameters
-        ----------            
+        ----------
         file_path : str
             File path
         format: str
             name of the file format,  e.g. 'csv', 'parquet'.
-        **kwargs: 
+        **kwargs:
             Additional reading options passed to `options()`.
         Returns
         -------
@@ -43,18 +45,18 @@ class SparkSpreadsheet(DataSource):
         return self.spark.read.format(format).options(**kwargs).load(file_path)
 
     def write_data(
-        self, 
-        df, 
+        self,
+        df,
         save_path,
         mode,
-        format = None,
-        partition_col = None,
-        n_partitions = None,
+        format=None,
+        partition_col=None,
+        n_partitions=None,
         **kwargs
     ) -> None:
         """
         Writes DataFramein the specified destination
-        
+
         Parameters
         ----------
         df : pyspark.sql.dataframe.DataFrame
@@ -72,10 +74,10 @@ class SparkSpreadsheet(DataSource):
 
         format : str
             File format of data being written
-        
+
         n_partitions : int
             Number of DataFrame partitions
-        
+
         partition_col : str
                 Column to partition DataFrame on writing
 
@@ -83,7 +85,7 @@ class SparkSpreadsheet(DataSource):
             Other options passed to DataFrameWriter.options
 
         Returns
-    	-------
+        -------
         """
         if n_partitions:
             df_partitions = df.rdd.getNumPartitions()

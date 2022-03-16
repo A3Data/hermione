@@ -33,7 +33,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         self.artifacts["metrics"] = metrics
         self.artifacts["columns"] = columns
         self.artifacts["creation_date"] = date.today()
-        
+
     def predict(self, model_input, included_input=False):
         """
         Method that returns the result of the prediction on a dataset
@@ -52,7 +52,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
         columns = self.artifacts["columns"]
         result = model.predict(df_processed[columns])
         if included_input:
-            model_input['predict'] = result
+            model_input["predict"] = result
             result = model_input
         return result
 

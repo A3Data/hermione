@@ -31,7 +31,7 @@ class HTestAutoPilot:
         return True
 
     @staticmethod
-    def check_norm(sample1, sample2, alpha=0.05, normality_method='shapiro'):
+    def check_norm(sample1, sample2, alpha=0.05, normality_method="shapiro"):
         """
         Check normality
 
@@ -50,17 +50,23 @@ class HTestAutoPilot:
         -------
         Array
         """
-        return [HypothesisTester.normality_test(
-            s,
-            alpha=alpha,
-            method=normality_method,
-            show_graph=False
-        ).loc['normal'][0] for s in [sample1, sample2]]
+        return [
+            HypothesisTester.normality_test(
+                s, alpha=alpha, method=normality_method, show_graph=False
+            ).loc["normal"][0]
+            for s in [sample1, sample2]
+        ]
 
     @staticmethod
-    def correlation(sample1, sample2, alpha=0.05,
-                    alternative='two-sided', normality_method='shapiro',
-                    show_graph=True, **kwargs):
+    def correlation(
+        sample1,
+        sample2,
+        alpha=0.05,
+        alternative="two-sided",
+        normality_method="shapiro",
+        show_graph=True,
+        **kwargs
+    ):
         """
         Autopilot for correlation tests
 
@@ -84,38 +90,42 @@ class HTestAutoPilot:
         pd.DataFrame
         """
         sample1, sample2 = np.array(sample1), np.array(sample2)
-        np_types = [np.dtype(i) for i in [np.int32, np.int64, np.float32,
-                                          np.float64]]
+        np_types = [np.dtype(i) for i in [np.int32, np.int64, np.float32, np.float64]]
         if any([t not in np_types for t in [sample1.dtype, sample2.dtype]]):
-            raise Exception('Samples are not numerical. ',
-                            'Try using categorical_test method instead.')
+            raise Exception(
+                "Samples are not numerical. ",
+                "Try using categorical_test method instead.",
+            )
 
         check_bin1 = HTestAutoPilot.check_binary(sample1)
         check_bin2 = HTestAutoPilot.check_binary(sample2)
 
         if check_bin1 and check_bin2:
-            raise Exception('Both samples are binary, ',
-                            'unable to calculate correlation.')
+            raise Exception(
+                "Both samples are binary, ", "unable to calculate correlation."
+            )
         elif sum([check_bin1, check_bin2]) == 1:
-            print('One binary sample and one real sample.',
-                  'Point-biserial correlation is going to be applied.')
-            corr_method = 'pointbiserial'
+            print(
+                "One binary sample and one real sample.",
+                "Point-biserial correlation is going to be applied.",
+            )
+            corr_method = "pointbiserial"
             binary_sample = sample2 if not check_bin1 else sample1
             num_sample = sample1 if not check_bin1 else sample2
             sample1, sample2 = [binary_sample, num_sample]
         else:
             check_norm1, check_norm2 = HTestAutoPilot.check_norm(
-                sample1, sample2,
-                alpha, normality_method
+                sample1, sample2, alpha, normality_method
             )
             if check_norm1 and check_norm2:
-                print('Samples are normally distributed.',
-                      'Using Pearson correlation.')
-                corr_method = 'pearson'
+                print("Samples are normally distributed.", "Using Pearson correlation.")
+                corr_method = "pearson"
             else:
-                print('Samples are not normally distributed.',
-                      'Using Spearman correlation.')
-                corr_method = 'spearman'
+                print(
+                    "Samples are not normally distributed.",
+                    "Using Spearman correlation.",
+                )
+                corr_method = "spearman"
         df_result = HypothesisTester.correlation_test(
             sample1,
             sample2,
@@ -128,9 +138,16 @@ class HTestAutoPilot:
         return df_result
 
     @staticmethod
-    def categorical(df, sample1, sample2, alpha=0.05,
-                    alternative='two-sided', correction=True,
-                    show_graph=True, **kwargs):
+    def categorical(
+        df,
+        sample1,
+        sample2,
+        alpha=0.05,
+        alternative="two-sided",
+        correction=True,
+        show_graph=True,
+        **kwargs
+    ):
         """
         Autopilot for tests with categorical variables
 
@@ -161,42 +178,44 @@ class HTestAutoPilot:
         pd.DataFrame
         """
         df_chi2 = HypothesisTester.chi2_test(
-            df,
-            sample1, sample2,
-            correction,
-            alpha,
-            show_graph,
-            **kwargs
+            df, sample1, sample2, correction, alpha, show_graph, **kwargs
         )
-        table = (df.groupby([sample1, sample2]).size() > 5)
+        table = df.groupby([sample1, sample2]).size() > 5
         if table.sum() == len(table):
             df_result = df_chi2
         else:
             if len(df[sample1].unique()) == 2 and len(df[sample2].unique()) == 2:
-                warnings.warn("The number of observations is not indicated " +
-                              "for the chi-squared test, cannot garantee a " +
-                              "correct inference. Also using Fisher's exact" +
-                              " test.")
-                df_fisher = HypothesisTester.fisher_exact_test(
-                    df,
-                    sample1,
-                    sample2,
-                    alpha,
-                    show_graph=False
+                warnings.warn(
+                    "The number of observations is not indicated "
+                    + "for the chi-squared test, cannot garantee a "
+                    + "correct inference. Also using Fisher's exact"
+                    + " test."
                 )
-                df_result = pd.concat([df_chi2, df_fisher], axis=1).fillna('-')
+                df_fisher = HypothesisTester.fisher_exact_test(
+                    df, sample1, sample2, alpha, show_graph=False
+                )
+                df_result = pd.concat([df_chi2, df_fisher], axis=1).fillna("-")
             else:
-                warnings.warn("The number of observations is not indicated " +
-                              "for the chi-squared test, cannot garantee a " +
-                              "correct inference.")
+                warnings.warn(
+                    "The number of observations is not indicated "
+                    + "for the chi-squared test, cannot garantee a "
+                    + "correct inference."
+                )
                 df_result = df_chi2
         return df_result
 
     @staticmethod
-    def independent_difference(sample1, sample2, alpha=0.05,
-                               alternative='two-sided', correction='auto',
-                               r=0.707, normality_method='shapiro',
-                               show_graph=True, **kwargs):
+    def independent_difference(
+        sample1,
+        sample2,
+        alpha=0.05,
+        alternative="two-sided",
+        correction="auto",
+        r=0.707,
+        normality_method="shapiro",
+        show_graph=True,
+        **kwargs
+    ):
         """
         Autopilot for testing the difference in means for independent samples
 
@@ -234,12 +253,13 @@ class HTestAutoPilot:
         pd.DataFrame
         """
         check_norm1, check_norm2 = HTestAutoPilot.check_norm(
-            sample1, sample2,
-            alpha, normality_method
+            sample1, sample2, alpha, normality_method
         )
         if check_norm1 and check_norm2:
-            print('Samples are normally distributed, an ideal condition',
-                  'for the application of t-test')
+            print(
+                "Samples are normally distributed, an ideal condition",
+                "for the application of t-test",
+            )
             df_result = HypothesisTester.t_test(
                 sample1,
                 sample2,
@@ -251,27 +271,27 @@ class HTestAutoPilot:
                 show_graph=show_graph,
                 **kwargs
             )
-        elif (check_norm1 is False and len(sample1) < 30) or \
-             (check_norm2 is False and len(sample2) < 30):
-            print('At least one of the samples is not normally distributed.',
-                  'However, the t-test can be applied due to central limit',
-                  'theorem (n>30). The Mann-Whitney test is also an option',
-                  'as it does not make any assumptions about data ditribution',
-                  '(non-parametric alternative)')
+        elif (check_norm1 is False and len(sample1) < 30) or (
+            check_norm2 is False and len(sample2) < 30
+        ):
+            print(
+                "At least one of the samples is not normally distributed.",
+                "However, the t-test can be applied due to central limit",
+                "theorem (n>30). The Mann-Whitney test is also an option",
+                "as it does not make any assumptions about data ditribution",
+                "(non-parametric alternative)",
+            )
             df_result = HypothesisTester.mann_whitney_2indep(
-                sample1,
-                sample2,
-                alpha,
-                alternative,
-                show_graph,
-                **kwargs
+                sample1, sample2, alpha, alternative, show_graph, **kwargs
             )
         else:
-            print('At least one of the samples is not normally distributed',
-                  'and due to the number of observations the central limit',
-                  'theorem does not apply. In this case, the Mann-Whitney',
-                  'test is used as it does not make any assumptions about',
-                  'data ditribution (non-parametric alternative)')
+            print(
+                "At least one of the samples is not normally distributed",
+                "and due to the number of observations the central limit",
+                "theorem does not apply. In this case, the Mann-Whitney",
+                "test is used as it does not make any assumptions about",
+                "data ditribution (non-parametric alternative)",
+            )
             df_result = HypothesisTester.t_test(
                 sample1,
                 sample2,
@@ -284,25 +304,43 @@ class HTestAutoPilot:
                 **kwargs
             )
             df_result_non_param = HypothesisTester.mann_whitney_2indep(
-                sample1,
-                sample2,
-                alpha,
-                alternative,
-                show_graph=False
+                sample1, sample2, alpha, alternative, show_graph=False
             )
             df_result = (
                 pd.concat([df_result, df_result_non_param], axis=1)
-                .reindex(['T', 'dof', 'cohen-d', 'BF10', 'power',
-                          'U-val', 'RBC', 'CLES', 'p-val', 'CI95%',
-                          'H0', 'H1', 'Result'])
-                .fillna('-')
+                .reindex(
+                    [
+                        "T",
+                        "dof",
+                        "cohen-d",
+                        "BF10",
+                        "power",
+                        "U-val",
+                        "RBC",
+                        "CLES",
+                        "p-val",
+                        "CI95%",
+                        "H0",
+                        "H1",
+                        "Result",
+                    ]
+                )
+                .fillna("-")
             )
         return df_result
 
     @staticmethod
-    def dependent_difference(sample1, sample2, alpha=0.05, alternative='two-sided',
-                             correction='auto', r=0.707, normality_method='shapiro',
-                             show_graph=True, **kwargs):
+    def dependent_difference(
+        sample1,
+        sample2,
+        alpha=0.05,
+        alternative="two-sided",
+        correction="auto",
+        r=0.707,
+        normality_method="shapiro",
+        show_graph=True,
+        **kwargs
+    ):
         """
         Autopilot for testing the difference in means for dependent samples
 
@@ -342,20 +380,15 @@ class HTestAutoPilot:
         pd.DataFrame
         """
         diff_sample = sorted(list(map(operator.sub, sample1, sample2)))
-        check_norm_diff = (
-            HypothesisTester
-            .normality_test(
-                diff_sample,
-                alpha,
-                normality_method,
-                show_graph=False
-            )
-            .loc['normal'][0]
-        )
+        check_norm_diff = HypothesisTester.normality_test(
+            diff_sample, alpha, normality_method, show_graph=False
+        ).loc["normal"][0]
 
         if check_norm_diff:
-            print('The distribution of differences is normally distributed',
-                  'an ideal condition for the application of t-test.')
+            print(
+                "The distribution of differences is normally distributed",
+                "an ideal condition for the application of t-test.",
+            )
             df_result = HypothesisTester.t_test(
                 sample1,
                 sample2,
@@ -368,11 +401,13 @@ class HTestAutoPilot:
                 **kwargs
             )
         elif len(sample1) > 30 and len(sample2) > 30:
-            print('The distribution of differences is not normally',
-                  'distributed. However, the t-test can be applied',
-                  'due to central limit theorem (n>30). The Wilcoxon',
-                  'test is also an option as it does not make any assumptions',
-                  'about data ditribution (non-parametric alternative).')
+            print(
+                "The distribution of differences is not normally",
+                "distributed. However, the t-test can be applied",
+                "due to central limit theorem (n>30). The Wilcoxon",
+                "test is also an option as it does not make any assumptions",
+                "about data ditribution (non-parametric alternative).",
+            )
             df_result = HypothesisTester.t_test(
                 sample1,
                 sample2,
@@ -385,35 +420,39 @@ class HTestAutoPilot:
                 **kwargs
             )
             df_result_non_param = HypothesisTester.wilcoxon_test(
-                sample1,
-                sample2,
-                alpha,
-                alternative,
-                show_graph=False,
-                **kwargs
+                sample1, sample2, alpha, alternative, show_graph=False, **kwargs
             )
             df_result = (
                 pd.concat([df_result, df_result_non_param], axis=1)
-                .reindex([
-                    'T', 'dof', 'cohen-d', 'BF10',
-                    'power', 'W-val', 'RBC', 'CLES',
-                    'p-val', 'CI95%', 'H0', 'H1', 'Result'
-                ])
-                .fillna('-')
+                .reindex(
+                    [
+                        "T",
+                        "dof",
+                        "cohen-d",
+                        "BF10",
+                        "power",
+                        "W-val",
+                        "RBC",
+                        "CLES",
+                        "p-val",
+                        "CI95%",
+                        "H0",
+                        "H1",
+                        "Result",
+                    ]
+                )
+                .fillna("-")
             )
         else:
-            print('The distribution of differences is not normally',
-                  'distributed and due to the number of observations the',
-                  'central limit theorem does not apply. In this case,',
-                  'the Wilcoxon test is indicated as it does not make',
-                  'any assumptions about data distribution',
-                  '(non-parametric alternative).')
+            print(
+                "The distribution of differences is not normally",
+                "distributed and due to the number of observations the",
+                "central limit theorem does not apply. In this case,",
+                "the Wilcoxon test is indicated as it does not make",
+                "any assumptions about data distribution",
+                "(non-parametric alternative).",
+            )
             df_result = HypothesisTester.wilcoxon_test(
-                sample1,
-                sample2,
-                alpha,
-                alternative,
-                show_graph,
-                **kwargs
+                sample1, sample2, alpha, alternative, show_graph, **kwargs
             )
         return df_result

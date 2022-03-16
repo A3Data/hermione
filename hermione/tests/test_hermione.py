@@ -1,5 +1,5 @@
 from click.testing import CliRunner
-from hermione.cli.main import cli,logo
+from hermione.cli.main import cli, logo
 
 
 def test_installation_ok():
@@ -10,7 +10,5 @@ def test_installation_ok():
 
 def test_info():
     runner = CliRunner()
-    res = runner.invoke(cli, ['info'])
+    res = runner.invoke(cli, ["info"])
     assert logo in res.output
-
-

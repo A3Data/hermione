@@ -8,14 +8,16 @@ st.set_page_config("Hermione Titanic", page_icon=":ship:")
 PAGES = {
     "Introduction": IntroPage,
     "Dataset Exploration": AnalysisPage,
-    'ML Model': ModelPage
+    "ML Model": ModelPage,
 }
+
 
 def main():
     st.sidebar.title("Navigation")
     selection = st.sidebar.selectbox("Go to", list(PAGES.keys()))
     page = PAGES[selection]()
     page.write()
+
 
 if __name__ == "__main__":
     main()

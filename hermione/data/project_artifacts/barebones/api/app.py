@@ -9,15 +9,15 @@ import uvicorn
 logging.getLogger().setLevel(logging.INFO)
 
 PROJECT_ROOT_DIR = Path(__file__).resolve().parents[1]
-DATA_DIR = os.path.abspath(os.path.join(PROJECT_ROOT_DIR, 'data'))
+DATA_DIR = os.path.abspath(os.path.join(PROJECT_ROOT_DIR, "data"))
 
-with open(os.path.join(PROJECT_ROOT_DIR, "config", "config.json"), 'r') as file:
+with open(os.path.join(PROJECT_ROOT_DIR, "config", "config.json"), "r") as file:
     SETTINGS = json.load(file)
 
 app = FastAPI(
     title=SETTINGS["project_name"],
     redoc_url=SETTINGS["docs_url"] if SETTINGS["use_redocs"] else None,
-    docs_url=SETTINGS["docs_url"] if not SETTINGS["use_redocs"] else None
+    docs_url=SETTINGS["docs_url"] if not SETTINGS["use_redocs"] else None,
 )
 
 

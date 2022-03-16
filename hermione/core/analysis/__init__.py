@@ -8,18 +8,19 @@ from ._vif import VIF
 
 
 __all__ = [
-    'Clusterer',
-    'DimensionalityReducer',
-    'FeatureSelector',
-    'HTestAutoPilot',
-    'HypothesisTester',
-    'PCAReducer',
-    'VIF'
+    "Clusterer",
+    "DimensionalityReducer",
+    "FeatureSelector",
+    "HTestAutoPilot",
+    "HypothesisTester",
+    "PCAReducer",
+    "VIF",
 ]
 
 
 try:
     from ._autoenconder import Autoencoder
-    __all__.append('Autoencoder')
+
+    __all__.append("Autoencoder")
 except (ModuleNotFoundError, ImportError):
     pass

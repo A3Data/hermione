@@ -3,13 +3,13 @@ from PIL import Image
 import requests
 from io import BytesIO
 
-url = 'https://github.com/A3Data/hermione/blob/master/images/vertical_logo.png?raw=true'
+url = "https://github.com/A3Data/hermione/blob/master/images/vertical_logo.png?raw=true"
 response = requests.get(url)
 img = Image.open(BytesIO(response.content))
 img.load()
 
-class IntroPage:
 
+class IntroPage:
     def __init__(self):
         pass
 

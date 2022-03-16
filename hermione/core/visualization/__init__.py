@@ -1,6 +1,4 @@
 from ._visualization import Visualizer
 
 
-__all__ = [
-    'Visualizer'
-]
+__all__ = ["Visualizer"]

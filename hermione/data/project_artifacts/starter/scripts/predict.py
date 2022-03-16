@@ -7,17 +7,15 @@ from joblib import load
 import logging
 
 PROJECT_ROOT_DIR = Path(__file__).resolve().parents[1]
-DATA_DIR = os.path.abspath(os.path.join(PROJECT_ROOT_DIR, 'data'))
+DATA_DIR = os.path.abspath(os.path.join(PROJECT_ROOT_DIR, "data"))
 
 logging.getLogger().setLevel(logging.INFO)
 
 
 def generate_data():
-    new_data = pd.DataFrame({
-        'Pclass': [3, 2, 1],
-        'Sex': ['male', 'female', 'male'],
-        'Age': [4, 22, 28]
-    })
+    new_data = pd.DataFrame(
+        {"Pclass": [3, 2, 1], "Sex": ["male", "female", "male"], "Age": [4, 22, 28]}
+    )
     return new_data
 
 
@@ -25,7 +23,7 @@ def load_model():
     try:
         return load(os.path.join(DATA_DIR, "output", "titanic_model_rf.pkl"))
     except:
-        logging.error('Model not loaded')
+        logging.error("Model not loaded")
 
 
 def predict_new(X, probs=True):

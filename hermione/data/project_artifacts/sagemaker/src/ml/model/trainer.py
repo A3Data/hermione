@@ -34,9 +34,16 @@ class Trainer(ABC):
 
 
 class TrainerSklearn(Trainer):
-
-    def train(self, train, val, y_name, classification: bool,
-              algorithm, columns=None, **params):
+    def train(
+        self,
+        train,
+        val,
+        y_name,
+        classification: bool,
+        algorithm,
+        columns=None,
+        **params
+    ):
         """
         Method that builds the Sklearn model
 
@@ -77,7 +84,6 @@ class TrainerSklearn(Trainer):
 
 
 class TrainerSklearnUnsupervised(Trainer):
-
     def train(self, X, algorithm, **params):
         """
         Method that builds the Sklearn model

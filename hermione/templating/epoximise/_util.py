@@ -45,5 +45,3 @@ class DotDict(MutableMapping):
 
     def copy(self) -> "DotDict":
         return type(self)(self.__dict__.copy())
-
-

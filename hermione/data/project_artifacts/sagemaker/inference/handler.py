@@ -1,4 +1,5 @@
 import sys
+
 sys.path.append("..")
 
 import os
@@ -12,10 +13,10 @@ from sagemaker_inference.default_inference_handler import DefaultInferenceHandle
 from sagemaker_inference.default_handler_service import DefaultHandlerService
 from sagemaker_inference import content_types, errors, transformer, encoder, decoder
 
-logging.getLogger().setLevel('INFO')
+logging.getLogger().setLevel("INFO")
 
 # Path to access the model
-MODEL_DIR = '/opt/ml/model'
+MODEL_DIR = "/opt/ml/model"
 
 
 def _csv_to_pandas(string_like):
@@ -41,6 +42,7 @@ class HandlerService(DefaultHandlerService, DefaultInferenceHandler):
     Execute the inference step in the virtual environment
 
     """
+
     def __init__(self):
         op = transformer.Transformer(default_inference_handler=self)
         super(HandlerService, self).__init__(transformer=op)
@@ -50,7 +52,7 @@ class HandlerService(DefaultHandlerService, DefaultInferenceHandler):
         Loads the model from the disk
 
         Parameters
-        ----------            
+        ----------
         model_dir   : string
                       Path of the model
 
@@ -58,7 +60,7 @@ class HandlerService(DefaultHandlerService, DefaultInferenceHandler):
         -------
         pkl : model
         """
-        logging.info('Loading the model')
+        logging.info("Loading the model")
         return load(os.path.join(MODEL_DIR, "model.pkl"))
 
     def default_input_fn(self, input_data, content_type):
@@ -66,7 +68,7 @@ class HandlerService(DefaultHandlerService, DefaultInferenceHandler):
         Parse and check the format of the input data
 
         Parameters
-        ----------            
+        ----------
         input_data   : string
                        CSV string
         content_type : string
@@ -86,7 +88,7 @@ class HandlerService(DefaultHandlerService, DefaultInferenceHandler):
         Run our model and do the prediction
 
         Parameters
-        ----------            
+        ----------
         df    : pd.DataFrame
                 Data to be predicted
         model : pkl
@@ -96,9 +98,9 @@ class HandlerService(DefaultHandlerService, DefaultInferenceHandler):
         -------
         pd.DataFrame : pandas DataFrame
         """
-        logging.info('Predicting...')
+        logging.info("Predicting...")
         resultados = model.predict(df, included_input=True)
-        logging.info('Prediction Complete')
+        logging.info("Prediction Complete")
         return resultados.reset_index(drop=True).T.reset_index().T
 
     def default_output_fn(self, prediction, accept):
@@ -106,7 +108,7 @@ class HandlerService(DefaultHandlerService, DefaultInferenceHandler):
         Gets the prediction output and format it to be returned to the user
 
         Parameters
-        ----------            
+        ----------
         prediction    : pd.DataFrame
                         Predicted dataset
         accept        : string
@@ -116,7 +118,7 @@ class HandlerService(DefaultHandlerService, DefaultInferenceHandler):
         -------
         CSV : CSV file
         """
-        logging.info('Saving')
+        logging.info("Saving")
         if accept != "text/csv":
             raise Exception("Invalid accept: %s" % accept)
         return encoder.encode(prediction, accept)

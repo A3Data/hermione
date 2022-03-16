@@ -9,18 +9,19 @@ from abc import ABCMeta, abstractmethod
 from jinja2 import Template
 from .exceptions import ProjectDirAlreadyExistsException
 
+
 def copy_folder(src, dst, dirs_exist_ok):
     shutil.copytree(src, dst, dirs_exist_ok=dirs_exist_ok)
 
 
 def copy_file(src, dst, context_data=None):
-    if '.tpl.' in src:
+    if ".tpl." in src:
         new_dst = dst.replace(".tpl", "")
-        with open(src, 'r', encoding='latin-1') as src_file:
+        with open(src, "r", encoding="latin-1") as src_file:
             src_content = src_file.read()
         template = Template(src_content)
-        output = template.render(context=context_data).encode('latin-1')
-        with open(new_dst, 'wb') as f:
+        output = template.render(context=context_data).encode("latin-1")
+        with open(new_dst, "wb") as f:
             f.write(output)
     else:
         shutil.copyfile(src, dst)
@@ -110,7 +111,7 @@ class ProjectTemplate(ChangeDirectory):
 
 
 def active_workspace_as_parent(cls: ChildNode):
-    class_init = cls.__dict__.get('__init__')
+    class_init = cls.__dict__.get("__init__")
 
     def __init__(self, *args, **kwargs):
         if class_init:
@@ -120,7 +121,8 @@ def active_workspace_as_parent(cls: ChildNode):
             self.parent = current_workspace
             if isinstance(current_workspace, BranchNode):
                 current_workspace.add_child(self)
-    setattr(cls, '__init__', __init__)
+
+    setattr(cls, "__init__", __init__)
     return cls
 
 
@@ -142,7 +144,7 @@ class CreateFile(TerminalNode):
         self.filename = filename
 
     def eval(self, **kwargs):
-        open(self.filename, 'a').close()
+        open(self.filename, "a").close()
 
 
 @active_workspace_as_parent

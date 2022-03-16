@@ -12,15 +12,15 @@ from enum import Enum
 logging.getLogger().setLevel(logging.INFO)
 
 PROJECT_ROOT_DIR = Path(__file__).resolve().parents[1]
-DATA_DIR = os.path.abspath(os.path.join(PROJECT_ROOT_DIR, 'data'))
+DATA_DIR = os.path.abspath(os.path.join(PROJECT_ROOT_DIR, "data"))
 
-with open(os.path.join(PROJECT_ROOT_DIR, "config", "config.json"), 'r') as file:
+with open(os.path.join(PROJECT_ROOT_DIR, "config", "config.json"), "r") as file:
     SETTINGS = json.load(file)
 
 app = FastAPI(
     title=SETTINGS["project_name"],
     redoc_url=SETTINGS["docs_url"] if SETTINGS["use_redocs"] else None,
-    docs_url=SETTINGS["docs_url"] if not SETTINGS["use_redocs"] else None
+    docs_url=SETTINGS["docs_url"] if not SETTINGS["use_redocs"] else None,
 )
 
 
@@ -56,16 +56,16 @@ class Passenger(BaseModel):
 
 
 class PredictionResult(BaseModel):
-    probability_of_survival: float = Field(ge=0, le=1, description="Probability of survival")
+    probability_of_survival: float = Field(
+        ge=0, le=1, description="Probability of survival"
+    )
 
 
 @app.post("/invocations", response_model=PredictionResult)
 def predict(passenger: Passenger) -> PredictionResult:
-    data = pd.DataFrame([{
-        "Pclass": passenger.p_class,
-        "Sex": passenger.sex,
-        "Age": passenger.age
-    }])
+    data = pd.DataFrame(
+        [{"Pclass": passenger.p_class, "Sex": passenger.sex, "Age": passenger.age}]
+    )
     prediction = predict_new(data)[0]
     return PredictionResult(probability_of_survival=float(prediction))
 

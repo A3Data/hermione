@@ -19,7 +19,7 @@ def read_json(file):
 
 
 def get_all_file_paths(folder):
-    return list(str(path) for path in Path(folder).rglob('*'))
+    return list(str(path) for path in Path(folder).rglob("*"))
 
 
 @pytest.fixture()
@@ -41,43 +41,40 @@ class ProjectTestCase:
 
 
 def project_test_cases():
-    context_data = {
-        "project_start_date": datetime.now().strftime("%B %d, %Y")
-    }
+    context_data = {"project_start_date": datetime.now().strftime("%B %d, %Y")}
     return [
         ProjectTestCase(
             template="barebones",
             expected_project_name="barebones_project",
             expected_files=read_json("barebones_project_files.json"),
-            context_data=context_data
+            context_data=context_data,
         ),
         ProjectTestCase(
             template="starter",
             expected_project_name="starter_project",
             expected_files=read_json("starter_project_files.json"),
-            context_data=context_data
+            context_data=context_data,
         ),
         ProjectTestCase(
             template="sagemaker",
             expected_project_name="sagemaker_project",
             expected_files=read_json("sagemaker_project_files.json"),
-            context_data=context_data
-        )
+            context_data=context_data,
+        ),
     ]
 
 
-@pytest.mark.usefixtures('cleandir')
-@pytest.mark.parametrize("test_case",  project_test_cases())
+@pytest.mark.usefixtures("cleandir")
+@pytest.mark.parametrize("test_case", project_test_cases())
 def test_project_creation(test_case: ProjectTestCase):
     create_project(
         os.getcwd(),
         test_case.expected_project_name,
         test_case.template,
         test_case.context_data,
-        output_blueprint=True
+        output_blueprint=True,
     )
     project_path = os.path.join(os.getcwd(), test_case.expected_project_name)
     assert os.path.exists(project_path)
     for file in test_case.expected_files:
         assert os.path.exists(file)
-

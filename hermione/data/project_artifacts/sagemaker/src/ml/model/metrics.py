@@ -5,7 +5,6 @@ from sklearn.model_selection import cross_validate
 
 
 class Metrics:
-
     @classmethod
     def smape(cls, A, F):
         """
@@ -22,7 +21,7 @@ class Metrics:
         -------
         float: smape value
         """
-        return 100/len(A) * np.sum(np.abs(F - A) / (np.abs(A) + np.abs(F)))
+        return 100 / len(A) * np.sum(np.abs(F - A) / (np.abs(A) + np.abs(F)))
 
     @classmethod
     def __custom_score(cls, y_true, y_pred):
@@ -40,7 +39,7 @@ class Metrics:
         -------
         sklearn.metrics
         """
-        #return sklearn.metrics.fbeta_score(y_true, y_pred, 2)
+        # return sklearn.metrics.fbeta_score(y_true, y_pred, 2)
         pass
 
     @classmethod
@@ -79,7 +78,7 @@ class Metrics:
         float : value of mape
         """
         y_true, y_pred = np.array(y_true), np.array(y_pred)
-        return np.mean(np.abs(((y_true+1) - (y_pred+1)) / (y_true+1))) * 100
+        return np.mean(np.abs(((y_true + 1) - (y_pred + 1)) / (y_true + 1))) * 100
 
     @classmethod
     def regression(cls, y_true, y_pred):
@@ -97,34 +96,44 @@ class Metrics:
         -------
         dict : metrics results
         """
-        results = {'mean_absolute_error': round(mean_absolute_error(
-            y_true, y_pred), 7),
-                    'root_mean_squared_error': round(np.sqrt(
-                          mean_squared_error(y_true, y_pred)), 7),
-                    'r2': round(r2_score(y_true, y_pred), 7),
-                    'smape': round(cls.smape(y_true, y_pred), 7),
-                    'mape': round(cls.mape(y_true, y_pred), 7)
-                     }
+        results = {
+            "mean_absolute_error": round(mean_absolute_error(y_true, y_pred), 7),
+            "root_mean_squared_error": round(
+                np.sqrt(mean_squared_error(y_true, y_pred)), 7
+            ),
+            "r2": round(r2_score(y_true, y_pred), 7),
+            "smape": round(cls.smape(y_true, y_pred), 7),
+            "mape": round(cls.mape(y_true, y_pred), 7),
+        }
         return results
 
     @classmethod
-    def crossvalidation(cls, model, X, y, classification: bool,
-                        cv=5, agg=np.mean):
+    def crossvalidation(cls, model, X, y, classification: bool, cv=5, agg=np.mean):
         if classification:
             if len(set(y)) > 2:
-                metrics = ['accuracy', 'f1_weighted',
-                           'recall_weighted', 'precision_weighted']
+                metrics = [
+                    "accuracy",
+                    "f1_weighted",
+                    "recall_weighted",
+                    "precision_weighted",
+                ]
             else:
-                metrics = ['accuracy', 'f1', 'recall', 'precision', 'roc_auc']
+                metrics = ["accuracy", "f1", "recall", "precision", "roc_auc"]
         else:
-            metrics = ['mean_absolute_error', 'r2', 'root_mean_squared_error',
-                       'smape', 'mape']
-        res_metrics = cross_validate(model, X, y, cv=cv,
-                                     return_train_score=False,
-                                     scoring=metrics)
-        results = {metric.replace("test_", ""): round(agg(
-            res_metrics[metric]), 7)
-                   for metric in res_metrics}
+            metrics = [
+                "mean_absolute_error",
+                "r2",
+                "root_mean_squared_error",
+                "smape",
+                "mape",
+            ]
+        res_metrics = cross_validate(
+            model, X, y, cv=cv, return_train_score=False, scoring=metrics
+        )
+        results = {
+            metric.replace("test_", ""): round(agg(res_metrics[metric]), 7)
+            for metric in res_metrics
+        }
         return results
 
     @classmethod
@@ -143,12 +152,12 @@ class Metrics:
         -------
         dict : metrics results
         """
-        results = {'accuracy': accuracy_score(y_true, y_pred),
-                   'f1': f1_score(y_true, y_pred, average='weighted'),
-                   'precision': precision_score(y_true, y_pred,
-                                                average='weighted'),
-                   'recall': recall_score(y_true, y_pred,
-                                          average='weighted')}
+        results = {
+            "accuracy": accuracy_score(y_true, y_pred),
+            "f1": f1_score(y_true, y_pred, average="weighted"),
+            "precision": precision_score(y_true, y_pred, average="weighted"),
+            "recall": recall_score(y_true, y_pred, average="weighted"),
+        }
         return results
 
     @classmethod
@@ -167,11 +176,13 @@ class Metrics:
         -------
         dict : metrics results
         """
-        results = {'accuracy': accuracy_score(y_true, y_pred),
-                   'f1': f1_score(y_true, y_pred),
-                   'precision': precision_score(y_true, y_pred),
-                   'recall': recall_score(y_true, y_pred),
-                   'roc_auc': roc_auc_score(y_true, y_probs)}
+        results = {
+            "accuracy": accuracy_score(y_true, y_pred),
+            "f1": f1_score(y_true, y_pred),
+            "precision": precision_score(y_true, y_pred),
+            "recall": recall_score(y_true, y_pred),
+            "roc_auc": roc_auc_score(y_true, y_probs),
+        }
         return results
 
     @classmethod
@@ -216,7 +227,8 @@ class Metrics:
         -------
         dict : metrics results
         """
-        results = {'silhouette': silhouette_score(X, labels,
-                                                  metric='euclidean'),
-                   'calinski_harabaz': calinski_harabaz_score(X, labels)}
+        results = {
+            "silhouette": silhouette_score(X, labels, metric="euclidean"),
+            "calinski_harabaz": calinski_harabaz_score(X, labels),
+        }
         return results

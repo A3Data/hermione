@@ -3,7 +3,11 @@ import os
 import sys
 import json
 from datetime import datetime
-from hermione.templating import create_project, TEMPLATES, ProjectDirAlreadyExistsException
+from hermione.templating import (
+    create_project,
+    TEMPLATES,
+    ProjectDirAlreadyExistsException,
+)
 
 TEMPLATE_OPTIONS = [template_option["name"] for template_option in TEMPLATES]
 
@@ -16,22 +20,20 @@ def project():
 
 
 @project.command()
-@click.argument('project_name')
-@click.option('--template', type=click.Choice(TEMPLATE_OPTIONS, case_sensitive=False))
+@click.argument("project_name")
+@click.option("--template", type=click.Choice(TEMPLATE_OPTIONS, case_sensitive=False))
 def new(project_name, template):
     """
     Create a new hermione project
     """
     while not template:
-        selection_prompt_str = 'Please select one of the following templates \n'
+        selection_prompt_str = "Please select one of the following templates \n"
         for i, template_name in enumerate(TEMPLATE_OPTIONS):
             selection_prompt_str += f"\t({i}) {template_name} \n"
         selection_prompt_str += "Option"
         selected_option = click.prompt(selection_prompt_str, type=int, default=0)
         if selected_option >= len(TEMPLATE_OPTIONS):
-            click.echo(
-                f'Error: {selected_option} its not a valid option'
-            )
+            click.echo(f"Error: {selected_option} its not a valid option")
         else:
             template = TEMPLATE_OPTIONS[selected_option]
     try:
@@ -39,19 +41,19 @@ def new(project_name, template):
             LOCAL_PATH,
             project_name,
             template.lower(),
-            context_data={
-                "project_start_date": datetime.now().strftime("%B %d, %Y")
-            }
+            context_data={"project_start_date": datetime.now().strftime("%B %d, %Y")},
         )
     except ProjectDirAlreadyExistsException:
         click.echo(
-            f'Error: Cannot create new project. Folder {project_name} already exists'
+            f"Error: Cannot create new project. Folder {project_name} already exists"
         )
         sys.exit(-1)
 
 
 @project.command()
-@click.argument('blueprint_file_path', type=click.Path(exists=True, dir_okay=False, readable=True))
+@click.argument(
+    "blueprint_file_path", type=click.Path(exists=True, dir_okay=False, readable=True)
+)
 def replay(blueprint_file_path):
     """
     Create a new hermione project from blueprint
@@ -63,7 +65,7 @@ def replay(blueprint_file_path):
                 LOCAL_PATH,
                 blueprint["project_name"],
                 blueprint["template"],
-                blueprint["context_data"]
+                blueprint["context_data"],
             )
         except ProjectDirAlreadyExistsException:
             click.echo(
