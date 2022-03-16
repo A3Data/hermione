@@ -11,34 +11,16 @@ from sklearn.manifold import TSNE
 from umap import UMAP
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from ._pca import PCAReducer
-import keras
 import numpy as np
 import pandas as pd
 
-class Autoencoder:
-    
-    def __init__(self, n_components, n_layers = 1, **kwargs):
-        self.n_components = n_components
-        self.n_layers = n_layers
-        self.kwargs = kwargs
-
-    def fit(self, X, y = None):
-        input_ = keras.layers.Input(shape=(X.shape[1]))
-        encoded = keras.layers.Dense(self.n_components, activation='relu')(input_)
-        decoded = keras.layers.Dense(X.shape[1], activation='relu')(encoded)
-
-        self.autoencoder = keras.Model(input_,decoded)
-        self.encoder = keras.Model(input_, encoded)
-        self.autoencoder.compile(loss = keras.losses.MeanSquaredError())
-        print(X.shape[1])
-        self.autoencoder.fit(X, X, epochs = 100, batch_size = 64, shuffle=True)
-
-    def transform(self, X, y = None):
-        return self.encoder.predict(X)
-
-    def fit_transform(self, X, y = None):
-        self.fit(X)
-        return self.encoder.predict(X)
+try:
+    from ._autoenconder import Autoencoder
+    AUTOENCONDER_AVAILABLE = True
+except (ModuleNotFoundError, ImportError):
+    AUTOENCONDER_AVAILABLE = False
+    import warnings
+    warnings.warn("Warning: optional dependency keras is not available. Autoencoder its not available")
 
 class DimensionalityReducer:
     
@@ -93,8 +75,9 @@ class DimensionalityReducer:
                          'latent_dirichlet':LatentDirichletAllocation,
                          'truncated_svd':TruncatedSVD,
                          'nmf':NMF,
-                         'linear_discriminant':LinearDiscriminantAnalysis,
-                         'autoencoder':Autoencoder}
+                         'linear_discriminant':LinearDiscriminantAnalysis}
+        if AUTOENCONDER_AVAILABLE:
+             self.reducers["autoencoder"] = Autoencoder
         self.kwargs = kwargs 
         self.fitted = False
         self.reduction = self.reducers[self.reducer](**self.kwargs)
