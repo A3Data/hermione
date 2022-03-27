@@ -53,7 +53,7 @@ def new(project_name, implemented):
         }
     os.makedirs(os.path.join(LOCAL_PATH, project_name))
     if is_imp:
-        option = click.prompt('Do you want to start with: \n\t(1) Sagemaker \n\t(2) Local version \n', type=int, default=2)
+        option = click.prompt('Do you want to start with: \n\t(1) Sagemaker \n\t(2) Local version \n', type=int, default=3)
         implemented_version_type(project_name,custom_inputs,option)
     else:
         write_module(os.path.join(LOCAL_PATH, project_name), '__NOT_IMPLEMENTED_BASE__', True, custom_inputs)

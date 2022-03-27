@@ -38,6 +38,9 @@ ProjectStructure
 
 ```
 
+.. automodule:: hermione.__IMPLEMENTED_BASE__.src
+    :members:
+
 ```{toctree}
 :maxdepth: 2
 :hidden:
