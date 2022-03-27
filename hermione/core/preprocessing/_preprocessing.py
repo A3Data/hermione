@@ -6,28 +6,29 @@ import logging
 
 logging.getLogger().setLevel(logging.INFO)
 
+
 class Preprocessing:
     """
     Class to perform data preprocessing before training
     """
-    
+
     def clean_data(self, df: pd.DataFrame):
         """
         Perform data cleansing.
-        
+
         Parameters
-        ----------            
+        ----------
         df  :   pd.Dataframe
                 Dataframe to be processed
 
         Returns
-    	-------
+        -------
         pd.Dataframe
             Cleaned Data Frame
         """
         logging.info("Cleaning data")
         df_copy = df.copy()
-        df_copy['Pclass'] = df_copy.Pclass.astype('object')
+        df_copy["Pclass"] = df_copy.Pclass.astype("object")
         df_copy = df_copy.dropna()
         return df_copy
 
@@ -36,12 +37,12 @@ class Preprocessing:
         Perform encoding of the categorical variables
 
         Parameters
-        ----------            
+        ----------
         df  :   pd.Dataframe
                 Dataframe to be processed
 
         Returns
-    	-------
+        -------
         pd.Dataframe
             Cleaned Data Frame
         """

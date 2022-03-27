@@ -1,10 +1,9 @@
-
 import contextlib
 import threading
 from contextlib import contextmanager
 from collections.abc import MutableMapping
 import os
-from typing import Any,  Iterator
+from typing import Any, Iterator
 
 
 from ._util import DotDict

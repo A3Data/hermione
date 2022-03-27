@@ -2,10 +2,19 @@ from setuptools import setup, find_packages
 import re
 import os
 
-exec(open('hermione/_version.py').read())
+from hermione._version import __version__
 
 with open('README.md', encoding='utf-8') as f:
     long_description = f.read()
+    
+def package_files(directory):
+    paths = []
+    for (path, directories, filenames) in os.walk(directory):
+        for filename in filenames:
+            paths.append(os.path.join('..', path, filename))
+    return paths
+
+extra_files = package_files('hermione/data')
 
 setup(
     name='hermione-ml',
@@ -20,9 +29,8 @@ setup(
     classifiers=[
         'Development Status :: 4 - Beta',
         'License :: OSI Approved :: Apache Software License',
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Topic :: Scientific/Engineering :: Artificial Intelligence',
         'Topic :: Software Development'
       ],
@@ -36,5 +44,6 @@ setup(
         [console_scripts]
         hermione=hermione.cli.main:cli
     ''',
-    python_requires='>=3.6'
+    python_requires='>=3.8.0',
+    package_data={'': extra_files},
 )

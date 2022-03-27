@@ -3,8 +3,4 @@ from ._preprocessing import SparkPreprocessor
 from ._text_vectorizer import SparkVectorizer
 
 
-__all__ = [
-    'SparkScaler',
-    'SparkPreprocessor',
-    'SparkVectorizer'
-]
+__all__ = ["SparkScaler", "SparkPreprocessor", "SparkVectorizer"]

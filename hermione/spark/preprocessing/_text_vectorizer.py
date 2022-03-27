@@ -7,9 +7,9 @@ from hermione.core.base import Asserter
 class SparkVectorizer(CustomEstimator, Asserter):
     """
     Class used to vectorize text data using Spark ML
-    
+
     Parameters
-    ----------            
+    ----------
     inputCol : str
         Column that should be used in the vectorization
 
@@ -32,13 +32,13 @@ class SparkVectorizer(CustomEstimator, Asserter):
 
     final_cols : list[str]
         List of strings with the columns that should be appended to the resulting DataFrame.
-    
+
     inputCol : str
         Column that should be used in the vectorization
-    
+
     tokenized : bool
         Boolean indicating if the text column already is tokenized or not.
-    
+
     Examples
     --------
     >>> data = [(1,'Using Spark is really cool'), (2, 'Hermione is such a great tool'), (3, 'Data science is nice'), ]
@@ -53,38 +53,43 @@ class SparkVectorizer(CustomEstimator, Asserter):
     |  3|Data science is nice|[data, science, i...|(13,[0,6,10,12],[...|
     +---+--------------------+--------------------+--------------------+
     """
-    def __init__(self, inputCol, method, tokenized = False, **kwargs):
+
+    def __init__(self, inputCol, method, tokenized=False, **kwargs):
 
         self.inputCol = inputCol
         self.tokenized = tokenized
         methods_dict = {
-            'hashing_tfidf': HashingTF, 
-            'tfidf': CountVectorizer,
-            'word2vec': Word2Vec,
+            "hashing_tfidf": HashingTF,
+            "tfidf": CountVectorizer,
+            "word2vec": Word2Vec,
         }
         self.assert_method(methods_dict.keys(), method)
-        self.algorithm = methods_dict[method](inputCol=inputCol, outputCol='word_vectors', **kwargs)
+        self.algorithm = methods_dict[method](
+            inputCol=inputCol, outputCol="word_vectors", **kwargs
+        )
         self.estimator_cols = [inputCol]
-        self.final_cols = ['tokens', 'word_vectors'] if not tokenized else ['word_vectors']
+        self.final_cols = (
+            ["tokens", "word_vectors"] if not tokenized else ["word_vectors"]
+        )
 
     def _fit(self):
         """
         Prepare the estimators
-        
-    	Parameters
-    	----------            
-    	Returns
-    	-------
+
+        Parameters
+        ----------
+        Returns
+        -------
         pyspark.ml.pipeline.Pipeline
         """
         stages = []
         if not self.tokenized:
-            tokenizer = Tokenizer(inputCol=self.inputCol, outputCol='tokens')
-            algorithm = self.algorithm.setInputCol('tokens')
+            tokenizer = Tokenizer(inputCol=self.inputCol, outputCol="tokens")
+            algorithm = self.algorithm.setInputCol("tokens")
             stages.append(tokenizer)
         stages.append(algorithm)
         if isinstance(self.algorithm, (HashingTF, CountVectorizer)):
-            algorithm = algorithm.setOutputCol('unscaled_vectors')
+            algorithm = algorithm.setOutputCol("unscaled_vectors")
             idf = IDF(inputCol="unscaled_vectors", outputCol="word_vectors")
             stages.append(idf)
         return Pipeline(stages=stages)

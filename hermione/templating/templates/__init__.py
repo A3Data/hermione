@@ -1,10 +1,10 @@
-from ._local_implemented import build_local_implemented_template
-from ._local_not_implemented import build_local_not_implemented_template
+from ._starter import build_starter_template
+from ._barebones import build_barebones_template
 from ._sagemaker import build_sagemaker_template
 
 
 __all__ = [
-    'build_local_implemented_template',
-    'build_local_not_implemented_template',
-    'build_sagemaker_template',
+    build_starter_template,
+    build_barebones_template,
+    build_sagemaker_template,
 ]

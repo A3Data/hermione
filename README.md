@@ -38,7 +38,7 @@ This is also our way of reinforcing our position that women should be taking mor
 
 ### Dependencies
 
-- Python (>= 3.6)
+- Python (>= 3.8)
 - **docker**
 
 Hermione does not depend on conda to build and manage virtual environments anymore. It uses `venv` instead.
@@ -71,24 +71,21 @@ After installed Hermione:
 1.  Create you new project:
 
 ```
-hermione new project_hermione
+hermione project new project_hermione
 ```
 
 2. Hit Enter if you want to start with an example code
 
 ```
-Do you want to start with an implemented example (recommended) [y/n]? [y]: 
+Please select one of the following templates 
+	(0) starter 
+	(1) barebones 
+	(2) sagemaker 
+Option [0]: 
+
 ```
 
-3. If you choose an implemented example, select Sagemaker or Local version
-
-```
-Do you want to start with:
-    (1) Sagemaker 
-    (2) Local version 
-```
-
-4. Hermione already creates a virtual environment for the project. For Windows users, activate it with
+3. Hermione already creates a virtual environment for the project. For Windows users, activate it with
 
 ```cmd
 <project_name>_env\Scripts\activate
@@ -107,7 +104,7 @@ source <project_name>_env/bin/activate
 pip install -r requirements.txt
 ```
 
-1. Now, if you selected the Local version,  we will train some models from the example, using MLflow ❤. To do so, inside *src* directory, just type: _hermione train_. The “hermione train” command will search for a `train.py` file and execute it. In the example, models and metrics are already controlled via MLflow.
+1. Now, if you selected the starter version,  we will train some models from the example, using MLflow ❤. To do so, inside project directory, just type: _hermione train_. The “hermione run train” command will search for a `train.py` file and execute it. In the example, models and metrics are already controlled via MLflow.
 
 ![](https://cdn-images-1.medium.com/max/800/1*MmVcmAYspxWdzbd5r00W5g.png)
 
@@ -126,15 +123,15 @@ mlflow ui
 
 ![](https://cdn-images-1.medium.com/max/800/1*c_rDEqERZR6r8JVI3TMTcQ.png)
 
-7. To make batch predictions using your `predict.py` file, type `hermione predict`. The default implemented version will print some predictions for you in the terminal.
+7. To make batch predictions using your `predict.py` file, type `hermione run predict`. The default implemented version will print some predictions for you in the terminal.
 
 ```
-hermione predict
+hermione run predict
 ```
 
-8.  In the Titanic example, we also provide a step by step notebook. To view it, just type jupyter notebook inside directory `/src/notebooks/`.
+8.  In the Titanic example, we also provide a step by step notebook. To view it, just type jupyter notebook inside directory `notebooks`.
 
-![](https://cdn-images-1.medium.com/max/800/1*U3ToR5jDjQJihT9EnxeDdg.png)
+![](https://i.imgur.com/tKDrjc6.png)
 
 
 9. If you selected the Sagemaker version, click [here](hermione/module_templates/__IMPLEMENTED_SAGEMAKER__/README.tpl.md) to check a tutorial.
@@ -144,18 +141,18 @@ Do you want to create your **project from scratch**? There click [here](tutorial
 
 # Docker
 
-Hermione comes with a default `Dockerfile` which implements a Flask + Gunicorn API that serves your ML model. You should take a look at the `api/app.py` module and rewrite `predict_new()` function as you see fit.  
+Hermione comes with a default `Dockerfile` which implements a FastAPI application that serves your ML model. You should take a look at the `api/app.py` module and rewrite `predict_new()` function as you see fit.  
 
 Also, in the newest version, hermione brings two CLI commands that helps us abstract a little bit the complexity regarding docker commands. To build an image (remember you should have docker installed), you should be in the project's root directory. Than, do:
 
 ```bash
-hermione build <IMAGE_NAME>
+hermione run build <IMAGE_NAME>
 ```
 
 After you have built you're docker image, run it with:
 
 ```bash
-hermione run <IMAGE_NAME>
+hermione run container <IMAGE_NAME>
 ```
 
     [2020-10-20 02:13:20 +0000] [1] [INFO] Starting gunicorn 20.0.4

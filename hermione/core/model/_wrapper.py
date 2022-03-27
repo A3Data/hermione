@@ -75,7 +75,7 @@ class Wrapper(mlflow.pyfunc.PythonModel):
             return model.predict_proba(df_processed[columns])[:, 1]
         else:
             return model.predict_proba(df_processed[columns])
-        
+
     def load(self, path):
         """
         Load the model object to a specific path
