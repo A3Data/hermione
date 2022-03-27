@@ -3,7 +3,7 @@ joblib==1.0.1
 matplotlib==3.3.4
 pyspark==3.1.2
 numpy==1.19.5
-mlflow==1.18.0
+mlflow==1.23.1
 Unidecode==1.2.0
 seaborn==0.11.1
 PyYAML==6.0
