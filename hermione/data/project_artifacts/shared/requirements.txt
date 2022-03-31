@@ -28,3 +28,4 @@ pyspark==3.2.1
 notebook==6.4.10
 fastapi==0.75.0
 uvicorn==0.17.5
+Jinja2==3.0.3
