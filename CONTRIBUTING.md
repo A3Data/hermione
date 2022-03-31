@@ -25,44 +25,40 @@ That way, the Hermione cli command will point directly to the source code. Any c
 
 ## Adding new modules
 
-All Hermione module templates are kept in ["hermione/module_templates/"](hermione/module_templates) folder.
-To add a new module, you just need to add a folder named after the module and add all the files and folders from the module to it.
+All Hermione module templates are defined as code in the ["templating"](hermione/templating/) module. To add a new module, you need to add a new script in the ["TEMPLATES"](hermione/templating/projects.py) dictionary. Build scripts can be created using the ["epoximise"](hermione/templating/epoximise/) module, an internal library for defining template-as-code. An example of a build script can be seen below:
 
-The files and folders need to respect the exact same folder structure they will have on the user's project.
-
-When a user install your module, all the files will be copied to the project's directory following the same structure of the "module_template" folder.
-If any file already exists on user's project, its content will be appended with the template content.
-
-### Module template config file
-
-Optionally, you can add a json file containing some information about the module, and any inputs to be asked to the user:
-
-```json
-{
-    "info": "Base files with implemented example",
-    "input_info": [
-        ["project_name", "My Project", "Enter your project name"],
-        ["project_start_date", "01/01/21", "Enter the date your project started"]
-    ]
-}
+```python
+with ProjectTemplate("barebones_template") as template:
+    for file_name in [
+        ".gitignore",
+        "README.tpl.md",
+        "requirements.txt",
+        "setup.tpl.py",
+        "Dockerfile",
+    ]:
+        CopyFile(get_artefact_full_path("shared", file_name))
+    with CreateDir("config"):
+        CopyFile(get_artefact_full_path("shared", "config/config.tpl.json"))
+    CopyDir(get_artefact_full_path("shared", "tests"))
+    with CreateDir("data"):
+        for data_dir in ["raw", "processed", "output"]:
+            CreateDir(data_dir)
+    for module in ["api", "notebooks", "scripts"]:
+        CopyDir(get_artefact_full_path("barebones", module))
+    with CopyDir(get_hermione_src_dir(), "src"):
+        CopyDir(get_artefact_full_path("shared", "src/data_source"))
+        CopyDir(
+            get_artefact_full_path("barebones", "src/data_source"),
+            merge_if_exists=True,
+        )
+    CreateVirtualEnv()
+    InstallProjectLocally()
+    InitializeGitRepository()
 ```
-
-The config file needs to have the same name as the module template folder, with the `.json` extension.
-
-The `info` field of the json is used as a description of the module, when user uses autocompletion.
-
-The `input_info` field of the json contains a list of lists. Each list contains information about one of the module's user inputs:
-
-- 1st element is the name of the input
-- 2nd element is the default value
-- 3rd element is the text the user will be prompted when being asked for the input
-
 
 ### Using jinja template files
 
-Optionally, you can let Herminone process the template files as [jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates.
-
-To let Herminoe know the file needs to be interpreted as a jinja template, you just need to add `.tpl`before the file extension (`sample.py`would become `sample.tpl.py`).
+Herminone can process [jinja](https://jinja.palletsprojects.com/en/2.11.x/) templates. To let Herminone know the file needs to be interpreted as a jinja template, you just need to add `.tpl` before the file extension (`sample.py` would become `sample.tpl.py`).
 
 All the user inputs are passed to the template as keys of `inputs` variable. For example:
 
