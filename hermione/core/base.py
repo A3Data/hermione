@@ -70,7 +70,7 @@ class Asserter:
 
         Parameters
         ----------
-        method_dict : Iterable[str]
+        valid_methods : Iterable[str]
             iterable of valid methods
 
         method  : str
@@ -89,7 +89,7 @@ class Asserter:
 
         Parameters
         ----------
-        df  : pyspark.sql.dataframe.DataFrame
+        df_columns  : List[str]
             input Spark DataFrame
 
         Returns
