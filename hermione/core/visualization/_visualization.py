@@ -96,24 +96,26 @@ class Visualizer:
     def histogram(
         values, title="", label1="", label2="", fig_size=(4, 3), path=None, bins=10
     ):
-        """
-        Histogram plot of a set of values
+        """ Histogram plot of a set of values
 
         Parameters
         ----------
-        values      : array
-                      values
-        title       : str
-                      title
-        fig_size    : tuple
-                      figure size
-        path        : str
-                      path where the graphics will be saved
-
-        Returns
-        -------
-        None
+        values : _type_
+            _description_
+        title : str, optional
+            _description_, by default ""
+        label1 : str, optional
+            _description_, by default ""
+        label2 : str, optional
+            _description_, by default ""
+        fig_size : tuple, optional
+            _description_, by default (4, 3)
+        path : _type_, optional
+            _description_, by default None
+        bins : int, optional
+            _description_, by default 10
         """
+
         plt.clf()
         f, ax = plt.subplots(1, figsize=fig_size)
         ax.hist(values, bins=bins)
