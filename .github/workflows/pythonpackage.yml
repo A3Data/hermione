@@ -32,7 +32,7 @@ jobs:
         pip install .
     - name: Test with pytest
       run: |
-        coverage run -m pytest --ignore=hermione/module_templates
+        coverage run -m pytest --ignore=hermione/data
     - name: Coverage report
       run: |
         coverage report -m
