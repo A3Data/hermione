@@ -1,7 +1,7 @@
 tabulate==0.8.9
 joblib==1.0.1
 matplotlib==3.3.4
-pyspark==3.1.2
+pyspark==3.2.2
 numpy==1.21.0
 mlflow==1.23.1
 Unidecode==1.2.0
