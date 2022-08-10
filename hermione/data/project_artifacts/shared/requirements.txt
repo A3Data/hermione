@@ -24,7 +24,7 @@ lightgbm==3.3.2
 great-expectations==0.14.9
 umap-learn==0.5.2
 pingouin==0.5.1
-pyspark==3.2.1
+pyspark==3.2.2
 notebook==6.4.10
 fastapi==0.75.0
 uvicorn==0.17.5
